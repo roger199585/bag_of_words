@@ -472,19 +472,20 @@ if __name__ == "__main__":
             
 
             feature_loss = 0
-            crop_list = []
-            pos_x = (mask == 0).nonzero()[0, 0]
-            pos_y = (mask == 0).nonzero()[0, 1]
             
             pred_label = output.argmax(-1)
-            crop_img = img[:, :, pos_x*64:pos_x*64+64, pos_y*64:pos_y*64+64].to(device)
-            crop_output = pretrain_model(crop_img)
-            """ flatten the dimension of H and W """
-            out_ = crop_output.flatten(1,2).flatten(1,2)
-            out = pca.transform(out_.detach().cpu().numpy())
-            out = pil_to_tensor(out).squeeze().to(device)
-            crop_list.append(out)
+            
+            
             for i in range(args.train_batch):
+                pos_x = (mask[i] == 0).nonzero()[0, 0].item()
+                pos_y = (mask[i] == 0).nonzero()[0, 1].item()
+                crop_img = img[i, :, pos_x*64:pos_x*64+64, pos_y*64:pos_y*64+64].to(device)
+                crop_output = pretrain_model(crop_img)
+                """ flatten the dimension of H and W """
+                out_ = crop_output.flatten(1,2).flatten(1,2)
+                vggOut = pca.transform(out_.detach().cpu().numpy())
+                vggOut = pil_to_tensor(out).squeeze().to(device)
+
                 _pred = pred_label[i].item()
 
                 output_center = kmeans.cluster_centers_[_pred]
@@ -495,7 +496,7 @@ if __name__ == "__main__":
                 isWrongLabel = int(_pred != label[i].item())
 
 
-                feature_loss += isWrongLabel * nn.MSELoss()(output_center, crop_list[i])
+                feature_loss += isWrongLabel * nn.MSELoss()(output_center, vggOut)
             feature_loss /= args.train_batch
             
             optimizer.zero_grad()
