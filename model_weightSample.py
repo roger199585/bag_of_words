@@ -454,58 +454,6 @@ if __name__ == "__main__":
     iter_count = 1
     
     for epoch in range(args.epoch): 
-        """ noise version 2 """
-        # value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label)
-        # value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label)
-
-        # label_pred = []
-        # label_gt = []
-
-        # """ for defect type """ 
-        # for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-        #     img = img.cuda()
-        #     idx = idx[0].item()
-
-        #     error_map = np.zeros((1024, 1024))
-        #     for index, scalar in enumerate(value_feature[idx]):
-        #         mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-        #         mask = np.invert(mask)
-        #         mask[mask==255]=1
-                
-        #         error_map += mask * scalar
-
-        #     ## 可以在這邊算
-        #     defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-        #     true_mask = defect_gt[:, :, 0].astype('int32')
-        #     label_pred.append(error_map)
-        #     label_gt.append(true_mask)    
-        #     print(f'EP={epoch} defect_img_idx={idx}')
-
-
-        # """ for good type """
-        # for (idx, img) in test_loader:
-        #     img = img.cuda()
-        #     idx = idx[0].item()
-
-        #     error_map = np.zeros((1024, 1024))
-        #     for index, scalar in enumerate(value_good_feature[idx]):
-        #         mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-        #         mask = np.invert(mask)
-        #         mask[mask==255]=1
-        #         error_map += mask * scalar
-
-        #     defect_gt = np.zeros((1024, 1024, 3))
-        #     true_mask = defect_gt[:, :, 0].astype('int32')
-        #     label_pred.append(error_map)
-        #     label_gt.append(true_mask)    
-        #     print(f'EP={epoch} good_img_idx={idx}')
-
-        # auc = roc_auc_score(np.array(label_gt).flatten(), np.array(label_pred).flatten())
-        # writer.add_scalars('eval_score', {
-        #     'roc_auc_score': auc
-        # }, epoch)
-        # print("AUC score for testing data {}: {}".format(auc, args.data))
-        
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
             idx = idx[0].item()
@@ -527,7 +475,8 @@ if __name__ == "__main__":
             crop_list = []
             pos_x = (mask == 0).nonzero()[0, 0]
             pos_y = (mask == 0).nonzero()[0, 1]
-
+            
+            pred_label = output.argmax(-1)
             crop_img = img[:, :, pos_x*64:pos_x*64+64, pos_y*64:pos_y*64+64].to(device)
             crop_output = pretrain_model(crop_img)
             """ flatten the dimension of H and W """
@@ -536,7 +485,7 @@ if __name__ == "__main__":
             out = pil_to_tensor(out).squeeze().to(device)
             crop_list.append(out)
             for i in range(args.train_batch):
-                _pred = output[i].item()
+                _pred = pred_label[i].item()
 
                 output_center = kmeans.cluster_centers_[_pred]
                 output_center = np.reshape(output_center, (1, -1))

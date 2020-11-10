@@ -6,8 +6,8 @@
 4. Also `dataset` should be move under `bag_of_words`
 5. Build Dockerfile `docker build -t cgvlab:ad .`
 6. Run training with docker :
-    - With old docker driver `docker run --runtime=nvidia -e CUDA_VISIBLE_DEVICE=0,1,2,3 -e TASK=1 -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
-    - With latest docker driver `docker run --gpus=all -e TASK=1 -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
+    - With old docker driver `docker run --runtime=nvidia -e CUDA_VISIBLE_DEVICE=0,1,2,3 -e TASK=1 --ipc=host -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
+    - With latest docker driver `docker run --gpus=all -e TASK=1 --ipc=host -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
 
 
 ## 資料處理
