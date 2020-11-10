@@ -1,43 +1,43 @@
 #!/bin/bash
 
 if [[ $TASK = 1 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 8 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 8 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 8 --test_batch 128 --kmeans=16 --data=cable --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 8 --test_batch 128 --kmeans=16 --data=cable --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=cable --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=cable --type=good --epoch 40 &
 elif [[ $TASK = 2 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=capsule --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=capsule --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=carpet --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=carpet --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=capsule --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=capsule --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=carpet --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=carpet --type=good --epoch 40 &
 elif [[ $TASK = 3 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=grid --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=grid --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=hazelnut --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=hazelnut --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=grid --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=grid --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=hazelnut --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=hazelnut --type=good --epoch 40 &
 elif [[ $TASK = 4 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=leather --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=leather --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=metal_nut --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=metal_nut --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=leather --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=leather --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=metal_nut --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=metal_nut --type=good --epoch 40 &
 elif [[ $TASK = 5 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=pill --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=pill --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=screw --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=screw --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=pill --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=pill --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=screw --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=screw --type=good --epoch 40 &
 elif [[ $TASK = 6 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=tile --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=tile --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=toothbrush --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=toothbrush --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=tile --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=tile --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=toothbrush --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=toothbrush --type=good --epoch 40 &
 elif [[ $TASK = 7 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=transistor --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=transistor --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=wood --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=16 --data=wood --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=transistor --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=transistor --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=wood --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=3 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=16 --data=wood --type=good --epoch 40 &
 elif [[ $TASK = 8 ]]; then
-    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=zipper --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=32 --data=zipper --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=zipper --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=zipper --type=good --epoch 40 &
 fi
 
 wait
