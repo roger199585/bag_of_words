@@ -495,7 +495,7 @@ if __name__ == "__main__":
                 isWrongLabel = int(_pred != label[i].item())
 
 
-                feature_loss += isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
+                feature_loss += isWrongLabel * nn.MSELoss()(output_center, crop_list[i])
             feature_loss /= args.train_batch
             
             optimizer.zero_grad()
