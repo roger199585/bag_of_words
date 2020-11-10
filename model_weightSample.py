@@ -477,9 +477,10 @@ if __name__ == "__main__":
             
             
             for i in range(args.train_batch):
-                pos_x = (mask[i] == 0).nonzero()[0, 0].item()
-                pos_y = (mask[i] == 0).nonzero()[0, 1].item()
-                crop_img = img[i, None, :, pos_x*64:pos_x*64+64, pos_y*64:pos_y*64+64].to(device)
+                pos_y, pos_x = (mask[i] == 0).nonzero()[0]
+                pos_y, pos_x = pos_y.item(), pos_x.item()
+                
+                crop_img = img[i, None, :, pos_y:pos_y+64, pos_x:pos_x+64].to(device)
                 crop_output = pretrain_model(crop_img)
                 """ flatten the dimension of H and W """
                 out_ = crop_output.flatten(1,2).flatten(1,2)
