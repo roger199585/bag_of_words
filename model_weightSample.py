@@ -233,18 +233,8 @@ def eval_feature(epoch, model, test_loader, __labels):
                         isWrongLabel = int(y_[k] != y[k].item())
                         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
 
-                        un_out = torch.unsqueeze(output[k], dim=0)
-                        un_y = torch.unsqueeze(y[k], dim=0).long()
-
-                        diff_label = nn.CrossEntropyLoss()(un_out, un_y)
                         value_feature.append(diff.item())
-
-                        writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
-                        writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
-                        writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
                     crop_list.clear()
-                    
-                    eval_fea_count += 1
 
             total_gt.append(label_gt)
             total_idx.append(label_idx)
@@ -323,6 +313,7 @@ def eval_feature_test(epoch, model, test_loader, mask_loader):
                 output = model(x)
                 # y_ = output.argmax(-1).detach()
                 y_ = output.argmax(-1).detach().cpu().numpy()
+                acc = (output.argmax(-1).detach() == y).float().mean()  
 
                 for k in range(16):
                     label_idx.append(y_[k])
@@ -345,26 +336,9 @@ def eval_feature_test(epoch, model, test_loader, mask_loader):
 
                     writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
                     writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
-
-                    # print(f'Testing i={i} j={k} loss={diff.item()}')
+                    writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
                     
                     eval_fea_count += 1
-
-                """ feature error """
-                # diff = torch.mm( (y - output), torch.tensor(gmm.means_ ).to(device, dtype=torch.float)).sum(dim=1).abs() / 32
-                # print(f'Testing i={i} feature loss={diff.sum().item()}')
-
-                """ alpha error """
-                # diff_alpha = nn.MSELoss()(output[k], y[k])
-                # value_label.append(diff_alpha.item())
-                # loss_alpha += diff_alpha.item()
-            
-                """ loss unit: per patch """
-                # loss /= 32
-                # writer.add_scalar('test_loss', diff.sum().item(), eval_fea_count)
-                # loss_alpha /= 32
-                # writer.add_scalar('test_alpha_loss', loss_alpha, eval_fea_count)
-                # eval_fea_count += 1
 
             total_gt.append(label_gt)
             total_idx.append(label_idx)
