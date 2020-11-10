@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ $TASK = 0 ]]; then
-    CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 16 --test_batch 64 --kmeans=128 --data=carpet --type=good --epoch 40 &
-    CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 16 --test_batch 64 --kmeans=64 --data=carpet --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=128 --data=grid --type=good --epoch 40 &
+    CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 16 --test_batch 128 --kmeans=64 --data=bottle --type=good --epoch 40 &
 elif [[ $TASK = 1 ]]; then
     CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &
     CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 32 --test_batch 128 --kmeans=32 --data=bottle --type=good --epoch 40 &

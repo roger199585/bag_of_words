@@ -470,45 +470,12 @@ if __name__ == "__main__":
             loss = criterion(output, label)
             acc = (output.argmax(-1).detach() == label).float().mean()
             
-
-            feature_loss = 0
-            
-            pred_label = output.argmax(-1)
-            
-            
-            for i in range(args.train_batch):
-                pos_y, pos_x = (mask[i] == 0).nonzero()[0]
-                pos_y, pos_x = pos_y.item(), pos_x.item()
-                
-                crop_img = img[i, None, :, pos_y:pos_y+64, pos_x:pos_x+64].to(device)
-                crop_output = pretrain_model(crop_img)
-                """ flatten the dimension of H and W """
-                out_ = crop_output.flatten(1,2).flatten(1,2)
-                vggOut = pca.transform(out_.detach().cpu().numpy())
-                vggOut = pil_to_tensor(out).squeeze().to(device)
-
-                _pred = pred_label[i].item()
-
-                output_center = kmeans.cluster_centers_[_pred]
-                output_center = np.reshape(output_center, (1, -1))
-                output_center = pil_to_tensor(output_center).to(device)
-                output_center = torch.squeeze(output_center)
-
-                isWrongLabel = int(_pred != label[i].item())
-
-
-                feature_loss += isWrongLabel * nn.MSELoss()(output_center, vggOut)
-            feature_loss /= args.train_batch
-            
             optimizer.zero_grad()
             loss.backward()
-            feature_loss.backward()
             optimizer.step()
-
 
             writer.add_scalars('loss', {
                 'label loss': loss.item(),
-                'feature loss': feature_loss.item()
             }, iter_count)
             writer.add_scalar('acc', acc.item(), iter_count)            
             
