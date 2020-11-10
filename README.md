@@ -1,4 +1,14 @@
-# 運氣遊戲來囉
+# Run With Docker 
+
+1. Download [preprocess data](https://drive.google.com/file/d/1omH4LxKuxPlq2sDxKt_VjPSu0qP8yjir/view?usp=sharing) and [dataset](https://drive.google.com/file/d/1J752eYmySgCPJJ7HHAMy8KC9vkN_cxoa/view?usp=sharing)
+2. Clone the code from github `git clone https://github.com/roger199585/bag_of_words.git`
+3. The preprocess data should rename to `preprocessData` and put it under `bag_of_words`
+4. Also `dataset` should be move under `bag_of_words`
+5. Build Dockerfile `docker build -t cgvlab:ad .`
+6. Run training with docker :
+    - With old docker driver `docker run --runtime=nvidia -e CUDA_VISIBLE_DEVICE=0,1,2,3 -e TASK=1 -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
+    - With latest docker driver `docker run --gpus=all -e TASK=1 -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
+
 
 ## 資料處理
 > 首先如果你沒有資料庫的話要先下載下來

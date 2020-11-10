@@ -81,6 +81,10 @@ pca = pickle.load(open(pca_path, "rb"))
 
 """ image transform """
 pil_to_tensor = transforms.ToTensor()
+image_invert = transforms.Compose([
+    Invert(),
+    transforms.ToTensor()
+])
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #-------------------------------------
@@ -315,30 +319,7 @@ def eval_feature_test(epoch, model, test_loader, mask_loader):
                 y_ = output.argmax(-1).detach().cpu().numpy()
                 acc = (output.argmax(-1).detach() == y).float().mean()  
 
-                for k in range(16):
-                    label_idx.append(y_[k])
-                    label_gt.append(y[k].item())
-                    output_center = kmeans.cluster_centers_[y_[k]]
-                    output_center = np.reshape(output_center, (1, -1))
-                    output_center = pil_to_tensor(output_center).to(device)
-                    output_center = torch.squeeze(output_center)
-
-                    if y_[k] == y[k].item():
-                        isWrongLabel = 0
-                    else:
-                        isWrongLabel = 1
-
-                    un_out = torch.unsqueeze(output[k], dim=0)
-                    un_y = torch.unsqueeze(y[k], dim=0).long()
-                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
-                    diff_label = nn.CrossEntropyLoss()(un_out, un_y)
-                    value_feature.append(diff.item())
-
-                    writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
-                    writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
-                    writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
-                    
-                    eval_fea_count += 1
+                 
 
             total_gt.append(label_gt)
             total_idx.append(label_idx)
@@ -478,56 +459,56 @@ if __name__ == "__main__":
     
     for epoch in range(args.epoch): 
         """ noise version 2 """
-        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label)
-        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label)
+        # value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label)
+        # value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label)
 
-        label_pred = []
-        label_gt = []
+        # label_pred = []
+        # label_gt = []
 
-        """ for defect type """ 
-        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-            img = img.cuda()
-            idx = idx[0].item()
+        # """ for defect type """ 
+        # for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
+        #     img = img.cuda()
+        #     idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
+        #     error_map = np.zeros((1024, 1024))
+        #     for index, scalar in enumerate(value_feature[idx]):
+        #         mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        #         mask = np.invert(mask)
+        #         mask[mask==255]=1
                 
-                error_map += mask * scalar
+        #         error_map += mask * scalar
 
-            ## 可以在這邊算
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} defect_img_idx={idx}')
+        #     ## 可以在這邊算
+        #     defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+        #     true_mask = defect_gt[:, :, 0].astype('int32')
+        #     label_pred.append(error_map)
+        #     label_gt.append(true_mask)    
+        #     print(f'EP={epoch} defect_img_idx={idx}')
 
 
-        """ for good type """
-        for (idx, img) in test_loader:
-            img = img.cuda()
-            idx = idx[0].item()
+        # """ for good type """
+        # for (idx, img) in test_loader:
+        #     img = img.cuda()
+        #     idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
-                error_map += mask * scalar
+        #     error_map = np.zeros((1024, 1024))
+        #     for index, scalar in enumerate(value_good_feature[idx]):
+        #         mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        #         mask = np.invert(mask)
+        #         mask[mask==255]=1
+        #         error_map += mask * scalar
 
-            defect_gt = np.zeros((1024, 1024, 3))
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} good_img_idx={idx}')
+        #     defect_gt = np.zeros((1024, 1024, 3))
+        #     true_mask = defect_gt[:, :, 0].astype('int32')
+        #     label_pred.append(error_map)
+        #     label_gt.append(true_mask)    
+        #     print(f'EP={epoch} good_img_idx={idx}')
 
-        auc = roc_auc_score(np.array(label_gt).flatten(), np.array(label_pred).flatten())
-        writer.add_scalars('eval_score', {
-            'roc_auc_score': auc
-        }, epoch)
-        print("AUC score for testing data {}: {}".format(auc, args.data))
+        # auc = roc_auc_score(np.array(label_gt).flatten(), np.array(label_pred).flatten())
+        # writer.add_scalars('eval_score', {
+        #     'roc_auc_score': auc
+        # }, epoch)
+        # print("AUC score for testing data {}: {}".format(auc, args.data))
         
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
@@ -545,12 +526,43 @@ if __name__ == "__main__":
             loss = criterion(output, label)
             acc = (output.argmax(-1).detach() == label).float().mean()
             
+
+            feature_loss = 0
+            crop_list = []
+            pos_x = (mask == 0).nonzero()[0, 0]
+            pos_y = (mask == 0).nonzero()[0, 1]
+
+            crop_img = img[:, :, pos_x*64:pos_x*64+64, pos_y*64:pos_y*64+64].to(device)
+            crop_output = pretrain_model(crop_img)
+            """ flatten the dimension of H and W """
+            out_ = crop_output.flatten(1,2).flatten(1,2)
+            out = pca.transform(out_.detach().cpu().numpy())
+            out = pil_to_tensor(out).squeeze().to(device)
+            crop_list.append(out)
+            for i in range(args.train_batch):
+                _pred = output[i].item()
+
+                output_center = kmeans.cluster_centers_[_pred]
+                output_center = np.reshape(output_center, (1, -1))
+                output_center = pil_to_tensor(output_center).to(device)
+                output_center = torch.squeeze(output_center)
+
+                isWrongLabel = int(_pred != label[i].item())
+
+
+                feature_loss += isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
+            feature_loss /= args.train_batch
+            
             optimizer.zero_grad()
             loss.backward()
+            feature_loss.backward()
             optimizer.step()
 
 
-            writer.add_scalar('loss', loss.item(), iter_count)
+            writer.add_scalars('loss', {
+                'label loss': loss.item(),
+                'feature loss': feature_loss.item()
+            }, iter_count)
             writer.add_scalar('acc', acc.item(), iter_count)            
             
             print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
