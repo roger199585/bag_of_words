@@ -1,0 +1,8 @@
+dataset/**
+errorMap*/**
+preprocessData/**
+**/*.pth
+models/**
+__pycache__
+**/*.tar
+**/*.pyc

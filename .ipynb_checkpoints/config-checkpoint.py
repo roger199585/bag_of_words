@@ -1,0 +1,1 @@
+ROOT='/root/AFS/bag_of_words'
