@@ -204,7 +204,8 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
                     mask = mask.to(device)
-                    x = img * mask
+                    # x = img * mask
+                    x = img
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*16+j].to(device)
                    
@@ -295,7 +296,8 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
             mask = mask.to(device)
             img_ = img_.to(device)
 
-            x = img * mask
+            # x = img * mask
+            x = img
             x = torch.cat((x, mask), 1)
             
             out = pretrain_model(img_)
@@ -443,7 +445,8 @@ if __name__ == "__main__":
             img = img.to(device)
             mask = mask.to(device)
 
-            x = img * mask
+            # x = img * mask
+            x = img
             x = torch.cat((x, mask), 1)
             label = label.squeeze().to(device, dtype=torch.long)
 
