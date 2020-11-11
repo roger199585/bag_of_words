@@ -10,6 +10,8 @@
     - With latest docker driver `docker run --gpus=all -e TASK=1 --ipc=host -v <code folder>:/ws_data/nctu/bag_of_words -v <result folder>:/result -it --rm cgvlab:ad`
 
 
+
+### 手動執行，如果要透過 docker 跑的話下面不用理他
 ## 資料處理
 > 首先如果你沒有資料庫的話要先下載下來
 > 下載方法如下方所示

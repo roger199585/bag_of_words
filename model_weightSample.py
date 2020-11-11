@@ -263,9 +263,6 @@ def eval_feature_test(epoch, model, test_loader, mask_loader):
         total_gt = []
         total_idx = []
 
-# 這邊暫時只會畫 good 但是 good 沒有 mask
-# 之前 mask 是隨便給，但是這樣會遇到 dataset idx 不符的問題，所以反正現在都只有畫 good 就先應給他兩個 testing set
-#         for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
         for ((idx, img), (idx2, img2)) in zip(test_loader, test_loader):
             img = img.to(device)
             idx = idx[0].item()
@@ -315,7 +312,30 @@ def eval_feature_test(epoch, model, test_loader, mask_loader):
                 y_ = output.argmax(-1).detach().cpu().numpy()
                 acc = (output.argmax(-1).detach() == y).float().mean()  
 
-                 
+                for k in range(16):
+                    label_idx.append(y_[k])
+                    label_gt.append(y[k].item())
+                    output_center = kmeans.cluster_centers_[y_[k]]
+                    output_center = np.reshape(output_center, (1, -1))
+                    output_center = pil_to_tensor(output_center).to(device)
+                    output_center = torch.squeeze(output_center)
+
+                    if y_[k] == y[k].item():
+                        isWrongLabel = 0
+                    else:
+                        isWrongLabel = 1
+
+                    un_out = torch.unsqueeze(output[k], dim=0)
+                    un_y = torch.unsqueeze(y[k], dim=0).long()
+                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
+                    diff_label = nn.CrossEntropyLoss()(un_out, un_y)
+                    value_feature.append(diff.item())
+
+                    writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
+                    writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
+                    writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
+                    
+                    eval_fea_count += 1
 
             total_gt.append(label_gt)
             total_idx.append(label_idx)
@@ -505,7 +525,7 @@ if __name__ == "__main__":
             'roc_auc_score': auc
         }, epoch)
         print("AUC score for testing data {}: {}".format(auc, args.data))
-        
+
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
             idx = idx[0].item()
