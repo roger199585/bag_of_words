@@ -25,7 +25,7 @@ import resnet
 import dataloaders
 import pretrain_vgg
 import pretrain_resnet
-from config import ROOT
+from config import ROOT, RESULT_PATH
 from visualize import errorMap
 from utils.tools import one_hot, one_hot_forMap, draw_errorMap
 
@@ -429,7 +429,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="../tensorboard/{}_{}_{}_{}".format(args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
