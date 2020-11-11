@@ -25,7 +25,7 @@ import resnet
 import dataloaders
 import pretrain_vgg
 import pretrain_resnet
-from config import ROOT, RESULT_PATH
+from config import ROOT
 from visualize import errorMap
 from utils.tools import one_hot, one_hot_forMap, draw_errorMap
 
@@ -204,8 +204,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
                     mask = mask.to(device)
-                    # x = img * mask
-                    x = img
+                    x = img * mask
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*16+j].to(device)
                    
@@ -296,8 +295,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
             mask = mask.to(device)
             img_ = img_.to(device)
 
-            # x = img * mask
-            x = img
+            x = img * mask
             x = torch.cat((x, mask), 1)
             
             out = pretrain_model(img_)
@@ -344,7 +342,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="../tensorboard/{}_{}_{}_{}".format(args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -445,8 +443,7 @@ if __name__ == "__main__":
             img = img.to(device)
             mask = mask.to(device)
 
-            # x = img * mask
-            x = img
+            x = img * mask
             x = torch.cat((x, mask), 1)
             label = label.squeeze().to(device, dtype=torch.long)
 
@@ -464,9 +461,6 @@ if __name__ == "__main__":
             writer.add_scalar('acc', acc.item(), iter_count)            
             
             print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
-
-            if (iter_count % 200 == 0):
-                value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
             
             iter_count += 1
         
