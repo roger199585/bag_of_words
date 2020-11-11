@@ -570,7 +570,7 @@ if __name__ == "__main__":
 
     # 計算 multimap
     global_index = MAXAUCEPOCH
-    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOTm args.data, args.kmeans, global_index)))
+    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
     ## Label
     test_all_label_name = "preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
