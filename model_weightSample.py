@@ -53,6 +53,11 @@ parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--pretrain', type=str, default='False')
 args = parser.parse_args()
 
+MAXAUCEPOCH = 0
+ALLAUC = []
+label_pred = []
+label_gt = []
+
 kmeans_path = "{}/preprocessData/kmeans/{}/{}_{}_{}_{}.pickle".format(
     ROOT,
     args.data,
@@ -76,7 +81,6 @@ left_j_path = "{}/preprocessData/coordinate/vgg19/{}/left_j.pickle".format(ROOT,
 
 kmeans = pickle.load(open(kmeans_path, "rb"))
 pca = pickle.load(open(pca_path, "rb"))
-# gmm = pickle.load(open(gmm_path, "rb"))
 
 
 """ image transform """
@@ -150,10 +154,6 @@ print(all_test_label.shape)
 """ eval """
 eval_path = "{}/dataset/{}/test_resize/all".format(ROOT, args.data)
 eval_mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
-    
-
-""" the ground truth defective mask path """ 
-# defect_gt_path = "dataset/{}/ground_truth/{}_resize/".format(args.data, args.type)
 
 print('testing data: ', test_path)
 print('testing label: ', test_label_name)
@@ -162,6 +162,93 @@ eval_fea_count = 0
 
 def myNorm(features):
     return features / features.max()
+
+def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=False):
+    global label_pred
+    global label_true
+    global pretrain_model
+    global kmeans
+    global pca
+
+    model.eval()
+    pretrain_model.eval()
+
+    with torch.no_grad():
+
+        img_feature = []
+        
+        start = time.time()
+
+        for (idx, img) in test_loader:
+            each_pixel_err_sum = np.zeros([1024, 1024])
+            each_pixel_err_count = np.zeros([1024, 1024])
+
+            # pixel_feature = []  
+            img = img.to(device)
+            idx = idx[0].item()
+            
+            print(f'eval phase: img idx={idx}')
+
+            """ slide window = 16 """
+            map_num = int((1024 - 64) / 16 + 1)   ## = 61
+            indices = list(itertools.product(range(map_num), range(map_num)))
+            
+            """ batch """
+            batch_size = 32
+
+            label_idx = []
+            label_gt = []
+
+            for batch_start_idx in range(0, len(indices), batch_size):
+                xs = []
+                ys = []
+                crop_list = []
+
+                batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
+
+                for i, j in batch_idxs:
+                    crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
+                    crop_output = pretrain_model(crop_img)
+                    """ flatten the dimension of H and W """
+                    out_ = crop_output.flatten(1,2).flatten(1,2)
+                    out = pca.transform(out_.detach().cpu().numpy())
+                    out_label = kmeans.predict(out)
+                    out_label = torch.from_numpy(out_label).to(device)
+                    out = pil_to_tensor(out).squeeze().to(device)
+                    crop_list.append(out)
+
+                    mask = torch.ones(1, 1, 1024, 1024)
+                    mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
+                    mask = mask.to(device)
+                    x = img * mask
+                    x = torch.cat((x, mask), 1)
+
+                    xs.append(x)
+                    ys.append(out_label)
+
+                x = torch.cat(xs, 0)
+                y = torch.stack(ys).squeeze().to(device)                        
+                output = model(x)
+                y_ = output.argmax(-1).detach().cpu().numpy()
+
+                for n, (i, j) in enumerate(batch_idxs):
+                    output_center = kmeans.cluster_centers_[y_[n]]
+                    output_center = np.reshape(output_center, (1, -1))
+                    output_center = pil_to_tensor(output_center).to(device)
+                    output_center = torch.squeeze(output_center)
+
+                    isWrongLabel = int(y_[n] != y[n].item())
+                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[n])
+                    
+                    each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
+                    each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+            
+            pixel_feature = each_pixel_err_sum / each_pixel_err_count
+            img_feature.append(pixel_feature)
+
+    print(np.array(img_feature).shape)
+    img_feature = np.array(img_feature).reshape((len(test_loader), -1))
+    return img_feature
 
 def eval_feature(epoch, model, test_loader, __labels, isGood):
     global eval_fea_count
@@ -380,99 +467,160 @@ if __name__ == "__main__":
     
     iter_count = 1
     
-    for epoch in range(args.epoch): 
-        """ noise version 2 """
-        print("------- For defect type -------")
-        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
-        print("------- For good type -------")
-        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
+    # for epoch in range(args.epoch): 
+    #     """ noise version 2 """
+    #     print("------- For defect type -------")
+    #     value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
+    #     print("------- For good type -------")
+    #     value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
 
-        label_pred = []
-        label_gt = []
+    #     """ for defect type """ 
+    #     for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
+    #         img = img.cuda()
+    #         idx = idx[0].item()
 
-        """ for defect type """ 
-        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-            img = img.cuda()
-            idx = idx[0].item()
-
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
+    #         error_map = np.zeros((1024, 1024))
+    #         for index, scalar in enumerate(value_feature[idx]):
+    #             mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+    #             mask = np.invert(mask)
+    #             mask[mask==255]=1
                 
-                error_map += mask * scalar
+    #             error_map += mask * scalar
 
-            ## 可以在這邊算
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} defect_img_idx={idx}')
+    #         ## 可以在這邊算
+    #         defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+    #         true_mask = defect_gt[:, :, 0].astype('int32')
+    #         label_pred.append(error_map)
+    #         label_gt.append(true_mask)    
+    #         print(f'EP={epoch} defect_img_idx={idx}')
 
 
-        """ for good type """
-        for (idx, img) in test_loader:
-            img = img.cuda()
-            idx = idx[0].item()
+    #     """ for good type """
+    #     for (idx, img) in test_loader:
+    #         img = img.cuda()
+    #         idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
-                error_map += mask * scalar
+    #         error_map = np.zeros((1024, 1024))
+    #         for index, scalar in enumerate(value_good_feature[idx]):
+    #             mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+    #             mask = np.invert(mask)
+    #             mask[mask==255]=1
+    #             error_map += mask * scalar
 
-            defect_gt = np.zeros((1024, 1024, 3))
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} good_img_idx={idx}')
+    #         defect_gt = np.zeros((1024, 1024, 3))
+    #         true_mask = defect_gt[:, :, 0].astype('int32')
+    #         label_pred.append(error_map)
+    #         label_gt.append(true_mask)    
+    #         print(f'EP={epoch} good_img_idx={idx}')
 
-        label_pred = myNorm(np.array(label_pred))
-        auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
-        writer.add_scalars('eval_score', {
-            'roc_auc_score': auc
-        }, epoch)
-        print("AUC score for testing data {}: {}".format(auc, args.data))
+    #     label_pred = myNorm(np.array(label_pred))
+    #     auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
+    #     ALLAUC.append(auc)
+
+    #     if auc >= ALLAUC[MAXAUCEPOCH]:
+    #         MAXAUCEPOCH = epoch
+
+    #     writer.add_scalars('eval_score', {
+    #         'roc_auc_score': auc
+    #     }, epoch)
+    #     print("AUC score for testing data {}: {}".format(auc, args.data))
         
-        for (idx, img, left_i, left_j, label, mask) in train_loader:
-            scratch_model.train()
-            idx = idx[0].item()
+    #     for (idx, img, left_i, left_j, label, mask) in train_loader:
+    #         scratch_model.train()
+    #         idx = idx[0].item()
             
-            img = img.to(device)
-            mask = mask.to(device)
+    #         img = img.to(device)
+    #         mask = mask.to(device)
 
-            x = img * mask
-            x = torch.cat((x, mask), 1)
-            label = label.squeeze().to(device, dtype=torch.long)
+    #         x = img * mask
+    #         x = torch.cat((x, mask), 1)
+    #         label = label.squeeze().to(device, dtype=torch.long)
 
-            output = scratch_model(x)
+    #         output = scratch_model(x)
             
-            loss = criterion(output, label)
-            acc = (output.argmax(-1).detach() == label).float().mean()
+    #         loss = criterion(output, label)
+    #         acc = (output.argmax(-1).detach() == label).float().mean()
             
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+    #         optimizer.zero_grad()
+    #         loss.backward()
+    #         optimizer.step()
 
 
-            writer.add_scalar('loss', loss.item(), iter_count)
-            writer.add_scalar('acc', acc.item(), iter_count)            
+    #         writer.add_scalar('loss', loss.item(), iter_count)
+    #         writer.add_scalar('acc', acc.item(), iter_count)            
             
-            print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
+    #         print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
             
-            iter_count += 1
+    #         iter_count += 1
         
-        if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
-            os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
+    #     if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
+    #         os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
         
-        path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
-            ROOT,
-            args.model, 
-            args.data, 
-            str(out), 
-            str(epoch+1+epoch_num)
-        )
-        torch.save(scratch_model.state_dict(), path)
+    #     path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
+    #         ROOT,
+    #         args.model, 
+    #         args.data, 
+    #         str(out), 
+    #         str(epoch+1+epoch_num)
+    #     )
+    #     torch.save(scratch_model.state_dict(), path)
 
+
+
+
+    # 計算 multimap
+    global_index = MAXAUCEPOCH
+    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOTm args.data, args.kmeans, global_index)))
+
+    ## Label
+    test_all_label_name = "preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
+    test_all_label = torch.tensor(torch.load(test_all_label_name))
+
+    test_good_label_name = "preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(args.data, args.kmeans)
+    test_good_label = torch.tensor(torch.load(test_good_label_name))
+
+    print("----- defect -----")
+    img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
+    print("----- good -----")
+    img_good_feature = eval_feature_for_multiMap(scratch_model, test_loader, args.data, global_index, good=True)
+
+    label_pred = []
+    label_true = []
+
+    """ for defect type """ 
+    for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
+        img = img.cuda()
+        idx = idx[0].item()
+
+        errorMap = img_all_feature[idx].reshape((1024, 1024))
+
+        """ for computing aucroc score """
+        defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+        true_mask = defect_gt[:, :, 0].astype('int32')
+        label_pred.append(errorMap)
+        label_true.append(true_mask)    
+        print(f'EP={global_index} defect_img_idx={idx}')
+
+        
+
+    """ for good type """
+    for (idx, img) in test_loader:
+        img = img.cuda()
+        idx = idx[0].item()
+        
+        errorMap = img_good_feature[idx].reshape((1024, 1024))
+        
+
+        """ for computing aucroc score """
+        defect_gt = np.zeros((1024, 1024, 3))
+        true_mask = defect_gt[:, :, 0].astype('int32')
+        label_pred.append(errorMap)
+        label_true.append(true_mask)    
+        print(f'EP={global_index} good_img_idx={idx}')
+
+    label_pred = myNorm(np.array(label_pred))
+    print(label_pred.shape)
+    print(np.array(label_true).shape)
+    auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
+    writer.add_scalar('multi map auc', auc, 1)
+    print("AUC score for testing data {}: {}".format(args.data, auc))
