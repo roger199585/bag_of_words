@@ -36,7 +36,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import roc_auc_score, average_precision_score
 
 
-from config import RESULT_PATH, ROOT
+# from config import gamma
 
 """ set parameters """
 parser = argparse.ArgumentParser()
@@ -163,7 +163,7 @@ eval_fea_count = 0
 def myNorm(features):
     return features / features.max()
 
-def eval_feature(epoch, model, test_loader, __labels):
+def eval_feature(epoch, model, test_loader, __labels, isGood):
     global eval_fea_count
     global pretrain_model
     global kmeans
@@ -219,10 +219,9 @@ def eval_feature(epoch, model, test_loader, __labels):
 
                     output = model(x)
                     y_ = output.argmax(-1).detach().cpu().numpy()
-
                     acc = (output.argmax(-1).detach() == y).float().mean()  
 
-                    for k in range(16):
+                    for k in range(args.test_batch_size):
                         label_idx.append(y_[k])
                         label_gt.append(y[k].item())
                         output_center = kmeans.cluster_centers_[y_[k]]
@@ -231,116 +230,24 @@ def eval_feature(epoch, model, test_loader, __labels):
                         output_center = torch.squeeze(output_center)
 
                         isWrongLabel = int(y_[k] != y[k].item())
-                        diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
 
+                        un_out = torch.unsqueeze(output[k], dim=0)
+                        un_y = torch.unsqueeze(y[k], dim=0).long()
+                        diff_label = nn.CrossEntropyLoss()(un_out, un_y)
+                        diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
                         value_feature.append(diff.item())
+
+                        if isGood:
+                            writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
+                            writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
+                            writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
+                            eval_fea_count += 1
+
                     crop_list.clear()
 
             total_gt.append(label_gt)
             total_idx.append(label_idx)
             img_feature.append(value_feature)
-    print(np.array(img_feature).shape)
-    print(len(test_loader))
-    img_feature = np.array(img_feature).reshape((len(test_loader), -1))
-    total_gt = np.array(total_gt).reshape((len(test_loader), -1))
-    total_idx = np.array(total_idx).reshape((len(test_loader), -1))
-
-    return myNorm(img_feature), total_gt, total_idx
-
-
-def eval_feature_test(epoch, model, test_loader, mask_loader):
-    global eval_fea_count
-    global norm_count
-    global pretrain_model
-    global kmeans
-
-    model.eval()
-    pretrain_model.eval()
-
-    with torch.no_grad():
-        
-        img_feature = []
-        total_gt = []
-        total_idx = []
-
-        for ((idx, img), (idx2, img2)) in zip(test_loader, test_loader):
-            img = img.to(device)
-            idx = idx[0].item()
-
-            print(f'eval phase: img idx={idx}')
-
-            value_feature = []
-            value_label = []
-            label_idx = []
-            label_gt = []
-
-            for i in range(16):
-                xs = []
-                ys = []
-
-                crop_list = []
-                loss = 0.0
-                loss_alpha = 0.0
-
-                for j in range(16):
-                    crop_img = img[:, :, i*64:i*64+64, j*64:j*64+64].to(device)
-                    crop_output = pretrain_model(crop_img)
-                    """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
-                    out = pca.transform(out_.detach().cpu().numpy())
-                    out = pil_to_tensor(out).squeeze().to(device)
-                    crop_list.append(out)
-
-                    mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
-                    mask = mask.to(device)
-                    x = img * mask
-                    x = torch.cat((x, mask), 1)
-                    label = test_label[idx][i*16+j].to(device)
-                        
-                    # label = test_label[idx*1024 + i*32+j].to(device, dtype=torch.float)
-                    # print(label)
-                   
-                    xs.append(x)
-                    ys.append(label)
-            
-                x = torch.cat(xs, 0)
-                y = torch.stack(ys).squeeze().to(device)
-
-                output = model(x)
-                # y_ = output.argmax(-1).detach()
-                y_ = output.argmax(-1).detach().cpu().numpy()
-                acc = (output.argmax(-1).detach() == y).float().mean()  
-
-                for k in range(16):
-                    label_idx.append(y_[k])
-                    label_gt.append(y[k].item())
-                    output_center = kmeans.cluster_centers_[y_[k]]
-                    output_center = np.reshape(output_center, (1, -1))
-                    output_center = pil_to_tensor(output_center).to(device)
-                    output_center = torch.squeeze(output_center)
-
-                    if y_[k] == y[k].item():
-                        isWrongLabel = 0
-                    else:
-                        isWrongLabel = 1
-
-                    un_out = torch.unsqueeze(output[k], dim=0)
-                    un_y = torch.unsqueeze(y[k], dim=0).long()
-                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
-                    diff_label = nn.CrossEntropyLoss()(un_out, un_y)
-                    value_feature.append(diff.item())
-
-                    writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
-                    writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
-                    writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
-                    
-                    eval_fea_count += 1
-
-            total_gt.append(label_gt)
-            total_idx.append(label_idx)
-            img_feature.append(value_feature)
-
     print(np.array(img_feature).shape)
     print(len(test_loader))
     img_feature = np.array(img_feature).reshape((len(test_loader), -1))
@@ -435,7 +342,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="../tensorboard/{}_{}_{}_{}".format(args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -475,8 +382,10 @@ if __name__ == "__main__":
     
     for epoch in range(args.epoch): 
         """ noise version 2 """
-        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label)
-        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label)
+        print("------- For defect type -------")
+        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
+        print("------- For good type -------")
+        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
 
         label_pred = []
         label_gt = []
@@ -520,12 +429,13 @@ if __name__ == "__main__":
             label_gt.append(true_mask)    
             print(f'EP={epoch} good_img_idx={idx}')
 
-        auc = roc_auc_score(np.array(label_gt).flatten(), np.array(label_pred).flatten())
+        label_pred = myNorm(np.array(label_pred))
+        auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
         writer.add_scalars('eval_score', {
             'roc_auc_score': auc
         }, epoch)
         print("AUC score for testing data {}: {}".format(auc, args.data))
-
+        
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
             idx = idx[0].item()
@@ -546,15 +456,14 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
 
-            writer.add_scalars('loss', {
-                'label loss': loss.item(),
-            }, iter_count)
+
+            writer.add_scalar('loss', loss.item(), iter_count)
             writer.add_scalar('acc', acc.item(), iter_count)            
             
             print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
 
             if (iter_count % 200 == 0):
-                img_feature, total_gt, total_idx = eval_feature_test(epoch+epoch_num, scratch_model, test_loader, writer)
+                value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
             
             iter_count += 1
         
