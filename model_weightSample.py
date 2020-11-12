@@ -577,11 +577,11 @@ if __name__ == "__main__":
         scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
         ## Label
-        test_all_label_name = "preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
-        test_all_label = torch.tensor(torch.load(test_all_label_name))
+        # test_all_label_name = "preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
+        # test_all_label = torch.tensor(torch.load(test_all_label_name))
 
-        test_good_label_name = "preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(args.data, args.kmeans)
-        test_good_label = torch.tensor(torch.load(test_good_label_name))
+        # test_good_label_name = "preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(args.data, args.kmeans)
+        # test_good_label = torch.tensor(torch.load(test_good_label_name))
 
         print("----- defect -----")
         img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
