@@ -475,6 +475,9 @@ if __name__ == "__main__":
         print("------- For good type -------")
         value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
 
+        label_pred = []
+        label_gt = []
+
         """ for defect type """ 
         for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
             img = img.cuda()
