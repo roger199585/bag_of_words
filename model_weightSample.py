@@ -525,7 +525,7 @@ if __name__ == "__main__":
         if auc >= ALLAUC[MAXAUCEPOCH]:
             MAXAUCEPOCH = epoch
 
-        writer.add_scalar('roc_auc_score', 'roc_auc_score': auc, epoch)
+        writer.add_scalar('roc_auc_score', auc, epoch)
         print("AUC score for testing data {}: {}".format(auc, args.data))
         
         for (idx, img, left_i, left_j, label, mask) in train_loader:
