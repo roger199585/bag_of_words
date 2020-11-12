@@ -57,8 +57,6 @@ args = parser.parse_args()
 
 MAXAUCEPOCH = 0
 ALLAUC = []
-label_pred = []
-label_gt = []
 
 kmeans_path = "{}/preprocessData/kmeans/{}/{}_{}_{}_{}.pickle".format(
     ROOT,
@@ -166,8 +164,6 @@ def myNorm(features):
     return features / features.max()
 
 def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=False):
-    global label_pred
-    global label_true
     global pretrain_model
     global kmeans
     global pca
@@ -486,7 +482,7 @@ if __name__ == "__main__":
 
             error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 
@@ -507,7 +503,7 @@ if __name__ == "__main__":
 
             error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 error_map += mask * scalar
