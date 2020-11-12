@@ -1,6 +1,6 @@
 # Run With Docker 
 
-1. Download preprocess data `https://6-33409.afs.twcc.wise-paas.com/files/refactor/bag_of_words/dataWithNoError.tar?_xsrf=2%7C711ba3b2%7C9a033dcb208fb5c9cfa4c4a48eaecf1d%7C1604948403`
+1. Download [preprocess data](https://drive.google.com/file/d/1nX0lq07XnB8w8OH09Nk616ZQK5nnrijp/view?usp=sharing)
 2. Download [dataset](https://drive.google.com/file/d/1J752eYmySgCPJJ7HHAMy8KC9vkN_cxoa/view?usp=sharing)
 2. Clone the code from github `git clone https://github.com/roger199585/bag_of_words.git`
 3. The preprocess data should rename to `preprocessData` and put it under `bag_of_words`
