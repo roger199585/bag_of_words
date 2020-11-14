@@ -218,8 +218,7 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
                     mask = mask.to(device)
-                    # x = img * mask
-                    x = img
+                    x = img * mask
                     x = torch.cat((x, mask), 1)
 
                     xs.append(x)
@@ -290,8 +289,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
                     mask = mask.to(device)
-                    # x = img * mask
-                    x = img
+                    x = img * mask
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*16+j].to(device)
                    
@@ -382,8 +380,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
             mask = mask.to(device)
             img_ = img_.to(device)
 
-            # x = img * mask
-            x = img
+            x = img * mask
             x = torch.cat((x, mask), 1)
             
             out = pretrain_model(img_)
@@ -534,8 +531,7 @@ if __name__ == "__main__":
             img = img.to(device)
             mask = mask.to(device)
 
-            # x = img * mask
-            x = img
+            x = img * mask
             x = torch.cat((x, mask), 1)
             label = label.squeeze().to(device, dtype=torch.long)
 
@@ -626,6 +622,11 @@ if __name__ == "__main__":
         print(np.array(label_true).shape)
         auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
         writer.add_scalar('multi map auc', auc, 1)
+
+        f = open("overlap_score.txt", "a")
+        f.write("AUC score for testing data {}: {}".format(args.data, auc))
+        f.close()
+        
         print("AUC score for testing data {}: {}".format(args.data, auc))
     except:
         print('Multi Map calculate error')

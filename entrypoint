@@ -1,8 +1,7 @@
 #!/bin/bash
 
 if [[ $TASK = 0 ]]; then
-    CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 8 --test_batch 32 --kmeans=128 --data=grid --type=good --epoch 30 &
-    CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 16 --test_batch 32 --kmeans=64 --data=bottle --type=good --epoch 30 &
+    CUDA_VISIBLE_DEVICES=0,1 python eval_aucroc.py --data toothbrush --kmeans 128 --index 10
 elif [[ $TASK = 1 ]]; then
     CUDA_VISIBLE_DEVICES=0 python model_weightSample.py --train_batch 16 --test_batch 32 --kmeans=128 --data=bottle --type=good --epoch 30 &
     CUDA_VISIBLE_DEVICES=1 python model_weightSample.py --train_batch 16 --test_batch 32 --kmeans=64 --data=bottle --type=good --epoch 30 &
