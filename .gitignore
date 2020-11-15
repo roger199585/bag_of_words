@@ -1,6 +1,7 @@
 dataset/**
 errorMap*/**
 preprocessData/**
+fullVGGPreprocessData
 **/*.pth
 models/**
 __pycache__
