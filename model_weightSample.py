@@ -31,7 +31,6 @@ from config import ROOT, RESULT_PATH
 from visualize import errorMap
 from utils.tools import one_hot, one_hot_forMap, draw_errorMap
 
-
 # evaluations
 from sklearn import preprocessing
 from sklearn.preprocessing import OneHotEncoder
@@ -53,6 +52,7 @@ parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=16)
 parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--pretrain', type=str, default='False')
+parser.add_argument('--with_mask', type=str, default='True')
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
@@ -91,7 +91,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 out = args.kmeans
 scratch_model = nn.Sequential(
-    resnet.resnet18(pretrained=False, num_classes=out),
+    resnet.resnet50(pretrained=False, num_classes=out),
 )
 
 """ training """
@@ -218,8 +218,7 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
                     mask = mask.to(device)
-                    # x = img * mask
-                    x = img
+                    x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
 
                     xs.append(x)
@@ -290,8 +289,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
                     mask = mask.to(device)
-                    # x = img * mask
-                    x = img
+                    x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*16+j].to(device)
                    
@@ -382,8 +380,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
             mask = mask.to(device)
             img_ = img_.to(device)
 
-            # x = img * mask
-            x = img
+            x = img * mask if args.with_mask == 'True' else img
             x = torch.cat((x, mask), 1)
             
             out = pretrain_model(img_)
@@ -430,7 +427,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}_addSmooth".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -534,8 +531,8 @@ if __name__ == "__main__":
             img = img.to(device)
             mask = mask.to(device)
 
-            # x = img * mask
-            x = img
+
+            x = img * mask if args.with_mask == 'True' else img
             x = torch.cat((x, mask), 1)
             label = label.squeeze().to(device, dtype=torch.long)
 
@@ -559,7 +556,7 @@ if __name__ == "__main__":
         if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
             os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
         
-        path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
+        path = "{}/models/{}/{}/exp1_{}_{}_smooth.ckpt".format(
             ROOT,
             args.model, 
             args.data, 

@@ -16,6 +16,7 @@ import cv2
 import math 
 import functools
 from config import ROOT
+import scipy.ndimage as ndimage
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -118,7 +119,10 @@ class NoisePatchDataloader(Dataset):
         img_idx = index // 256
         img_ = self.img_path + "/" + self.img_list[img_idx]
         img__ = cached_load_image(img_)
-        img = transform(img__)
+        
+        """ add gaussian smooth """
+        img_smooth = ndimage.gaussian_filter(img__, sigma=5)
+        img = transform(img_smooth)
         
         """ for mask position """
         left_i = self.left_i_list[index]

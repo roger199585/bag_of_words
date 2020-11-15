@@ -6,3 +6,5 @@ models/**
 __pycache__
 **/*.tar
 **/*.pyc
+.DS_Store
+._.DS_Store
