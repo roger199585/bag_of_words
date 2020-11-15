@@ -427,7 +427,7 @@ def noise_training(train_loader, pretrain_model, scratch_model, criterion, optim
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/{}_{}_{}_{}_addSmooth".format(RESULT_PATH, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -466,63 +466,63 @@ if __name__ == "__main__":
     iter_count = 1
     
     for epoch in range(args.epoch): 
-        """ noise version 2 """
-        print("------- For defect type -------")
-        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
-        print("------- For good type -------")
-        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
+        # """ noise version 2 """
+        # print("------- For defect type -------")
+        # value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
+        # print("------- For good type -------")
+        # value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
 
-        label_pred = []
-        label_gt = []
+        # label_pred = []
+        # label_gt = []
 
-        """ for defect type """ 
-        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-            img = img.cuda()
-            idx = idx[0].item()
+        # """ for defect type """ 
+        # for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
+        #     img = img.cuda()
+        #     idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
+        #     error_map = np.zeros((1024, 1024))
+        #     for index, scalar in enumerate(value_feature[idx]):
+        #         mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+        #         mask = np.invert(mask)
+        #         mask[mask==255]=1
                 
-                error_map += mask * scalar
+        #         error_map += mask * scalar
 
-            ## 可以在這邊算
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} defect_img_idx={idx}')
+        #     ## 可以在這邊算
+        #     defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+        #     true_mask = defect_gt[:, :, 0].astype('int32')
+        #     label_pred.append(error_map)
+        #     label_gt.append(true_mask)    
+        #     print(f'EP={epoch} defect_img_idx={idx}')
 
 
-        """ for good type """
-        for (idx, img) in test_loader:
-            img = img.cuda()
-            idx = idx[0].item()
+        # """ for good type """
+        # for (idx, img) in test_loader:
+        #     img = img.cuda()
+        #     idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
-            for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-                mask = np.invert(mask)
-                mask[mask==255]=1
-                error_map += mask * scalar
+        #     error_map = np.zeros((1024, 1024))
+        #     for index, scalar in enumerate(value_good_feature[idx]):
+        #         mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+        #         mask = np.invert(mask)
+        #         mask[mask==255]=1
+        #         error_map += mask * scalar
 
-            defect_gt = np.zeros((1024, 1024, 3))
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(error_map)
-            label_gt.append(true_mask)    
-            print(f'EP={epoch} good_img_idx={idx}')
+        #     defect_gt = np.zeros((1024, 1024, 3))
+        #     true_mask = defect_gt[:, :, 0].astype('int32')
+        #     label_pred.append(error_map)
+        #     label_gt.append(true_mask)    
+        #     print(f'EP={epoch} good_img_idx={idx}')
 
-        label_pred = myNorm(np.array(label_pred))
-        auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
-        ALLAUC.append(auc)
+        # label_pred = myNorm(np.array(label_pred))
+        # auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
+        # ALLAUC.append(auc)
 
-        if auc >= ALLAUC[MAXAUCEPOCH]:
-            MAXAUCEPOCH = epoch
+        # if auc >= ALLAUC[MAXAUCEPOCH]:
+        #     MAXAUCEPOCH = epoch
 
-        writer.add_scalar('roc_auc_score', auc, epoch)
-        print("AUC score for testing data {}: {}".format(auc, args.data))
+        # writer.add_scalar('roc_auc_score', auc, epoch)
+        # print("AUC score for testing data {}: {}".format(auc, args.data))
         
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
@@ -530,7 +530,6 @@ if __name__ == "__main__":
             
             img = img.to(device)
             mask = mask.to(device)
-
 
             x = img * mask if args.with_mask == 'True' else img
             x = torch.cat((x, mask), 1)

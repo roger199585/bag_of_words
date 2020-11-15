@@ -121,7 +121,7 @@ class NoisePatchDataloader(Dataset):
         img__ = cached_load_image(img_)
         
         """ add gaussian smooth """
-        img_smooth = ndimage.gaussian_filter(img__, sigma=5)
+        # img_smooth = ndimage.gaussian_filter(img__, sigma=5)
         img = transform(img_smooth)
         
         """ for mask position """
