@@ -7,29 +7,42 @@ import os
 import cv2
 import sys
 import pickle
+import sklearn
 import numpy as np
+from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
+
 
 import resnet
 import pretrain_vgg
 import dataloaders
+import argparse
+import time 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--data', type=str, default="bottle")
+parser.add_argument('--kmeans', type=int, default=128)
+parser.add_argument('--type', type=str, default="all")
+parser.add_argument('--index', type=int, default=30)
+args = parser.parse_args()
 
 
 scratch_model = nn.Sequential(
-    resnet.resnet18(pretrained=False, num_classes=128)
+    resnet.resnet18(pretrained=False, num_classes=args.kmeans)
 )
 scratch_model = nn.DataParallel(scratch_model).cuda()
 
-
-### DataSet
-test_path = "/home/dinosaur/bag_of_words/dataset/leather/test/good"
+### DataSet for all defect type
+test_path = "./dataset/{}/test_resize/all/".format(args.data)
 test_dataset = dataloaders.MvtecLoader(test_path)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-# mask_path = "dataset/bottle/ground_truth/broken_small_resize/"
-mask_path = "dataset/leather/ground_truth/broken_small_resize2/"
+test_good_path = "./dataset/{}/test_resize/good/".format(args.data)
+test_good_dataset = dataloaders.MvtecLoader(test_good_path)
+test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
+
+mask_path = "./dataset/{}/ground_truth_resize/all/".format(args.data)
 mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
@@ -37,37 +50,74 @@ mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
 ## Clusters
-kmeans_path = "kmeans/bottle/vgg19_128_100_16.pickle"
+kmeans_path = "./preprocessData/kmeans/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
 kmeans = pickle.load(open(kmeans_path, "rb"))
 
-pca_path = "PCA/bottle/vgg19_128_100_16.pickle"
+pca_path = "./preprocessData/PCA/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
 pca = pickle.load(open(pca_path, "rb"))
 
 ## Label
-test_label_name = "label/vgg19/bottle/test/broken_small_128_100.pth"
+test_label_name = "./preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
 test_label = torch.tensor(torch.load(test_label_name))
+
+test_good_label_name = "./preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(args.data, args.kmeans)
+test_good_label = torch.tensor(torch.load(test_good_label_name))
 
 ## Others
 pil_to_tensor = transforms.ToTensor()
 
-eval_fea_count = 0
-test_type = 'broken_small'
+test_data = args.data
+test_type = args.type
 
-def eval_feature(epoch, model, test_loader, mask_loader):
-    global eval_fea_count
+
+
+
+def norm(features):
+    if features.max() == 0:
+        return features
+    else:
+        return features / features.max()
+
+def pROC(y_true, y_pred):
+    # fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
+    tnr, fp, fn, tpr = confusion_matrix(y_true, y_pred, normalize="true").ravel()
+
+    return (tpr + tnr) / 2
+    # nearestIndex = np.argmin(abs(fpr - 0.3))
+    
+    # print(fpr)
+
+    # print(tpr)
+    # tpr = tpr[:nearestIndex]
+    # fpr = fpr[:nearestIndex]
+
+    # tpr = norm(tpr)
+    # fpr = norm(fpr)
+
+    area = 0
+    for index in range(1, fpr.shape[0] ):
+        width1 = tpr[index] - fpr[index]
+        width2 = tpr[index - 1] - fpr[index - 1]
+        height = fpr[index] - fpr[index - 1]
+
+        area += (width1 + width2) * height / 2
+    return area
+
+def eval_feature(epoch, model, test_loader, test_label):
     global pretrain_model
     global kmeans
 
     model.eval()
     pretrain_model.eval()
-    split_size = 8
 
     with torch.no_grad():
         img_feature = []
         total_gt = []
         total_idx = []
+ 
+        start = time.time()
 
-        for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
+        for (idx, img) in test_loader:
             img = img.cuda()
             idx = idx[0].item()
 
@@ -78,14 +128,11 @@ def eval_feature(epoch, model, test_loader, mask_loader):
             label_idx = []
             label_gt = []
 
+            xs = []
+            ys = []
+            crop_list = []
+
             for i in range(16):
-                xs = []
-                ys = []
-
-                crop_list = []
-                loss = 0.0
-                loss_alpha = 0.0
-
                 for j in range(16):
                     crop_img = img[:, :, i*64:i*64+64, j*64:j*64+64].cuda()
                     crop_output = pretrain_model(crop_img)
@@ -104,36 +151,36 @@ def eval_feature(epoch, model, test_loader, mask_loader):
                    
                     xs.append(x)
                     ys.append(label)
-            
-                x = torch.cat(xs, 0)
-                y = torch.stack(ys).squeeze().cuda()
 
-                output = model(x)
-                y_ = output.argmax(-1).detach().cpu().numpy()
+                if (len(xs) == 16):
 
-                for k in range(16):
-                    label_idx.append(y_[k])
-                    label_gt.append(y[k].item())
-                    output_center = kmeans.cluster_centers_[y_[k]]
-                    output_center = np.reshape(output_center, (1, -1))
-                    output_center = pil_to_tensor(output_center).cuda()
-                    output_center = torch.squeeze(output_center)
+                    x = torch.cat(xs, 0)
+                    y = torch.stack(ys).squeeze().cuda()
+                    xs.clear()
+                    ys.clear()
 
-                    if y_[k] == y[k].item():
-                        isWrongLabel = 0
-                    else:
-                        isWrongLabel = 1
+                    output = model(x)
+                    y_ = output.argmax(-1).detach().cpu().numpy()
+                
+                    for k in range(16):
+                        label_idx.append(y_[k])
+                        label_gt.append(y[k].item())
+                        output_center = kmeans.cluster_centers_[y_[k]]
+                        output_center = np.reshape(output_center, (1, -1))
+                        output_center = pil_to_tensor(output_center).cuda()
+                        output_center = torch.squeeze(output_center)
 
-                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
-                    value_feature.append(diff.item())
+                        isWrongLabel = int(y_[k] != y[k].item())
+                        diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
+                        value_feature.append(diff.item())
+                    crop_list.clear()
                     
-                    eval_fea_count += 1
-
-
             total_gt.append(label_gt)
             total_idx.append(label_idx)
             img_feature.append(value_feature)
 
+        
+        print("total running time: ", time.time() - start)
 
     img_feature = np.array(img_feature).reshape((len(test_loader), -1))
     total_gt = np.array(total_gt).reshape((len(test_loader), -1))
@@ -141,74 +188,118 @@ def eval_feature(epoch, model, test_loader, mask_loader):
 
     return img_feature, total_gt, total_idx
 
-for global_index in range(1, 6):
-    scratch_model.load_state_dict(torch.load('/home/dinosaur/bag_of_words/models/vgg19/bottle/exp6_128_{}.ckpt'.format(global_index)))
 
-    value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, mask_loader)
+""" load model """
+global_index = args.index
+scratch_model.load_state_dict(torch.load('./models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
 
-    for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
-        img = img.cuda()
-        idx = idx[0].item()
+print("------- For defect type -------")
+value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
+print("------- For good type -------")
+value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, test_good_loader, test_good_label)
+
+label_pred = []
+label_gt = []
+
+""" for defect type """ 
+for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
+    img = img.cuda()
+    idx = idx[0].item()
 
 
-        error_map = np.zeros((1024, 1024))
-        for index, scalar in enumerate(value_feature[idx]):
-            mask = cv2.imread('dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-            mask = np.invert(mask)
-            mask[mask==255]=1
-            
-            error_map += mask * scalar
-
+    error_map = np.zeros((1024, 1024))
+    for index, scalar in enumerate(value_feature[idx]):
+        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        mask = np.invert(mask)
+        mask[mask==255]=1
         
-        
+        error_map += mask * scalar
 
-        if (test_type == 'good'):
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1, 2)
-            fig = plt.figure(figsize=(12,6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,0])
-            im1 = ax1.imshow(error_map, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,1])
-            im2 = ax2.imshow(img_)
-        else:
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1, 3)
-            fig = plt.figure(figsize=(18,6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,0])
-            im1 = ax1.imshow(error_map, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,1])
-            ax3 = fig.add_subplot(ironman_grid[0,2])
-            im2 = ax2.imshow(img_)
-            im3 = ax3.imshow(defect_gt)
+    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
+    ironman_grid = plt.GridSpec(1, 3)
+    fig = plt.figure(figsize=(18,6), dpi=100)
+    ax1 = fig.add_subplot(ironman_grid[0,0])
+    im1 = ax1.imshow(error_map, cmap="Blues")
+    ax2 = fig.add_subplot(ironman_grid[0,1])
+    ax3 = fig.add_subplot(ironman_grid[0,2])
+    im2 = ax2.imshow(img_)
+    im3 = ax3.imshow(defect_gt)
 
-            ## 可以在這邊算
-            true_mask = defect_gt[:, :, 0].astype('int32') 
-            auc = roc_auc_score(true_mask.flatten(), error_map.flatten())
-
-            ax1.set_title(auc)
+    # for i in range(16):
+    #     for j in range(16):
+    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
+    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
 
 
+    ## 可以在這邊算
+    defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+    true_mask = defect_gt[:, :, 0].astype('int32')
+    label_pred.append(error_map)
+    label_gt.append(true_mask)    
+    print(f'EP={global_index} defect_img_idx={idx}')
 
-        """ add label text to each patch """ 
-        for i in range(16):
-            for j in range(16):
-                ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
-                ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
+    errorMapPath = "./testing/{}/all/{}/".format(test_data, args.kmeans)
+    if not os.path.isdir(errorMapPath):
+        os.makedirs(errorMapPath)
+        print("----- create folder for type:{} -----".format(test_type))
+    
+    errorMapName = "{}_{}.png".format(
+        str(idx),
+        str(global_index)
+    )
+
+    plt.savefig(errorMapPath+errorMapName, dpi=100)
+    plt.close(fig)
 
 
-        errorMapPath = "./testing/"
-        if not os.path.isdir(errorMapPath):
-            os.makedirs(errorMapPath)
-            print("----- create folder for type:{} -----".format(test_type))
-        
-        errorMapName = "{}_{}.png".format(
-            str(idx),
-            str(global_index) 
-        )
+""" for good type """
+for (idx, img) in test_good_loader:
+    img = img.cuda()
+    idx = idx[0].item()
 
-        plt.savefig(errorMapPath+errorMapName, dpi=100)
-        plt.close(fig)
+    error_map = np.zeros((1024, 1024))
+    for index, scalar in enumerate(value_good_feature[idx]):
+        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        mask = np.invert(mask)
+        mask[mask==255]=1
+        error_map += mask * scalar
 
+    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    ironman_grid = plt.GridSpec(1, 2)
+    fig = plt.figure(figsize=(12,6), dpi=100)
+    ax1 = fig.add_subplot(ironman_grid[0,0])
+    im1 = ax1.imshow(error_map, cmap="Blues")
+    ax2 = fig.add_subplot(ironman_grid[0,1])
+    im2 = ax2.imshow(img_)
 
-        print(f'EP={global_index} img_idx={idx}')
+    
+    # for i in range(16):
+    #     for j in range(16):
+    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
+    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
+
+    defect_gt = np.zeros((1024, 1024, 3))
+    true_mask = defect_gt[:, :, 0].astype('int32')
+    label_pred.append(error_map)
+    label_gt.append(true_mask)    
+    print(f'EP={global_index} good_img_idx={idx}')
+
+    errorMapPath = "./testing/{}/good/{}/".format(test_data, args.kmeans)
+    if not os.path.isdir(errorMapPath):
+        os.makedirs(errorMapPath)
+        print("----- create folder for type:{} -----".format(test_type))
+    
+    errorMapName = "{}_{}.png".format(
+        str(idx),
+        str(global_index)
+    )
+
+    plt.savefig(errorMapPath+errorMapName, dpi=100)
+    plt.close(fig)
+
+label_pred = norm(np.array(label_pred))
+auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
+auc_fpr30 = pROC(np.array(label_gt).flatten(), label_pred.flatten())
+print("AUC score for testing data {}: {}".format(args.data, auc))
+print("AUC FPR under 30 pecent score for testing data {}: {}".format(args.data, auc_fpr30))

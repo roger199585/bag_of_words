@@ -623,6 +623,11 @@ if __name__ == "__main__":
         print(np.array(label_true).shape)
         auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
         writer.add_scalar('multi map auc', auc, 1)
+
+        f = open("overlap_score.txt", "a")
+        f.write("AUC score for testing data {}: {}".format(args.data, auc))
+        f.close()
+        
         print("AUC score for testing data {}: {}".format(args.data, auc))
     except:
         print('Multi Map calculate error')
