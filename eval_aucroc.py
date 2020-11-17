@@ -12,6 +12,8 @@ import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import confusion_matrix
+
 
 
 import resnet
@@ -78,29 +80,34 @@ def norm(features):
     else:
         return features / features.max()
 
+def getOverlap(y_true, y_pred, threshold):
+        y_pred = y_pred[y_true == 1]
+
+        y_pred[y_pred >= threshold] = 1
+        y_pred[y_pred < threshold] = 0
+
+        return y_pred.sum() / float(y_true.sum())
+
 def pROC(y_true, y_pred):
-    # fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
-    tnr, fp, fn, tpr = confusion_matrix(y_true, y_pred, normalize="true").ravel()
+    fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
 
-    return (tpr + tnr) / 2
-    # nearestIndex = np.argmin(abs(fpr - 0.3))
-    
-    # print(fpr)
+    nearestIndex = np.argmin(abs(fpr - 0.3))
 
-    # print(tpr)
-    # tpr = tpr[:nearestIndex]
-    # fpr = fpr[:nearestIndex]
-
-    # tpr = norm(tpr)
-    # fpr = norm(fpr)
+    thresholds = thresholds[:nearestIndex]
+    fpr = norm(fpr[:nearestIndex])
 
     area = 0
-    for index in range(1, fpr.shape[0] ):
-        width1 = tpr[index] - fpr[index]
-        width2 = tpr[index - 1] - fpr[index - 1]
+    for index in range(1, nearestIndex):
         height = fpr[index] - fpr[index - 1]
 
-        area += (width1 + width2) * height / 2
+        if height != 0:
+            width1 = getOverlap(y_true, y_pred, thresholds[index])
+            width2 = getOverlap(y_true, y_pred, thresholds[index - 1])
+
+            area += (width1 + width2) * height / 2
+        else:
+            continue
+
     return area
 
 def eval_feature(epoch, model, test_loader, test_label):
