@@ -1,2 +1,5 @@
 dataset
 preprocessData
+*.tar
+models
+.*

@@ -1,9 +1,12 @@
 dataset/**
 errorMap*/**
 preprocessData/**
+fullVGGPreprocessData
 **/*.pth
 models/**
 __pycache__
 **/*.tar
 **/*.pyc
+.DS_Store
+._.DS_Store
 testing/**
