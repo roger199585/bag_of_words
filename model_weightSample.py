@@ -452,7 +452,7 @@ if __name__ == "__main__":
     eval_mask_loader = DataLoader(eval_mask_dataset, batch_size=1, shuffle=False)
 
     ## Cluster Center Features
-    center_features_path = "{}/preprocessData/cluster_center/{}.pickle".format(ROOT, args.data)
+    center_features_path = "{}/preprocessData/cluster_center/{}/{}.pickle".format(ROOT, args.kmeans, args.data)
     cluster_features = pickle.load(open(center_features_path, "rb"))
 
     scratch_model = nn.DataParallel(scratch_model).to(device)
