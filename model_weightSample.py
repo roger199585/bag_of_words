@@ -162,7 +162,7 @@ eval_fea_count = 0
 def myNorm(features):
     return features / features.max()
 
-def eval_with_orrigin_feature(model, test_loader, test_data, global_index, good=False):
+def eval_with_origin_feature(model, test_loader, test_data, global_index, good=False):
     global cluster_features
     global pretrain_model
     global kmeans
@@ -357,6 +357,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             xs = []
             ys = []
             crop_list = []
+            origin_feature_list = []
 
             for i in range(16):
                 for j in range(16):
@@ -367,6 +368,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     out = pca.transform(out_.detach().cpu().numpy())
                     out = pil_to_tensor(out).squeeze().to(device)
                     crop_list.append(out)
+                    origin_feature_list.append(out_)
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
@@ -404,25 +406,22 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
                         value_feature.append(diff.item())
 
-                        output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
+                        output_feature = np.expand_dims(cluster_features[y_[k]], axis=0)
                         output_feature = torch.from_numpy(output_feature).cuda()
 
-                        isWrongLabel = int(y_[n] != y[n].item())
-                        diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
-                        
-                        each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
-                        each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
-
-                        pixel_feature = each_pixel_err_sum / each_pixel_err_count
+                        isWrongLabel = int(y_[k] != y[k].item())
+                        origin_feature_diff = isWrongLabel * nn.MSELoss()(output_feature, origin_feature_list[k])
+                    
 
                         if isGood:
                             writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
-                            writer.add_scalar('test_origin_feature_loss', pixel_feature.item(), eval_fea_count)
+                            writer.add_scalar('test_origin_feature_loss', origin_feature_diff.item(), eval_fea_count)
                             writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
                             writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
                             eval_fea_count += 1
 
                     crop_list.clear()
+                    origin_feature_list.clear()
 
             img_feature.append(value_feature)
     print(np.array(img_feature).shape)
@@ -576,7 +575,7 @@ if __name__ == "__main__":
         """ 透過 pca 將為之後的 cluster center 去算 feature error 來畫圖"""
         print("----- defect -----")
         img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
-        img_all_origin_feature = eval_with_orrigin_feature(scratch_model, eval_loader, args.data, global_index, good=False)
+        img_all_origin_feature = eval_with_origin_feature(scratch_model, eval_loader, args.data, global_index, good=False)
         print("----- good -----")
         img_good_feature = eval_feature_for_multiMap(scratch_model, test_loader, args.data, global_index, good=True)
         img_good_origin_feature = eval_with_orrigin_feature(scratch_model, test_loader, args.data, global_index, good=True)
