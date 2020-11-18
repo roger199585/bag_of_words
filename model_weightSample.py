@@ -342,8 +342,6 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
     with torch.no_grad():
         img_feature = []
-        total_gt = []
-        total_idx = []
 
         for (idx, img) in test_loader:
             img = img.to(device)
@@ -406,24 +404,32 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
                         value_feature.append(diff.item())
 
+                        output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
+                        output_feature = torch.from_numpy(output_feature).cuda()
+
+                        isWrongLabel = int(y_[n] != y[n].item())
+                        diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
+                        
+                        each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
+                        each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+
+                        pixel_feature = each_pixel_err_sum / each_pixel_err_count
+
                         if isGood:
                             writer.add_scalar('test_feature_loss', diff.item(), eval_fea_count)
+                            writer.add_scalar('test_origin_feature_loss', pixel_feature.item(), eval_fea_count)
                             writer.add_scalar('test_label_loss', diff_label.item(), eval_fea_count)
                             writer.add_scalar('test_label_acc', acc.item(), eval_fea_count)
                             eval_fea_count += 1
 
                     crop_list.clear()
 
-            total_gt.append(label_gt)
-            total_idx.append(label_idx)
             img_feature.append(value_feature)
     print(np.array(img_feature).shape)
     print(len(test_loader))
     img_feature = np.array(img_feature).reshape((len(test_loader), -1))
-    total_gt = np.array(total_gt).reshape((len(test_loader), -1))
-    total_idx = np.array(total_idx).reshape((len(test_loader), -1))
 
-    return img_feature, total_gt, total_idx
+    return img_feature
 
 if __name__ == "__main__":
 
