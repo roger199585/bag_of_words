@@ -467,9 +467,9 @@ if __name__ == "__main__":
     for epoch in range(args.epoch): 
         """ noise version 2 """
         print("------- For defect type -------")
-        value_feature, total_gt, total_idx = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
+        value_feature = eval_feature(epoch, scratch_model, eval_loader, all_test_label, isGood=False)
         print("------- For good type -------")
-        value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
+        value_good_feature = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
 
         label_pred = []
         label_gt = []
@@ -552,7 +552,7 @@ if __name__ == "__main__":
             iter_count += 1
 
             if iter_count % 1000 == 0:
-                value_good_feature, total_good_gt, total_good_idx = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
+                value_good_feature = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
         
         if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
             os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
