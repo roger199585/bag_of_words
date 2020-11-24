@@ -12,6 +12,8 @@ import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import confusion_matrix
+
 
 
 import resnet
@@ -78,31 +80,45 @@ def norm(features):
     else:
         return features / features.max()
 
+def getOverlap(y_true, y_pred, threshold):
+        y_pred[y_pred >= threshold] = 1
+        y_pred[y_pred < threshold] = 0
+
+        y_true.reshape((-1, 1024, 1024))
+        y_pred.reshape((-1, 1024, 1024))
+
+        y_pred = np.bitwise_and(y_pred, y_true)
+
+        overlap_rate = 0
+
+        for i in range( y_true.shape[0] ):
+            overlap_rate += y_pred[i].sum() / y_true[i].sum()
+
+        return overlap_rate / y_true.shape[0]
+
 def pROC(y_true, y_pred):
-    # fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
-    tnr, fp, fn, tpr = confusion_matrix(y_true, y_pred, normalize="true").ravel()
+    fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
 
-    return (tpr + tnr) / 2
-    # nearestIndex = np.argmin(abs(fpr - 0.3))
-    
-    # print(fpr)
+    nearestIndex = np.argmin(abs(fpr - 0.3))
 
-    # print(tpr)
-    # tpr = tpr[:nearestIndex]
-    # fpr = fpr[:nearestIndex]
+    thresholds = thresholds[:nearestIndex+1]
+    fpr = norm(fpr[:nearestIndex+1])
 
-    # tpr = norm(tpr)
-    # fpr = norm(fpr)
-
+    print(len(fpr))
     area = 0
-    for index in range(1, fpr.shape[0] ):
-        width1 = tpr[index] - fpr[index]
-        width2 = tpr[index - 1] - fpr[index - 1]
+    for index in range(1, nearestIndex+1):
         height = fpr[index] - fpr[index - 1]
 
-        area += (width1 + width2) * height / 2
-    return area
+        if height != 0:
+            width1 = getOverlap(y_true, y_pred, thresholds[index])
+            width2 = getOverlap(y_true, y_pred, thresholds[index - 1])
 
+            area += (width1 + width2) * height / 2
+        else:
+            continue
+
+    return area
+    
 def eval_feature(epoch, model, test_loader, test_label):
     global pretrain_model
     global kmeans
@@ -226,10 +242,10 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     im2 = ax2.imshow(img_)
     im3 = ax3.imshow(defect_gt)
 
-    # for i in range(16):
-    #     for j in range(16):
-    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
-    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
 
 
     ## 可以在這邊算
@@ -274,10 +290,10 @@ for (idx, img) in test_good_loader:
     im2 = ax2.imshow(img_)
 
     
-    # for i in range(16):
-    #     for j in range(16):
-    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
-    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
 
     defect_gt = np.zeros((1024, 1024, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')

@@ -391,33 +391,49 @@ def kmeans_visualization():
     但是因為 mds 本身計算量很大，並沒有辦法把我們所有資料都放進去，因此我只有放第一張圖片去作降維做視覺化當參考依據
     至於 tsne 的化調整了 perplexity 的參數
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # kmeans_path = 'kmeans/bottle/resnet34_32_100_16.pickle'
-    kmeans_path = 'kmeans/bottle/vgg19_16_100_16.pickle'
-    kmeans = pickle.load(open(kmeans_path, "rb"))
+    TYPES = ["bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut", "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper"]
+    for _type in TYPES:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        kmeans_path = f'preprocessData/kmeans/{_type}/vgg19_128_100_128.pickle'
+        kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    feature_path = 'chunks/vgg19/PCA/bottle_16_100_16.pickle'
-    feature = pickle.load(open(feature_path, "rb"))
-    
-    y = kmeans.predict(feature)
-    # pca = PCA(n_components=2)
-    tsne = TSNE(n_components=2, perplexity=50)
-    mds = MDS(n_components=2)
-    # feature = pca.fit_transform(feature)
+        feature_path = f'preprocessData/chunks/vgg19/PCA/{_type}_128_100_128.pickle'
+        feature = pickle.load(open(feature_path, "rb"))
+        
+        y = kmeans.predict(feature)
+        pca = PCA(n_components=2)
+        pca.fit(feature)
+        # tsne = TSNE(n_components=2, perplexity=50)
+        # mds = MDS(n_components=2)
 
-    feature = tsne.fit_transform(feature[:1024])
+
+        x_train_pca = pca.transform(feature)
+        x_projected = pca.inverse_transform(x_train_pca)
+
+
+        loss = ((feature - x_projected) ** 2).mean()
+
+        """  MSE Error """
+        print (f"{_type} MSE loss = {loss}")
+
+    sys.exit(0)
+
+    comp = pca.com
+    sys.exit(0)
+
+    # feature = tsne.fit_transform(feature[:1024])
     # feature = mds.fit_transform(feature[:1024])
 
-    plt.scatter(feature[:, 0], feature[:, 1], c=y[:1024], s=5, cmap=plt.cm.get_cmap('Spectral', 32))
+    fig = plt.scatter(feature[:, 0], feature[:, 1], c=y[:20480], s=5, cmap=plt.cm.get_cmap('Spectral', 32))
     center =  kmeans.cluster_centers_
-    # center = pca.transform(center)
+    center = pca.transform(center)
     # print(center.shape)
-    # plt.scatter(center[:, 0], center[:, 1], c='black', s=10, alpha=0.5)
-    plt.colorbar()
+    plt.scatter(center[:, 0], center[:, 1], c='black', s=50, alpha=0.5)
+    plt.colorbar(fig, ticks=np.linspace(0,15,16))
 
-    plt.savefig('./vis_entire_vgg19_tsne.png')
+    plt.savefig('./wood_vis.png')
 
-# kmeans_visualization()
+kmeans_visualization()
 
 def PCA_loss():
     chunks_path = 'chunks/chunks_bottle_train.pickle'
