@@ -81,23 +81,20 @@ def norm(features):
         return features / features.max()
 
 def getOverlap(y_true, y_pred, threshold):
+        y_pred = y_pred[y_true == 1]
+
         y_pred[y_pred >= threshold] = 1
         y_pred[y_pred < threshold] = 0
 
-        y_true.reshape((-1, 1024, 1024))
-        y_pred.reshape((-1, 1024, 1024))
-
-        y_pred = np.bitwise_and(y_pred, y_true)
-
-        overlap_rate = 0
-
-        for i in range( y_true.shape[0] ):
-            overlap_rate += y_pred[i].sum() / y_true[i].sum()
-
-        return overlap_rate / y_true.shape[0]
+        return y_pred.sum() / float(y_true.sum())
 
 def pROC(y_true, y_pred):
     fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
+
+    nearestIndex = np.argmin(abs(fpr - 0.3))
+
+    thresholds = thresholds[:nearestIndex]
+    fpr = norm(fpr[:nearestIndex])
 
     nearestIndex = np.argmin(abs(fpr - 0.3))
 
@@ -106,12 +103,18 @@ def pROC(y_true, y_pred):
 
     print(len(fpr))
     area = 0
-    for index in range(1, nearestIndex+1):
+    for index in range(1, nearestIndex):
         height = fpr[index] - fpr[index - 1]
 
         if height != 0:
             width1 = getOverlap(y_true, y_pred, thresholds[index])
             width2 = getOverlap(y_true, y_pred, thresholds[index - 1])
+
+            area += (width1 + width2) * height / 2
+        else:
+            continue
+
+    return area
 
             area += (width1 + width2) * height / 2
         else:

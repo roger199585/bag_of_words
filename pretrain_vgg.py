@@ -31,12 +31,11 @@ class VGG(nn.Module):
     def __init__(self, features, num_classes=1000):
         super(VGG, self).__init__()
         self.features = features
-        #self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 
     def forward(self, x):
         x = self.features(x)
-        #x = self.avgpool(x)
-        #x = torch.flatten(x, 1)
+        x = self.avgpool(x)
         return x
 
 def make_layers(cfg, batch_norm=False):
