@@ -10,6 +10,7 @@ from scipy.ndimage.measurements import label
 from torch.utils.data import Dataset, DataLoader
 import dataloaders
 
+from config import ROOT
 
 class PRO_curve():
     def __init__(self, y_pred, y_true, FPR_boundary=0.3, spacing=0.005):
@@ -36,10 +37,11 @@ class PRO_curve():
 
         return y_pred
 
-    def compute_metrics_image(self, prediction):
+    def compute_metrics_image(self, prediction, idx):
         # 找出 connected components (aka anomalous regions)
         structure = np.ones((3, 3), dtype=np.int)
-        labeled, n_components = label(self.y_true, structure)
+
+        labeled, n_components = label(self.y_true[idx], structure)
                 
         # 計算 false positive pixels 數量
         num_false_positives = np.sum(prediction[labeled==0])
@@ -48,7 +50,7 @@ class PRO_curve():
         all_region_overlaps = []
         for i in range(0, n_components):
             # 計算 connected component (異常區域) 的面積，同一張圖可能存在多個異常區域
-            component_size = len(self.y_true[labeled==(i+1)])
+            component_size = len(self.y_true[idx][labeled==(i+1)])
 
             # 計算異常區域內正確被預測出來的比例
             num_true_positives = np.sum(prediction[labeled==(i+1)])
@@ -69,7 +71,7 @@ class PRO_curve():
         total_num_background_pixels = 0
                 
         for i in range(0, self.y_true.shape[0]):
-            region_overlaps, num_FP = self.compute_metrics_image(predictions[i])
+            region_overlaps, num_FP = self.compute_metrics_image(predictions[i], i)
             all_region_overlaps.extend(region_overlaps)
                     
             total_num_FP += num_FP
@@ -121,7 +123,7 @@ class PRO_curve():
         threshold = 1
         lastFPR = 1
 
-        while abs(fpr - 0.29999) > 0.00001:
+        while abs(fpr - 0.3) > 0.00001:
             total_num_FP = 0
             total_num_background_pixels = 0
                     
@@ -132,8 +134,6 @@ class PRO_curve():
                 total_num_background_pixels += len(self.y_true[i][self.y_true[i]==0])
                 
             fpr = total_num_FP / total_num_background_pixels 
-
-            if lastFPR > for
 
     def test_all_threshold(self):
         for threshold in np.arange(1.0, 0.0, -1 * self.spacing):
@@ -171,11 +171,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # test image grid/all/048.png
-    y_pred = pickle.load(open("./testing_multiMap/{}/all/{}_img_all_feature_{}_Origin.pickle".format(args.data, args.kmeans, args.index), "rb"))
+    y_pred = pickle.load(open("{}/Results/testing_multiMap/{}/all/{}_img_all_feature_{}_Origin.pickle".format(ROOT, args.data, args.kmeans, args.index), "rb"))
     y_pred = y_pred.reshape(-1, 1024, 1024)
     # gt image
     y_true = []
-    mask_path = "./dataset/{}/ground_truth_resize/all".format(args.data)
+    mask_path = "{}/dataset/{}/ground_truth_resize/all".format(ROOT, args.data)
     mask_dataset = dataloaders.MaskLoader(mask_path)
     mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
     for (index, mask) in mask_loader:
@@ -183,9 +183,9 @@ if __name__ == "__main__":
     y_true = np.array(y_true)
 
 
-    evalTool = PRO_curve(y_pred, y_true, spacing=0.001)
+    evalTool = PRO_curve(y_pred, y_true, spacing=0.01)
 
     evalTool.test_all_threshold()
     evalTool.calculate_PRO_score()
-    evalTool.printFPR()
-    print(evalTool.getScore())
+
+    print(args.data, evalTool.getScore())
