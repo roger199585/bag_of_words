@@ -25,6 +25,7 @@ import dataloaders
 from sklearn.metrics import roc_auc_score
 import time
 import itertools
+from config import ROOT
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
@@ -46,30 +47,30 @@ if __name__ == "__main__":
     test_data = args.data
 
     ### DataSet for all defect type
-    test_all_path = "/home/dinosaur/bag_of_words/dataset/{}/test_resize/all/".format(args.data)
+    test_all_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data)
     test_all_dataset = dataloaders.MvtecLoader(test_all_path)
     test_all_loader = DataLoader(test_all_dataset, batch_size=1, shuffle=False)
 
-    test_good_path = "/home/dinosaur/bag_of_words/dataset/{}/test_resize/good/".format(args.data)
+    test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data)
     test_good_dataset = dataloaders.MvtecLoader(test_good_path)
     test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
 
-    mask_path = "dataset/{}/ground_truth_resize/all/".format(args.data)
+    mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
     mask_dataset = dataloaders.MaskLoader(mask_path)
     mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
     
     print("----- defect -----")
-    if args.resume and os.path.isfile('testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(args.data, args.index)):
-        print("load from testing_multiMap/{}/all/img_all_feature_{}.pickle".format(args.data, args.index))
-        img_all_feature = pickle.load(open('testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(args.data, args.index), 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle".format(ROOT, args.data, args.index))
+        img_all_feature = pickle.load(open('{}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_all_feature = eval_feature(pretrain_model, scratch_model, test_all_loader, kmeans, pca, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile('testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(args.data, args.index)):
-        print("load from testing_multiMap/{}/good/img_good_feature_{}.pickle".format(args.data, args.index))
-        img_good_feature = pickle.load(open('testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(args.data, args.index), 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle".format(ROOT, args.data, args.index))
+        img_good_feature = pickle.load(open('{}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_good_feature = eval_feature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
     
@@ -100,7 +101,7 @@ if __name__ == "__main__":
         im3 = ax3.imshow(defect_gt)
 
 
-        errorMapPath = "testing_multiMap/{}/all/{}/map/".format(test_data, args.kmeans)
+        errorMapPath = "{}/Results/testing_multiMap/{}/all/{}/map/".format(ROOT, test_data, args.kmeans)
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
             print("----- create folder for {} | type: all -----".format(test_data))
@@ -140,7 +141,7 @@ if __name__ == "__main__":
         ax2.set_axis_off()
         im2 = ax2.imshow(img_)
         
-        errorMapPath = "testing_multiMap/{}/good/{}/map/".format(test_data, args.kmeans)
+        errorMapPath = "{}/Results/testing_multiMap/{}/good/{}/map/".format(ROOT, test_data, args.kmeans)
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
             print("----- create folder for {} | type: good -----".format(test_data))

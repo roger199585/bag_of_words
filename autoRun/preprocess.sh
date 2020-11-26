@@ -134,4 +134,4 @@ python getCenterFeature.py --data zipper --kmeans 128 &
 
 wait
 
-python checkPreprocessData.py
+RETRY=`python checkPreprocessData.py

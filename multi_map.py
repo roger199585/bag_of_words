@@ -25,10 +25,10 @@ import matplotlib.pyplot as plt
 import random
 import sys
 import dataloaders
-# import model_weightSample
 from sklearn.metrics import roc_auc_score
 import time
 import itertools
+from config import ROOT
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
@@ -37,7 +37,6 @@ def norm(feature):
     return feature / feature.max()
 
 def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, global_index, good=False):
-
     global label_pred
     global label_true
 
@@ -275,22 +274,22 @@ if __name__ == "__main__":
     test_data = args.data
     
     scratch_model = nn.Sequential(
-        resnet.resnet18(pretrained=False, num_classes=args.kmeans)
+        resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).cuda()
-    scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
+    scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(args.data, args.kmeans, global_index)))
 
 
     ### DataSet for all defect type
-    test_all_path = "/home/dinosaur/bag_of_words/dataset/{}/test_resize/all/".format(args.data)
+    test_all_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data)
     test_all_dataset = dataloaders.MvtecLoader(test_all_path)
     test_all_loader = DataLoader(test_all_dataset, batch_size=1, shuffle=False)
 
-    test_good_path = "/home/dinosaur/bag_of_words/dataset/{}/test_resize/good/".format(args.data)
+    test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data)
     test_good_dataset = dataloaders.MvtecLoader(test_good_path)
     test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
 
-    mask_path = "dataset/{}/ground_truth_resize/all/".format(args.data)
+    mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
     mask_dataset = dataloaders.MaskLoader(mask_path)
     mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
@@ -298,39 +297,39 @@ if __name__ == "__main__":
     pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
     ## Clusters
-    kmeans_path = "preprocessData/kmeans/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+    kmeans_path = "{}/preprocessData/kmeans/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    pca_path = "preprocessData/PCA/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+    pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
     pca = pickle.load(open(pca_path, "rb"))
 
     ## Cluster Center Features
-    center_features_path = "cluster_center/{}.pickle".format(args.data)
+    center_features_path = "{}/preprocessData/cluster_center/128/{}.pickle".format(ROOT, args.data)
     cluster_features = pickle.load(open(center_features_path, "rb"))
     
     print("----- defect -----")
-    if args.resume and os.path.isfile('testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(args.data, args.index)):
-        print("load from testing_multiMap/{}/all/img_all_feature_{}.pickle".format(args.data, args.index))
-        img_all_feature = pickle.load(open('testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(args.data, args.index), 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/all/img_all_feature_{}.pickle".format(ROOT, args.data, args.index))
+        img_all_feature = pickle.load(open('{}/Results/testing_multiMap/{}/all/img_all_feature_{}.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_all_feature = eval_OriginFeature(pretrain_model, scratch_model, test_all_loader, kmeans, pca, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile('testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(args.data, args.index)):
-        print("load from testing_multiMap/{}/good/img_good_feature_{}.pickle".format(args.data, args.index))
-        img_all_feature = pickle.load(open('testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(args.data, args.index), 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/good/img_good_feature_{}.pickle".format(ROOT, args.data, args.index))
+        img_all_feature = pickle.load(open('{}/Results/testing_multiMap/{}/good/img_good_feature_{}.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_good_feature = eval_OriginFeature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
     
     """ save feature """ 
     
-    save_all_path = "testing_multiMap/{}/all/".format(args.data)
+    save_all_path = "{}/Results/testing_multiMap/{}/all/".format(ROOT, args.data)
     if not os.path.isdir(save_all_path):
         os.makedirs(save_all_path)
     save_all_name = "{}_img_all_feature_{}_Origin.pickle".format(args.kmeans, args.index)
     pickle.dump(img_all_feature, open(save_all_path+save_all_name, "wb"))
     
-    save_good_path = "testing_multiMap/{}/good/".format(args.data)
+    save_good_path = "{}/Results/testing_multiMap/{}/good/".format(ROOT, args.data)
     if not os.path.isdir(save_good_path):
         os.makedirs(save_good_path)
     save_good_name = "{}_img_good_feature_{}_Origin.pickle".format(args.kmeans, args.index)
