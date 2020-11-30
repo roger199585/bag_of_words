@@ -5,7 +5,7 @@ from PIL import Image
 class ImageConverter():
     def __init__(
         self,
-        ROOT='/workspace', 
+        ROOT='/home/dinosaur/bag_of_words', 
         TYPES=['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper'],
         SIZE=1024
     ):
@@ -23,6 +23,9 @@ class ImageConverter():
             for name in subFolders:
                 currentRoot = dataPath + name
                 images = os.listdir(currentRoot)
+                import glob
+
+                images = glob.glob(os.path.join(currentRoot, '*.png'))
 
                 if not os.path.isdir(resizeDataPath + name):
                     os.makedirs(resizeDataPath + name)

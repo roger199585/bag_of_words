@@ -17,6 +17,7 @@ import math
 import functools
 from config import ROOT
 import scipy.ndimage as ndimage
+import sys
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -25,6 +26,31 @@ transform = transforms.Compose([
 @functools.lru_cache(300)
 def cached_load_image(path):
     return Image.open(path).convert('RGB')
+
+def get_partial(img, i, j):
+    if (i < 2 and j < 2):
+        img = img[:, i*64:(i+5)*64, j*64:(j+5)*64]
+    elif (i < 2 and j > 12):
+        img = img[:, i*64:(i+5)*64, (j-5)*64:j*64]
+    elif (i > 12 and j < 2):
+        img = img[:, (i-5)*64:i*64, j*64:(j+5)*64]
+    elif (i > 12 and j > 12):
+        img = img[:, (i-5)*64:i*64, (j-5)*64:j*64]
+    elif (i < 2 and 2 <= j <= 12):
+        img = img[:, i*64:(i+5)*64, (j-2)*64:(j+3)*64]
+    elif (i > 12 and 2 <= j <= 12):
+        img = img[:, (i-5)*64:i*64, (j-2)*64:(j+3)*64]
+    elif (j < 2 and 2 <= i <= 12):
+        img = img[:, (i-2)*64:(i+3)*64, j*64:(j+5)*64]
+    elif (j > 12 and 2 <= i <= 12):
+        img = img[:, (i-2)*64:(i+3)*64, (j-5)*64:j*64]
+
+    else:
+        img = img[:, (i-2)*64:(i+3)*64, (j-2)*64:(j+3)*64]
+        
+    # print("i: {},j: {} | img size: {}".format(i,j,img.size()))
+
+    return img
 
 class MvtecLoader(Dataset):
     def __init__(self, dir):  
@@ -37,7 +63,8 @@ class MvtecLoader(Dataset):
 
     def __getitem__(self, index):
         img_path = self.dir + '/' + self.list[index]
-        img = Image.open(img_path).convert('RGB')
+        # img = Image.open(img_path).convert('RGB')
+        img = cached_load_image(img_path)
         img = transform(img)
         return index, img
 
@@ -53,7 +80,8 @@ class MaskLoader(Dataset):
 
     def __getitem__(self, index):
         img_path = self.dir + '/' + self.list[index]
-        img = Image.open(img_path).convert('RGB')
+        img = cached_load_image(img_path)
+        # img = Image.open(img_path).convert('RGB')
         img = transform(img)
         return index, img
         
@@ -99,6 +127,7 @@ class NoisePatchDataloader(Dataset):
     def __init__(self, img, label, left_i_path, left_j_path):
         self.img_path = img
         self.img_list = os.listdir(self.img_path)
+        self.img_list = [ x for x in self.img_list if x.endswith('.png') ]
         self.img_list.sort(key=lambda x: int(x[:-4]))
 
         self.label_list = torch.load(label)
@@ -109,7 +138,6 @@ class NoisePatchDataloader(Dataset):
         label_count = torch.tensor(self.label_list)
         self.class_sample_count = np.array([len(np.where(label_count==t)[0]) for t in np.unique(label_count)])
         self.weight = 1. / self.class_sample_count
-        # print(self.class_sample_count.shape)
         self.samples_weights = np.array([self.weight[t] for t in label_count])
 
     def __len__(self):
@@ -117,13 +145,9 @@ class NoisePatchDataloader(Dataset):
 
     def __getitem__(self, index):
         img_idx = index // 256
-        img_ = self.img_path + "/" + self.img_list[img_idx]
-        img__ = cached_load_image(img_)
-        
-        """ add gaussian smooth """
-        # img_smooth = ndimage.gaussian_filter(img__, sigma=5)
-        # img = transform(img_smooth)
-        img = transform(img__)
+        img = self.img_path + "/" + self.img_list[img_idx]
+        img = cached_load_image(img)
+        img = transform(img)
         
         """ for mask position """
         left_i = self.left_i_list[index]
@@ -134,7 +158,10 @@ class NoisePatchDataloader(Dataset):
         i = mask_idx // 16 
         j = mask_idx % 16
         mask[:, i*64+left_i:i*64+64+left_i, j*64+left_j:j*64+64+left_j] = 0
-        # mask = transform(mask)
+
+        """ 5*5 surroundings for patch """ 
+        img = get_partial(img, i, j)
+        mask = get_partial(mask, i, j)
 
         label = self.label_list[index]
 

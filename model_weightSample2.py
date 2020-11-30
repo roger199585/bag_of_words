@@ -23,7 +23,6 @@ import random
 from utils.tools import one_hot, one_hot_forMap, draw_errorMap
 import sys
 import dataloaders
-from losses.focalLoss import FocalLoss
 import torch.nn.functional as F
 
 
@@ -37,13 +36,13 @@ parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--data', type=str, default='bottle')
 parser.add_argument('--type', type=str, default='good')
 parser.add_argument('--batch', type=int, default=100)
-parser.add_argument('--dim', type=int, default=16)
+parser.add_argument('--dim', type=int, default=128)
 parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=32)
 parser.add_argument('--pretrain', type=str, default='False')
 args = parser.parse_args()
 
-kmeans_path = "kmeans/{}/{}_{}_{}_{}.pickle".format(
+kmeans_path = "./preprocessData/kmeans/{}/{}_{}_{}_{}.pickle".format(
     args.data,
     str(args.model),
     str(args.kmeans),
@@ -59,7 +58,7 @@ kmeans_path = "kmeans/{}/{}_{}_{}_{}.pickle".format(
 #     str(args.dim)
 # )
 
-pca_path = "PCA/{}/{}_{}_{}_{}.pickle".format(
+pca_path = "./preprocessData/PCA/{}/{}_{}_{}_{}.pickle".format(
     args.data, 
     str(args.model), 
     str(args.kmeans), 
@@ -67,8 +66,8 @@ pca_path = "PCA/{}/{}_{}_{}_{}.pickle".format(
     str(args.dim)
 )
 
-left_i_path = "coordinate/vgg19/{}/left_i.pickle".format(args.data)
-left_j_path = "coordinate/vgg19/{}/left_j.pickle".format(args.data)
+left_i_path = "./preprocessData/coordinate/vgg19/{}/left_i.pickle".format(args.data)
+left_j_path = "./preprocessData/coordinate/vgg19/{}/left_j.pickle".format(args.data)
 
 kmeans = pickle.load(open(kmeans_path, "rb"))
 pca = pickle.load(open(pca_path, "rb"))
@@ -87,7 +86,7 @@ scratch_model = nn.Sequential(
 )
 
 """ training """
-train_path = "./dataset/{}/train_resize/".format(args.data)
+train_path = "./dataset/{}/train_resize/good/".format(args.data)
 label_name = "./label/fullPatch/{}/{}/kmeans_{}_{}.pth".format(
     str(args.model),
     args.data,
@@ -122,7 +121,7 @@ print('training label: ', label_name)
 """ testing """
 if (args.type == 'good'):
     test_path = "./dataset/{}/test/good_resize".format(args.data)
-    test_label_name = "label/{}/{}/test/good_{}_{}.pth".format(
+    test_label_name = "preprocessData/label/{}/{}/test/good_{}_{}.pth".format(
         str(args.model),
         args.data,
         str(out),
@@ -404,65 +403,10 @@ if __name__ == "__main__":
     iter_count = 1
     
     for epoch in range(args.epoch):
-        
-        """ normal version """
 
-        # for (idx, img, mask, label) in train_loader:
-        #     scratch_model.train()
-        #     idx = idx[0].item()
-
-        #     img = img.to(device)
-        #     mask = mask.to(device)
-        #     label = label.squeeze().to(device, dtype=torch.long)
-        #     x = img * mask
-        #     x = torch.cat((x, mask), 1).to(device)
-
-        #     output = scratch_model(x)
-        #     output = nn.Softmax(dim=1)(output)
-            
-        #     """ MSE loss """
-        #     label_onehot = one_hot(label, args.kmeans, args.train_batch)
-        #     loss = criterion(output, label_onehot)
-        #     acc = (output.argmax(-1).detach() == label).float().mean()
-           
-        #     """ CE loss """
-        #     # acc = (output.argmax(-1).detach() == label).float().mean()
-        #     # loss = criterion(output, label)
-
-        #     """ loss = alpha CrossEntropy + feature L1 """
-        #     # alpha_CE = SoftCrossEntropy(output, label)
-        #     # output = nn.Softmax(dim=1)(output)            
-        #     # feature_L1 = torch.mm( (label - output), torch.tensor(gmm.means_ ).to(device, dtype=torch.float)).sum().abs() / args.train_batch
-        #     # loss = alpha_CE + feature_L1
-        #     # writer.add_scalar('feature_L1_loss', feature_L1, iter_count)
-        #     # writer.add_scalar('alpha_CE_loss', alpha_CE, iter_count)
-
-        #     optimizer.zero_grad()
-        #     loss.backward()
-        #     optimizer.step()
-
-        #     writer.add_scalar('loss', loss.item(), iter_count)
-        #     writer.add_scalar('acc', acc.item(), iter_count)            
-            
-        #     print(f'Training EP={epoch+epoch_num} it={iter_count} loss={loss.item()}')
-
-        #     """ 1672 = 1*8*11*19 = iterations per epoch """
-        #     if (iter_count % 88 == 0):
-        #         img_feature, total_gt, total_idx = eval_feature(epoch+epoch_num, scratch_model, test_loader, mask_loader)
-            
-        #     iter_count += 1
-
-        """ noise version """ 
-        # scratch_model, img_feature, total_gt, total_idx = noise_training(train_loader, pretrain_model, scratch_model, criterion, optimizer, writer, kmeans, pca, 32, epoch, epoch_num)
-        # draw_errorMap(img_feature, total_gt, total_idx, epoch, scratch_model, test_loader, mask_loader, args.data, args.type)
-
-
-        """ noise version 2 """
         for (idx, img, left_i, left_j, label, mask) in train_loader:
             scratch_model.train()
             idx = idx[0].item()
-            # left_i = left_i[0].item()
-            # left_j = left_j[0].item()
             
             img = img.to(device)
             mask = mask.to(device)
@@ -472,10 +416,6 @@ if __name__ == "__main__":
             label = label.squeeze().to(device, dtype=torch.long)
 
             output = scratch_model(x)
-            # output = nn.Softmax(dim=1)(output)
-
-            # label_onehot = one_hot(label, args.kmeans, args.train_batch)
-            # loss = criterion(output, label_onehot)
             loss = criterion(output, label)
             acc = (output.argmax(-1).detach() == label).float().mean()
             

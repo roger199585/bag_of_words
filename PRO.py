@@ -1,3 +1,4 @@
+import time
 import pickle
 import argparse
 import numpy as np
@@ -80,6 +81,7 @@ class PRO_curve():
         PRO = np.mean(all_region_overlaps)
         FPR = total_num_FP / total_num_background_pixels
         
+        # print(f'FPR={FPR}, PRO={PRO}')
         self.FPRS.append(FPR)
         self.PROS.append(PRO)
     
@@ -88,7 +90,7 @@ class PRO_curve():
 
         area = 0
         candidate = []
-        for i in range(1, len(self.PROS)):
+        for i in range(1, len(self.PROS) - 1):
             height = np.abs(self.FPRS[i - 1] - self.FPRS[i])
 
             # 如果出現連續且相同的 FPR 值得話其對應的 PRO 要全部加起來取平均
@@ -106,6 +108,7 @@ class PRO_curve():
                 candidate.append(self.PROS[i-1])
                 candidate.append(self.PROS[i])
 
+        print(f'FPR={self.FPRS[len(self.FPRS) - 2]}')
         self.score = area / self.FPR_boundary
 
     def calculate_fpr(self, pred, threshold):
@@ -183,9 +186,10 @@ if __name__ == "__main__":
     y_true = np.array(y_true)
 
 
-    evalTool = PRO_curve(y_pred, y_true, spacing=0.01)
-
+    evalTool = PRO_curve(y_pred, y_true, spacing=0.001)
+    start = time.time()
     evalTool.test_all_threshold()
     evalTool.calculate_PRO_score()
-
-    print(args.data, evalTool.getScore())
+    # evalTool.printFPR()
+    print(evalTool.getScore())
+    print(f'spend {time.time() - start}')
