@@ -11,6 +11,7 @@ from scipy.ndimage.measurements import label
 from torch.utils.data import Dataset, DataLoader
 import dataloaders
 
+from config import ROOT
 
 class PRO_curve():
     def __init__(self, y_pred, y_true, FPR_boundary=0.3, spacing=0.005):
@@ -40,6 +41,7 @@ class PRO_curve():
     def compute_metrics_image(self, prediction, idx):
         # 找出 connected components (aka anomalous regions)
         structure = np.ones((3, 3), dtype=np.int)
+
         labeled, n_components = label(self.y_true[idx], structure)
                 
         # 計算 false positive pixels 數量
@@ -172,11 +174,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # test image grid/all/048.png
-    y_pred = pickle.load(open("./testing_multiMap/{}/all/{}_img_all_feature_{}_Origin.pickle".format(args.data, args.kmeans, args.index), "rb"))
+    y_pred = pickle.load(open("{}/Results/testing_multiMap/{}/all/{}_img_all_feature_{}_Origin.pickle".format(ROOT, args.data, args.kmeans, args.index), "rb"))
     y_pred = y_pred.reshape(-1, 1024, 1024)
     # gt image
     y_true = []
-    mask_path = "./dataset/{}/ground_truth_resize/all".format(args.data)
+    mask_path = "{}/dataset/{}/ground_truth_resize/all".format(ROOT, args.data)
     mask_dataset = dataloaders.MaskLoader(mask_path)
     mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
     for (index, mask) in mask_loader:

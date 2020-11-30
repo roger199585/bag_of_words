@@ -96,6 +96,12 @@ def pROC(y_true, y_pred):
     thresholds = thresholds[:nearestIndex]
     fpr = norm(fpr[:nearestIndex])
 
+    nearestIndex = np.argmin(abs(fpr - 0.3))
+
+    thresholds = thresholds[:nearestIndex+1]
+    fpr = norm(fpr[:nearestIndex+1])
+
+    print(len(fpr))
     area = 0
     for index in range(1, nearestIndex):
         height = fpr[index] - fpr[index - 1]
@@ -110,6 +116,12 @@ def pROC(y_true, y_pred):
 
     return area
 
+            area += (width1 + width2) * height / 2
+        else:
+            continue
+
+    return area
+    
 def eval_feature(epoch, model, test_loader, test_label):
     global pretrain_model
     global kmeans
@@ -233,10 +245,10 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     im2 = ax2.imshow(img_)
     im3 = ax3.imshow(defect_gt)
 
-    # for i in range(16):
-    #     for j in range(16):
-    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
-    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
 
 
     ## 可以在這邊算
@@ -281,10 +293,10 @@ for (idx, img) in test_good_loader:
     im2 = ax2.imshow(img_)
 
     
-    # for i in range(16):
-    #     for j in range(16):
-    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
-    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
 
     defect_gt = np.zeros((1024, 1024, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')

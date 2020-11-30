@@ -12,3 +12,4 @@ __pycache__
 testing/**
 **/*.png
 **/*.pickle
+Results/**
