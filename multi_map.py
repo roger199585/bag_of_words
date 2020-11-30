@@ -33,6 +33,34 @@ import itertools
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
 
+def get_partial(img, i, j):
+    i = i // 4
+    j = j // 4
+    # print("original img size: {}".format(img.size()))
+    if (i < 2 and j < 2):
+        img = img[:, :, i*64:(i+5)*64, j*64:(j+5)*64]
+    elif (i < 2 and j > 12):
+        img = img[:, :, i*64:(i+5)*64, (j-5)*64:j*64]
+    elif (i > 12 and j < 2):
+        img = img[:, :, (i-5)*64:i*64, j*64:(j+5)*64]
+    elif (i > 12 and j > 12):
+        img = img[:, :, (i-5)*64:i*64, (j-5)*64:j*64]
+    elif (i < 2 and 2 <= j <= 12):
+        img = img[:, :, i*64:(i+5)*64, (j-2)*64:(j+3)*64]
+    elif (i > 12 and 2 <= j <= 12):
+        img = img[:, :, (i-5)*64:i*64, (j-2)*64:(j+3)*64]
+    elif (j < 2 and 2 <= i <= 12):
+        img = img[:, :, (i-2)*64:(i+3)*64, j*64:(j+5)*64]
+    elif (j > 12 and 2 <= i <= 12):
+        img = img[:, :, (i-2)*64:(i+3)*64, (j-5)*64:j*64]
+
+    else:
+        img = img[:, :, (i-2)*64:(i+3)*64, (j-2)*64:(j+3)*64]
+        
+    # print("i: {},j: {} | img size: {}".format(i,j,img.size()))
+
+    return img
+
 def norm(feature):
     return feature / feature.max()
 
@@ -65,7 +93,7 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
-            batch_size = 64
+            batch_size = 16
 
             label_idx = []
             label_gt = []
@@ -114,58 +142,10 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                     each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
                     each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
 
-            # """ batch = 61 """ 
-            # for i in range(map_num):
-            #     print(f'map_num:{i}')
-            #     xs = []
-            #     ys = []
-            #     crop_list = []
-
-            #     for j in range(map_num):
-            #         crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
-            #         crop_output = pretrain_model(crop_img)
-            #         """ flatten the dimension of H and W """
-            #         out_ = crop_output.flatten(1,2).flatten(1,2)
-            #         out = pca.transform(out_.detach().cpu().numpy())
-            #         out_label = kmeans.predict(out)
-            #         out_label = torch.from_numpy(out_label).to(device)
-            #         out = pil_to_tensor(out).squeeze().to(device)
-            #         crop_list.append(out)
-
-            #         mask = torch.ones(1, 1, 1024, 1024)
-            #         mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
-            #         mask = mask.to(device)
-            #         x = img * mask
-            #         x = torch.cat((x, mask), 1)
-
-            #         xs.append(x)
-            #         ys.append(out_label)
-                
-            #     x = torch.cat(xs, 0)
-            #     y = torch.stack(ys).squeeze().to(device)                        
-            #     output = model(x)
-            #     y_ = output.argmax(-1).detach().cpu().numpy()
-
-            #     for k in range(map_num):
-            #         output_center = kmeans.cluster_centers_[y_[k]]
-            #         output_center = np.reshape(output_center, (1, -1))
-            #         output_center = pil_to_tensor(output_center).to(device)
-            #         output_center = torch.squeeze(output_center)
-
-            #         isWrongLabel = int(y_[k] != y[k].item())
-            #         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
-                    
-            #         for a in range(64):
-            #             for b in range(64):
-            #                 each_pixel_list[i*16+a][k*16+b].append(diff.item())
             
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
 
-            # for m in range(1024):
-            #     for n in range(1024):
-            #         pixel_feature.append(sum(each_pixel_list[m][n]) / len(each_pixel_list[m][n]))
-
-            # pixel_feature = np.array(pixel_feature).reshape((1024, -1))
+            
             img_feature.append(pixel_feature)
 
     print(np.array(img_feature).shape)
@@ -201,7 +181,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
-            batch_size = 16
+            batch_size = 32
 
             label_idx = []
             label_gt = []
@@ -221,14 +201,18 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     out_ = pca.transform(out.detach().cpu().numpy())
                     out_label = kmeans.predict(out_)
                     out_label = torch.from_numpy(out_label).to(device)
-                    # out = pil_to_tensor(out).squeeze().to(device)
                     crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
-                    mask = mask.to(device)
-                    x = img * mask
-                    x = torch.cat((x, mask), 1)
+                    # mask = mask.to(device)
+                    partial_mask = get_partial(mask, i, j)
+                    partial_mask = partial_mask.to(device)
+                    partial_img = get_partial(img, i, j)
+                    # print(i, j)
+                    # print(partial_mask.size(), partial_img.size())
+                    x = partial_img * partial_mask
+                    x = torch.cat((x, partial_mask), 1)
 
                     xs.append(x)
                     ys.append(out_label)
@@ -239,10 +223,6 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 y_ = output.argmax(-1).detach().cpu().numpy()
 
                 for n, (i, j) in enumerate(batch_idxs):
-                    # output_center = kmeans.cluster_centers_[y_[n]]
-                    # output_center = np.reshape(output_center, (1, -1))
-                    # output_center = pil_to_tensor(output_center).to(device)
-                    # output_center = torch.squeeze(output_center)
 
                     output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
                     output_feature = torch.from_numpy(output_feature).cuda()
@@ -275,7 +255,7 @@ if __name__ == "__main__":
     test_data = args.data
     
     scratch_model = nn.Sequential(
-        resnet.resnet18(pretrained=False, num_classes=args.kmeans)
+        resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).cuda()
     scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
@@ -298,14 +278,14 @@ if __name__ == "__main__":
     pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
     ## Clusters
-    kmeans_path = "preprocessData/kmeans/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+    kmeans_path = "preprocessData/kmeans/{}/vgg19_{}_100_128.pickle".format(args.data, args.kmeans)
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    pca_path = "preprocessData/PCA/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+    pca_path = "preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(args.data, args.kmeans)
     pca = pickle.load(open(pca_path, "rb"))
 
     ## Cluster Center Features
-    center_features_path = "cluster_center/{}.pickle".format(args.data)
+    center_features_path = "preprocessData/cluster_center/{}/{}.pickle".format(args.kmeans, args.data)
     cluster_features = pickle.load(open(center_features_path, "rb"))
     
     print("----- defect -----")

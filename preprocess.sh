@@ -23,21 +23,21 @@ cd $PWD
 # python dataloaders.py --data leather --kmeans 256
 
 # 找出 kmeans cluster center 的 feature 
-python getCenterFeature.py --data bottle --kmeans 128 &
-python getCenterFeature.py --data cable --kmeans 128 &
-python getCenterFeature.py --data capsule --kmeans 128 &
-python getCenterFeature.py --data carpet --kmeans 128 &
-python getCenterFeature.py --data grid --kmeans 128 &
-python getCenterFeature.py --data hazelnut --kmeans 128 &
-python getCenterFeature.py --data leather --kmeans 128 &
-python getCenterFeature.py --data metal_nut --kmeans 128 &
-python getCenterFeature.py --data pill --kmeans 128 &
-python getCenterFeature.py --data screw --kmeans 128 &
-python getCenterFeature.py --data tile --kmeans 128 &
-python getCenterFeature.py --data toothbrush --kmeans 128 &
-python getCenterFeature.py --data transistor --kmeans 128 &
-python getCenterFeature.py --data wood --kmeans 128 &
-python getCenterFeature.py --data zipper --kmeans 128 &
+# python getCenterFeature.py --data bottle --kmeans 128 &
+# python getCenterFeature.py --data cable --kmeans 128 &
+# python getCenterFeature.py --data capsule --kmeans 128 &
+# python getCenterFeature.py --data carpet --kmeans 128 &
+# python getCenterFeature.py --data grid --kmeans 128 &
+# python getCenterFeature.py --data hazelnut --kmeans 128 &
+# python getCenterFeature.py --data leather --kmeans 128 &
+# python getCenterFeature.py --data metal_nut --kmeans 128 &
+# python getCenterFeature.py --data pill --kmeans 128 &
+# python getCenterFeature.py --data screw --kmeans 128 &
+# python getCenterFeature.py --data tile --kmeans 128 &
+# python getCenterFeature.py --data toothbrush --kmeans 128 &
+# python getCenterFeature.py --data transistor --kmeans 128 &
+# python getCenterFeature.py --data wood --kmeans 128 &
+# python getCenterFeature.py --data zipper --kmeans 128 &
 
 wait
 
