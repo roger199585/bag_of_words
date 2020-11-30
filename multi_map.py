@@ -186,6 +186,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
         start = time.time()
 
         for (idx, img) in test_loader:
+            sss = time.time()
             each_pixel_err_sum = np.zeros([1024, 1024])
             each_pixel_err_count = np.zeros([1024, 1024])
 
@@ -200,12 +201,13 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
-            batch_size = 16
+            batch_size = 32
 
             label_idx = []
             label_gt = []
 
             for batch_start_idx in range(0, len(indices), batch_size):
+                b_start = time.time()
                 xs = []
                 ys = []
                 crop_list = []
@@ -231,12 +233,12 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
 
                     xs.append(x)
                     ys.append(out_label)
-
+                print(f'gt label spend {time.time() - b_start}')
                 x = torch.cat(xs, 0)
                 y = torch.stack(ys).squeeze().to(device)                        
                 output = model(x)
                 y_ = output.argmax(-1).detach().cpu().numpy()
-
+                print(f'model predict spend {time.time() - b_start}')
                 for n, (i, j) in enumerate(batch_idxs):
                     # output_center = kmeans.cluster_centers_[y_[n]]
                     # output_center = np.reshape(output_center, (1, -1))
@@ -251,10 +253,11 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     
                     each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
                     each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
-
+                print(f'idx={idx}, batch={batch_start_idx}, spend={time.time()-b_start}')
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
-
             img_feature.append(pixel_feature)
+            print(f'spend {time.time() - sss}')
+
 
     print(np.array(img_feature).shape)
     img_feature = np.array(img_feature).reshape((len(test_loader), -1))
@@ -277,7 +280,7 @@ if __name__ == "__main__":
         resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).cuda()
-    scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(args.data, args.kmeans, global_index)))
+    scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
 
 
     ### DataSet for all defect type
