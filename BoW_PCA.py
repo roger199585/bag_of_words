@@ -1,27 +1,34 @@
-from sklearn.cluster import MiniBatchKMeans
-from sklearn.cluster import KMeans
-from scipy.spatial import distance
-import numpy as np
-import random
-import torch
-import ipydbg
-import argparse
-import pickle
+"""
+    Author: Yong Yu Chen
+    Collaborator: Corn
+
+    Update: 2020/12/2
+    History: 
+        2020/12/2 -> code refactor
+
+    Description: 
+"""
+
+""" STD Library """
 import os
-from sklearn.manifold import TSNE
+import pickle
+import argparse
+import numpy as np
+
+""" sklearn Library"""
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
+
+""" Custom Library """
+import ipydbg
 from config import ROOT
 
 def normalizeData(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 if __name__ == "__main__":
-
-    # ipydbg.selectable = True
-    # ipydbg.patch()
-
-    torch.backends.cudnn.benchmark = True
-
     """ set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--kmeans', type=int, default=16, help='number of kmeans clusters')
@@ -31,57 +38,37 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default='vgg19')
     args = parser.parse_args()
 
-    chunks_path = f'{ROOT}/preprocessData/chunks/{str(args.model)}/chunks_{args.data}_train.pickle'
+    """ read preprocess patches """
+    chunks_path = f"{ ROOT }/preprocessData/chunks/{ str(args.model) }/chunks_{ args.data }_train.pickle"
     chunks = pickle.load(open(chunks_path, "rb"))
     
     print(np.array(chunks).shape)
-    
+
     """ dimension reduction """ 
     pca = PCA(n_components=args.dim, copy=True)
     new_feature = pca.fit_transform(chunks)
-
-    print(new_feature.shape)
-
     kmeans = MiniBatchKMeans(n_clusters=args.kmeans, batch_size=args.batch)
     kmeans.fit(new_feature)
+
+    print(new_feature.shape)
+    
+    """" Check file and folders and auto create """
+    if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans/{ args.data }"):
+        print('create', f"{ ROOT }/preprocessData/kmeans/{ args.data }")
+        os.makedirs(f"{ ROOT }/preprocessData/kmeans/{ args.data }")
+        
+    if not os.path.isdir(f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/"):
+        print('create', f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/")
+        os.makedirs(f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/")
+        
+    if not os.path.isdir(f"{ ROOT }/preprocessData/PCA/{ args.data }/"):
+        print('create', f"{ ROOT }/preprocessData/PCA/{ args.data }/")
+        os.makedirs(f"{ ROOT }/preprocessData/PCA/{ args.data }/")
     
     """ save files """ 
-    save_kmeans = "{}/preprocessData/kmeans/{}/{}_{}_{}_{}.pickle".format(
-        ROOT,
-        args.data,
-        args.model, 
-        str(args.kmeans),
-        str(args.batch),
-        str(args.dim)
-    )
-    save_feature = "{}/preprocessData/chunks/{}/PCA/{}_{}_{}_{}.pickle".format(
-        ROOT,
-        args.model,
-        args.data,
-        str(args.kmeans),
-        str(args.batch),
-        str(args.dim)
-    )
-    save_PCA = "{}/preprocessData/PCA/{}/{}_{}_{}_{}.pickle".format(
-        ROOT,
-        args.data,
-        args.model,
-        str(args.kmeans),
-        str(args.batch),
-        str(args.dim)
-    )
-    
-    if not os.path.isdir('{}/preprocessData/kmeans/{}'.format(ROOT, args.data)):
-        print('create', '{}/preprocessData/kmeans/{}'.format(ROOT, args.data))
-        os.makedirs('{}/preprocessData/kmeans/{}'.format(ROOT, args.data))
-        
-    if not os.path.isdir("{}/preprocessData/chunks/{}/PCA/".format(ROOT, args.model)):
-        print('create', "{}/preprocessData/chunks/{}/PCA/".format(ROOT, args.model))
-        os.makedirs("{}/preprocessData/chunks/{}/PCA/".format(ROOT, args.model))
-        
-    if not os.path.isdir("{}/preprocessData/PCA/{}/".format(ROOT, args.data)):
-        print('create', "{}/preprocessData/PCA/{}/".format(ROOT, args.data))
-        os.makedirs("{}/preprocessData/PCA/{}/".format(ROOT, args.data))
+    save_kmeans  = f"{ ROOT }/preprocessData/kmeans/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
+    save_feature = f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/{ args.data }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
+    save_PCA     = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args/model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
     
     with open(save_kmeans, 'wb') as write:
         pickle.dump(kmeans, write)
