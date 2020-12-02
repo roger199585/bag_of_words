@@ -6,8 +6,10 @@ from torchvision import transforms
 import os
 import cv2
 import sys
+import time 
 import pickle
 import sklearn
+import argparse
 import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
@@ -17,10 +19,9 @@ from sklearn.metrics import confusion_matrix
 
 
 import resnet
-import pretrain_vgg
 import dataloaders
-import argparse
-import time 
+import pretrain_vgg
+from config import ROOT
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default="bottle")
@@ -31,20 +32,20 @@ args = parser.parse_args()
 
 
 scratch_model = nn.Sequential(
-    resnet.resnet18(pretrained=False, num_classes=args.kmeans)
+    resnet.resnet50(pretrained=False, num_classes=args.kmeans)
 )
 scratch_model = nn.DataParallel(scratch_model).cuda()
 
 ### DataSet for all defect type
-test_path = "./dataset/{}/test_resize/all/".format(args.data)
+test_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data)
 test_dataset = dataloaders.MvtecLoader(test_path)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-test_good_path = "./dataset/{}/test_resize/good/".format(args.data)
+test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data)
 test_good_dataset = dataloaders.MvtecLoader(test_good_path)
 test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
 
-mask_path = "./dataset/{}/ground_truth_resize/all/".format(args.data)
+mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
 mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
@@ -52,17 +53,17 @@ mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
 ## Clusters
-kmeans_path = "./preprocessData/kmeans/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+kmeans_path = "{}/preprocessData/kmeans/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
 kmeans = pickle.load(open(kmeans_path, "rb"))
 
-pca_path = "./preprocessData/PCA/{}/vgg19_{}_100_16.pickle".format(args.data, args.kmeans)
+pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
 pca = pickle.load(open(pca_path, "rb"))
 
 ## Label
-test_label_name = "./preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(args.data, args.kmeans)
+test_label_name = "{}/preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(ROOT, args.data, args.kmeans)
 test_label = torch.tensor(torch.load(test_label_name))
 
-test_good_label_name = "./preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(args.data, args.kmeans)
+test_good_label_name = "{}/preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(ROOT, args.data, args.kmeans)
 test_good_label = torch.tensor(torch.load(test_good_label_name))
 
 ## Others
@@ -80,48 +81,6 @@ def norm(features):
     else:
         return features / features.max()
 
-def getOverlap(y_true, y_pred, threshold):
-        y_pred = y_pred[y_true == 1]
-
-        y_pred[y_pred >= threshold] = 1
-        y_pred[y_pred < threshold] = 0
-
-        return y_pred.sum() / float(y_true.sum())
-
-def pROC(y_true, y_pred):
-    fpr, tpr, thresholds = metrics.roc_curve(y_true, y_pred)
-
-    nearestIndex = np.argmin(abs(fpr - 0.3))
-
-    thresholds = thresholds[:nearestIndex]
-    fpr = norm(fpr[:nearestIndex])
-
-    nearestIndex = np.argmin(abs(fpr - 0.3))
-
-    thresholds = thresholds[:nearestIndex+1]
-    fpr = norm(fpr[:nearestIndex+1])
-
-    print(len(fpr))
-    area = 0
-    for index in range(1, nearestIndex):
-        height = fpr[index] - fpr[index - 1]
-
-        if height != 0:
-            width1 = getOverlap(y_true, y_pred, thresholds[index])
-            width2 = getOverlap(y_true, y_pred, thresholds[index - 1])
-
-            area += (width1 + width2) * height / 2
-        else:
-            continue
-
-    return area
-
-            area += (width1 + width2) * height / 2
-        else:
-            continue
-
-    return area
-    
 def eval_feature(epoch, model, test_loader, test_label):
     global pretrain_model
     global kmeans
@@ -210,7 +169,7 @@ def eval_feature(epoch, model, test_loader, test_label):
 
 """ load model """
 global_index = args.index
-scratch_model.load_state_dict(torch.load('./models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
+scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
 print("------- For defect type -------")
 value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
@@ -228,7 +187,7 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
 
     error_map = np.zeros((1024, 1024))
     for index, scalar in enumerate(value_feature[idx]):
-        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
         mask = np.invert(mask)
         mask[mask==255]=1
         
@@ -319,6 +278,5 @@ for (idx, img) in test_good_loader:
 
 label_pred = norm(np.array(label_pred))
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
-auc_fpr30 = pROC(np.array(label_gt).flatten(), label_pred.flatten())
+
 print("AUC score for testing data {}: {}".format(args.data, auc))
-print("AUC FPR under 30 pecent score for testing data {}: {}".format(args.data, auc_fpr30))

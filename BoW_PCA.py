@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default='vgg19')
     args = parser.parse_args()
 
-    chunks_path = ROOT + '/preprocessData/chunks/' + str(args.model) + '/chunks_' + args.data + '_train.pickle'
+    chunks_path = f'{ROOT}/preprocessData/chunks/{str(args.model)}/chunks_{args.data}_train.pickle'
     chunks = pickle.load(open(chunks_path, "rb"))
     
     print(np.array(chunks).shape)

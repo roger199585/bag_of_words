@@ -206,23 +206,23 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
-                    # mask = mask.to(device)
-                    partial_mask = get_partial(mask, i, j)
-                    partial_mask = partial_mask.to(device)
-                    partial_img = get_partial(img, i, j)
+                    mask = mask.to(device)
+                    # partial_mask = get_partial(mask, i, j)
+                    # partial_mask = partial_mask.to(device)
+                    # partial_img = get_partial(img, i, j)
                     # print(i, j)
                     # print(partial_mask.size(), partial_img.size())
-                    x = partial_img * partial_mask
-                    x = torch.cat((x, partial_mask), 1)
+                    # x = partial_img * partial_mask
+                    x = img * mask
+                    # x = torch.cat((x, partial_mask), 1)
+                    x = torch.cat((x, mask), 1)
 
                     xs.append(x)
                     ys.append(out_label)
-                print(f'gt label spend {time.time() - b_start}')
                 x = torch.cat(xs, 0)
                 y = torch.stack(ys).squeeze().to(device)                        
                 output = model(x)
                 y_ = output.argmax(-1).detach().cpu().numpy()
-                print(f'model predict spend {time.time() - b_start}')
                 for n, (i, j) in enumerate(batch_idxs):
 
                     output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
@@ -233,7 +233,6 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     
                     each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
                     each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
-                print(f'idx={idx}, batch={batch_start_idx}, spend={time.time()-b_start}')
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
             img_feature.append(pixel_feature)
             print(f'spend {time.time() - sss}')
@@ -260,7 +259,7 @@ if __name__ == "__main__":
         resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).cuda()
-    scratch_model.load_state_dict(torch.load('models/vgg19/{}/exp1_{}_{}.ckpt'.format(args.data, args.kmeans, global_index)))
+    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
 
     ### DataSet for all defect type
