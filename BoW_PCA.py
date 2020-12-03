@@ -2,11 +2,12 @@
     Author: Yong Yu Chen
     Collaborator: Corn
 
-    Update: 2020/12/2
+    Update: 2020/12/3
     History: 
         2020/12/2 -> code refactor
+        2020/12/3 -> code refactor and add description
 
-    Description: 
+    Description: 透過 PCA 降維之後再用 kmeans 去進行分群
 """
 
 """ STD Library """
