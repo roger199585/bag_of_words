@@ -1,12 +1,15 @@
-# PyTorch
-import torch
-import torch.nn as nn
-import torchvision
-from torch.utils.data import Dataset, DataLoader
-import torchvision.models as models
-from torchvision import transforms
+"""
+    Author: Yong Yu Chen
+    Collaborator: Corn
 
-# standar library
+    Update: 2020/12/3
+    History: 
+        2020/12/3 -> code refactor
+
+    Description: 使用 pretrain 的 vgg19 將每個 patch 轉換成 feature 並存下來
+"""
+
+""" STD Library """
 import os
 import sys
 import pickle
@@ -15,15 +18,22 @@ import argparse
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
-
 sys.path.append('../')
-# custimize library
+
+""" Pytorch Libaray """
+import torch
+import torch.nn as nn
+import torchvision
+import torchvision.models as models
+from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
+
+""" Custom Library """
 import dataloaders
 from config import ROOT
 
 
 cfgs = {
-    # 'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M'],
     'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
     # 'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512],
 }
@@ -32,6 +42,7 @@ class VGG(nn.Module):
     def __init__(self, features, num_classes=1000):
         super(VGG, self).__init__()
         self.features = features
+        # avgpool 是為了強制將我們的 feature 轉換成 512x1x1
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 
     def forward(self, x):
@@ -61,10 +72,10 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
 def vgg19(pretrained=False, progress=True, **kwargs):
     return _vgg('vgg19', 'E', False, pretrained, progress, **kwargs)
 
-""" load part of pretrained model """
+""" Load part of pretrained model """
 pre_model = models.vgg19(pretrained=True)
-
 pre_model = pre_model.state_dict()
+
 model = vgg19()
 model_dict = model.state_dict()
 
@@ -73,27 +84,30 @@ model_dict.update(pre_model)
 model.load_state_dict(pre_model)
 
 
-""" save chunks of training datas to fit the corresponding kmeans """
+""" Save chunks of training datas to fit the corresponding kmeans """
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
     args = parser.parse_args()
 
     print('data: ', args.data)
 
-    """ load dataset """
-    train_dataset = dataloaders.MvtecLoader(ROOT + '/dataset/' + args.data + '/train_resize/good/')
-    train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
-    model = model.to(device)
-    model.train()
+    """" """
     patch_list = []
     patch_i = []
     patch_j = []
 
+    model = model.to(device)
+    """ Load dataset """
+    train_dataset = dataloaders.MvtecLoader(ROOT + '/dataset/' + args.data + '/train_resize/good/')
+    train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
+
     for idx, img in tqdm(train_loader):
+        model.train()
         for i in range(16):
             for j in range(16):
                 noise_i = random.randint(-32, 32)

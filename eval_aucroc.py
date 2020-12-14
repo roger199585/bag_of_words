@@ -171,112 +171,117 @@ def eval_feature(epoch, model, test_loader, test_label):
 global_index = args.index
 scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
-print("------- For defect type -------")
-value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
-print("------- For good type -------")
-value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, test_good_loader, test_good_label)
+# print("------- For defect type -------")
+# value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
+# print("------- For good type -------")
+# value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, test_good_loader, test_good_label)
 
 label_pred = []
 label_gt = []
 
 """ for defect type """ 
 for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
-    img = img.cuda()
+    # img = img.cuda()
     idx = idx[0].item()
 
 
-    error_map = np.zeros((1024, 1024))
-    for index, scalar in enumerate(value_feature[idx]):
-        mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-        mask = np.invert(mask)
-        mask[mask==255]=1
+    # error_map = np.zeros((1024, 1024))
+    # for index, scalar in enumerate(value_feature[idx]):
+    #     mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+    #     mask = np.invert(mask)
+    #     mask[mask==255]=1
         
-        error_map += mask * scalar
+    #     error_map += mask * scalar
 
-    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-    defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-    ironman_grid = plt.GridSpec(1, 3)
-    fig = plt.figure(figsize=(18,6), dpi=100)
-    ax1 = fig.add_subplot(ironman_grid[0,0])
-    im1 = ax1.imshow(error_map, cmap="Blues")
-    ax2 = fig.add_subplot(ironman_grid[0,1])
-    ax3 = fig.add_subplot(ironman_grid[0,2])
-    im2 = ax2.imshow(img_)
-    im3 = ax3.imshow(defect_gt)
+    # img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    # defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
+    # ironman_grid = plt.GridSpec(1, 3)
+    # fig = plt.figure(figsize=(18,6), dpi=100)
+    # ax1 = fig.add_subplot(ironman_grid[0,0])
+    # im1 = ax1.imshow(error_map, cmap="Blues")
+    # ax2 = fig.add_subplot(ironman_grid[0,1])
+    # ax3 = fig.add_subplot(ironman_grid[0,2])
+    # im2 = ax2.imshow(img_)
+    # im3 = ax3.imshow(defect_gt)
 
-    for i in range(16):
-        for j in range(16):
-            ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
-            ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
+    # for i in range(16):
+    #     for j in range(16):
+    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
+    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
 
 
     ## 可以在這邊算
     defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
     true_mask = defect_gt[:, :, 0].astype('int32')
-    label_pred.append(error_map)
+    # label_pred.append(error_map)
     label_gt.append(true_mask)    
     print(f'EP={global_index} defect_img_idx={idx}')
 
-    errorMapPath = "./testing/{}/all/{}/".format(test_data, args.kmeans)
-    if not os.path.isdir(errorMapPath):
-        os.makedirs(errorMapPath)
-        print("----- create folder for type:{} -----".format(test_type))
+    # errorMapPath = "./testing/{}/all/{}/".format(test_data, args.kmeans)
+    # if not os.path.isdir(errorMapPath):
+    #     os.makedirs(errorMapPath)
+    #     print("----- create folder for type:{} -----".format(test_type))
     
-    errorMapName = "{}_{}.png".format(
-        str(idx),
-        str(global_index)
-    )
+    # errorMapName = "{}_{}.png".format(
+    #     str(idx),
+    #     str(global_index)
+    # )
 
-    plt.savefig(errorMapPath+errorMapName, dpi=100)
-    plt.close(fig)
+    # plt.savefig(errorMapPath+errorMapName, dpi=100)
+    # plt.close(fig)
 
 
 """ for good type """
 for (idx, img) in test_good_loader:
-    img = img.cuda()
+    # img = img.cuda()
     idx = idx[0].item()
 
-    error_map = np.zeros((1024, 1024))
-    for index, scalar in enumerate(value_good_feature[idx]):
-        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-        mask = np.invert(mask)
-        mask[mask==255]=1
-        error_map += mask * scalar
+    # error_map = np.zeros((1024, 1024))
+    # for index, scalar in enumerate(value_good_feature[idx]):
+    #     mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+    #     mask = np.invert(mask)
+    #     mask[mask==255]=1
+    #     error_map += mask * scalar
 
-    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-    ironman_grid = plt.GridSpec(1, 2)
-    fig = plt.figure(figsize=(12,6), dpi=100)
-    ax1 = fig.add_subplot(ironman_grid[0,0])
-    im1 = ax1.imshow(error_map, cmap="Blues")
-    ax2 = fig.add_subplot(ironman_grid[0,1])
-    im2 = ax2.imshow(img_)
+    # img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    # ironman_grid = plt.GridSpec(1, 2)
+    # fig = plt.figure(figsize=(12,6), dpi=100)
+    # ax1 = fig.add_subplot(ironman_grid[0,0])
+    # im1 = ax1.imshow(error_map, cmap="Blues")
+    # ax2 = fig.add_subplot(ironman_grid[0,1])
+    # im2 = ax2.imshow(img_)
 
     
-    for i in range(16):
-        for j in range(16):
-            ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
-            ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
+    # for i in range(16):
+    #     for j in range(16):
+    #         ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
+    #         ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
 
     defect_gt = np.zeros((1024, 1024, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
-    label_pred.append(error_map)
+    # label_pred.append(error_map)
     label_gt.append(true_mask)    
     print(f'EP={global_index} good_img_idx={idx}')
 
-    errorMapPath = "./testing/{}/good/{}/".format(test_data, args.kmeans)
-    if not os.path.isdir(errorMapPath):
-        os.makedirs(errorMapPath)
-        print("----- create folder for type:{} -----".format(test_type))
+    # errorMapPath = "./testing/{}/good/{}/".format(test_data, args.kmeans)
+    # if not os.path.isdir(errorMapPath):
+    #     os.makedirs(errorMapPath)
+    #     print("----- create folder for type:{} -----".format(test_type))
     
-    errorMapName = "{}_{}.png".format(
-        str(idx),
-        str(global_index)
-    )
+    # errorMapName = "{}_{}.png".format(
+    #     str(idx),
+    #     str(global_index)
+    # )
 
-    plt.savefig(errorMapPath+errorMapName, dpi=100)
-    plt.close(fig)
+    # plt.savefig(errorMapPath+errorMapName, dpi=100)
+    # plt.close(fig)
 
-label_pred = norm(np.array(label_pred))
+mu, sigma = 0.5, 1 # mean and standard deviation
+label_pred = np.random.normal(mu, sigma, np.array(label_gt).size )
+
+# label_pred = norm(np.array(label_pred))
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
 
 print("AUC score for testing data {}: {}".format(args.data, auc))
+np.save("out", label_pred)
+print(label_pred)

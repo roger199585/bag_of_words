@@ -30,7 +30,7 @@ def normalizeData(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 if __name__ == "__main__":
-    """ set parameters """ 
+    """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--kmeans', type=int, default=16, help='number of kmeans clusters')
     parser.add_argument('--data', type=str, default='bottle')
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     print(new_feature.shape)
     
-    """" Check file and folders and auto create """
+    """ Check file and folders and auto create """
     if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans/{ args.data }"):
         print('create', f"{ ROOT }/preprocessData/kmeans/{ args.data }")
         os.makedirs(f"{ ROOT }/preprocessData/kmeans/{ args.data }")
@@ -66,10 +66,10 @@ if __name__ == "__main__":
         print('create', f"{ ROOT }/preprocessData/PCA/{ args.data }/")
         os.makedirs(f"{ ROOT }/preprocessData/PCA/{ args.data }/")
     
-    """ save files """ 
-    save_kmeans  = f"{ ROOT }/preprocessData/kmeans/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
-    save_feature = f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/{ args.data }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
-    save_PCA     = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args/model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle")
+    """ save files """
+    save_kmeans  = f"{ ROOT }/preprocessData/kmeans/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+    save_feature = f"{ ROOT }/preprocessData/chunks/{ args.model }/PCA/{ args.data }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+    save_PCA     = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
     
     with open(save_kmeans, 'wb') as write:
         pickle.dump(kmeans, write)
@@ -79,7 +79,4 @@ if __name__ == "__main__":
 
     with open(save_feature, 'wb') as write:
         pickle.dump(new_feature, write)
-        
-
-
         

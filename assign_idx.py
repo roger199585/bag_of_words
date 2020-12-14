@@ -44,7 +44,7 @@ def save_img(img, save_name):
     img.save(save_name)
 
 if __name__ == "__main__":
-    """ set parameters """ 
+    """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--type', type=str, default='train')
@@ -54,9 +54,9 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default='vgg19')
     args = parser.parse_args()
 
-    """ Load preprocess datas """"
+    """ Load preprocess datas """
     kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
-    pca_path    = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args.model }_{ str(args,kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+    pca_path    = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
     left_i_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.data }/left_i.pickle"
     left_j_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.data }/left_j.pickle"
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     """ Check folder if not exists auto create"""
     if args.type == 'train':
         path      = f"{ ROOT }/dataset/{ args.data}/train_resize/good/"
-        save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.data }/train/{ str(args.kmeans) }_{ str(args,batch) }.pth"
+        save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.data }/train/{ str(args.kmeans) }_{ str(args.batch) }.pth"
 
         if not os.path.isdir( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.data }/train/" ):
             os.makedirs( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.data }/train/" )
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = pretrain_vgg.model if args.model === 'vgg19' else pretrain_resnet if args.model === 'resnet34' else None
+    model = pretrain_vgg.model if args.model == 'vgg19' else pretrain_resnet if args.model == 'resnet34' else None
     model = model.to(device)
     model.eval()
 
@@ -99,7 +99,10 @@ if __name__ == "__main__":
     img_index_list = []
 
     """ kmeans version """
-    for idx, img in tqdm(enumerate(train_loader)):
+    for idx, img in tqdm(train_loader):
+        img = img.to(device)
+        idx = idx[0].item()
+
         patch_index_list = []
 
         for i in range(16):
@@ -121,9 +124,9 @@ if __name__ == "__main__":
                 patch_index_list.append(patch_idx)
 
             if (args.type == 'train'):                
-                save_img(img_, f'{ ROOT }/preprocessData/kmeans_img/{ args.data }/{ str(args.kmeans) }/idx_{ str(img_idx[0]) }.png')
+                save_img(img, f'{ ROOT }/preprocessData/kmeans_img/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
             
-    img_index_list.append(patch_list)
+        img_index_list.append(patch_index_list)
     torch.save(img_index_list, save_path)
 
     print(len(img_index_list), len(img_index_list[0]))
