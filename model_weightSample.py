@@ -47,11 +47,13 @@ parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--data', type=str, default='bottle')
 parser.add_argument('--type', type=str, default='good')
 parser.add_argument('--batch', type=int, default=100)
-parser.add_argument('--dim', type=int, default=16)
+parser.add_argument('--dim', type=int, default=128)
 parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=16)
 parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--with_mask', type=str, default='True')
+parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--image_size', type=int, default=1024)
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
@@ -187,8 +189,9 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
             
             print(f'eval phase: img idx={idx}')
 
+            chunk_num = int(args.image_size / args.patch_size)
             """ slide window = 16 """
-            map_num = int((1024 - 64) / 16 + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
@@ -205,7 +208,7 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
                 batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
 
                 for i, j in batch_idxs:
-                    crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
+                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out = crop_output.flatten(1,2).flatten(1,2)
@@ -216,7 +219,7 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
                     crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
+                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask
                     x = torch.cat((x, mask), 1)
@@ -236,8 +239,8 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
                     isWrongLabel = int(y_[n] != y[n].item())
                     diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
                     
-                    each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
-                    each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
+                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
 
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
 
@@ -271,8 +274,9 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
             
             print(f'eval phase: img idx={idx}')
 
+            chunk_num = int(args.image_size / args.patch_size)
             """ slide window = 16 """
-            map_num = int((1024 - 64) / 16 + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
@@ -289,7 +293,7 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
                 batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
 
                 for i, j in batch_idxs:
-                    crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
+                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
@@ -300,7 +304,7 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
                     crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
+                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
@@ -322,8 +326,8 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
                     isWrongLabel = int(y_[n] != y[n].item())
                     diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[n])
                     
-                    each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
-                    each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
+                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
             
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
             img_feature.append(pixel_feature)
@@ -359,9 +363,10 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             crop_list = []
             origin_feature_list = []
 
-            for i in range(16):
-                for j in range(16):
-                    crop_img = img[:, :, i*64:i*64+64, j*64:j*64+64].to(device)
+            chunk_num = int(args.image_size / args.patch_size)
+            for i in range(chunk_num):
+                for j in range(chunk_num):
+                    crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
@@ -371,11 +376,11 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     origin_feature_list.append(out_)
 
                     mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
+                    mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
-                    label = __labels[idx][i*16+j].to(device)
+                    label = __labels[idx][i*chunk_num+j].to(device)
                    
                     xs.append(x)
                     ys.append(label)
@@ -433,7 +438,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
