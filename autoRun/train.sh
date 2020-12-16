@@ -22,12 +22,7 @@
 #     done
 
 
-<<<<<<< HEAD
-CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 16 --kmeans=128 --data=capsule --with_mask True --type=good --epoch 30 &
-CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 16 --kmeans=128 --data=bottle --with_mask True --type=good --epoch 30 &
-=======
 CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --patch_size 128 --train_batch 64 --kmeans=128 --data=capsule --with_mask True --type=good --epoch 30 &
 CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --patch_size 128 --train_batch 64 --kmeans=128 --data=bottle --with_mask True --type=good --epoch 30 &
 
 wait
->>>>>>> 83d5ae1c5fc97ad6fb94c4beea9352c6d30b3def
