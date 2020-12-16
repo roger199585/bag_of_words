@@ -92,9 +92,13 @@ if __name__ == "__main__":
     """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
+    parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--image_size', type=int, default=1024)
     args = parser.parse_args()
 
     print('data: ', args.data)
+    print('patch size: ', args.patch_size)
+    print('image size: ', args.image_size)
 
     """" """
     patch_list = []
@@ -103,42 +107,42 @@ if __name__ == "__main__":
 
     model = model.to(device)
     """ Load dataset """
-    train_dataset = dataloaders.MvtecLoader(ROOT + '/dataset/' + args.data + '/train_resize/good/')
+    train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
 
     for idx, img in tqdm(train_loader):
         model.train()
-        for i in range(16):
-            for j in range(16):
-                noise_i = random.randint(-32, 32)
-                noise_j = random.randint(-32, 32)
+        for i in range(int(args.image_size / args.patch_size)):
+            for j in range(int(args.image_size / args.patch_size)):
+                noise_i = random.randint(-1 * int(args.patch_size / 2) , int(args.patch_size / 2))
+                noise_j = random.randint(-1 * int(args.patch_size / 2) , int(args.patch_size / 2))
 
-                if (i*64+64+noise_i > 1024 or i*64+noise_i < 0):
+                if (i * args.patch_size + args.patch_size + noise_i > args.image_size or i * args.patch_size + noise_i < 0):
                     noise_i = 0
-                if (j*64+64+noise_j > 1024 or j*64+noise_j < 0):
+                if (j * args.patch_size + args.patch_size + noise_j > args.image_size or j * args.patch_size + noise_j < 0):
                     noise_j = 0
                 
                 patch_i.append(noise_i)
                 patch_j.append(noise_j)
 
-                img_ = img[:, :, i*64+noise_i:i*64+noise_i+64, j*64+noise_j:j*64+noise_j+64].to(device)
+                img_ = img[:, :, i * args.patch_size+noise_i:i*args.patch_size+noise_i+args.patch_size, j*args.patch_size+noise_j:j*args.patch_size+noise_j+args.patch_size].to(device)
                
                 output = model.forward(img_)
                 """ flatten the dimension of H and W """
                 out_ = output.flatten(1,2).flatten(1,2).squeeze()
                 patch_list.append(out_.detach().cpu().numpy())
 
-    save_chunk = ROOT + '/preprocessData/chunks/vgg19/'
+    save_chunk = f"{ ROOT }/preprocessData/chunks/vgg19/"
     if not os.path.isdir(save_chunk):
         os.makedirs(save_chunk)
-    save_coor = ROOT + '/preprocessData/coordinate/vgg19/{}/'.format(args.data)
+    save_coor = f"{ ROOT }/preprocessData/coordinate/vgg19/{ args.data }/"
     if not os.path.isdir(save_coor):
         os.makedirs(save_coor)
 
     save_i = 'left_i.pickle'
     save_j = 'left_j.pickle'
 
-    with open(save_chunk+'chunks_' + args.data +'_train.pickle', 'wb') as write:
+    with open( f"{ save_chunk }chunks_{ args.data }_train.pickle", 'wb') as write:
         print(np.array(patch_list).shape)
         pickle.dump(patch_list, write)
 
