@@ -47,7 +47,7 @@ parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--data', type=str, default='bottle')
 parser.add_argument('--type', type=str, default='good')
 parser.add_argument('--batch', type=int, default=100)
-parser.add_argument('--dim', type=int, default=128)
+parser.add_argument('--dim', type=int, default=16)
 parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=16)
 parser.add_argument('--test_batch_size', type=int, default=64)
@@ -146,7 +146,9 @@ else:
 
 
 test_label = torch.tensor(torch.load(test_label_name))
+print(test_label.shape)
 all_test_label = torch.tensor(torch.load(all_test_label_name))
+print(all_test_label.shape)
 
 """ eval """
 eval_path = "{}/dataset/{}/test_resize/all".format(ROOT, args.data)
@@ -159,60 +161,6 @@ eval_fea_count = 0
 
 def myNorm(features):
     return features / features.max()
-
-def get_partial_eval(img, i, j):
-    i = i // 4
-    j = j // 4
-    # print("original img size: {}".format(img.size()))
-    if (i < 2 and j < 2):
-        img = img[:, :, i*64:(i+5)*64, j*64:(j+5)*64]
-    elif (i < 2 and j > 12):
-        img = img[:, :, i*64:(i+5)*64, (j-5)*64:j*64]
-    elif (i > 12 and j < 2):
-        img = img[:, :, (i-5)*64:i*64, j*64:(j+5)*64]
-    elif (i > 12 and j > 12):
-        img = img[:, :, (i-5)*64:i*64, (j-5)*64:j*64]
-    elif (i < 2 and 2 <= j <= 12):
-        img = img[:, :, i*64:(i+5)*64, (j-2)*64:(j+3)*64]
-    elif (i > 12 and 2 <= j <= 12):
-        img = img[:, :, (i-5)*64:i*64, (j-2)*64:(j+3)*64]
-    elif (j < 2 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, j*64:(j+5)*64]
-    elif (j > 12 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-5)*64:j*64]
-
-    else:
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-2)*64:(j+3)*64]
-        
-    # print("i: {},j: {} | img size: {}".format(i,j,img.size()))
-
-    return img
-
-def get_partial(img, i, j):
-    # print("original img size: {}".format(img.size()))
-    if (i < 2 and j < 2):
-        img = img[:, :, i*64:(i+5)*64, j*64:(j+5)*64]
-    elif (i < 2 and j > 12):
-        img = img[:, :, i*64:(i+5)*64, (j-5)*64:j*64]
-    elif (i > 12 and j < 2):
-        img = img[:, :, (i-5)*64:i*64, j*64:(j+5)*64]
-    elif (i > 12 and j > 12):
-        img = img[:, :, (i-5)*64:i*64, (j-5)*64:j*64]
-    elif (i < 2 and 2 <= j <= 12):
-        img = img[:, :, i*64:(i+5)*64, (j-2)*64:(j+3)*64]
-    elif (i > 12 and 2 <= j <= 12):
-        img = img[:, :, (i-5)*64:i*64, (j-2)*64:(j+3)*64]
-    elif (j < 2 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, j*64:(j+5)*64]
-    elif (j > 12 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-5)*64:j*64]
-
-    else:
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-2)*64:(j+3)*64]
-        
-    # print("i: {},j: {} | img size: {}".format(i,j,img.size()))
-
-    return img
 
 def eval_with_origin_feature(model, test_loader, test_data, global_index, good=False):
     global cluster_features
@@ -269,11 +217,9 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
-                    partial_mask = get_partial_eval(mask, i, j)
-                    partial_mask = partial_mask.to(device)
-                    partial_img = get_partial_eval(img, i, j)
-                    x = partial_img * partial_mask
-                    x = torch.cat((x, partial_mask), 1)
+                    mask = mask.to(device)
+                    x = img * mask
+                    x = torch.cat((x, mask), 1)
 
                     xs.append(x)
                     ys.append(out_label)
@@ -355,11 +301,9 @@ def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
-                    partial_mask = get_partial(mask, i, j)
-                    partial_mask = partial_mask.to(device)
-                    partial_img = get_partial(img, i, j)
-                    x = partial_img * partial_mask if args.with_mask == 'True' else partial_img
-                    x = torch.cat((x, partial_mask), 1)
+                    mask = mask.to(device)
+                    x = img * mask if args.with_mask == 'True' else img
+                    x = torch.cat((x, mask), 1)
 
                     xs.append(x)
                     ys.append(out_label)
@@ -428,11 +372,9 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*64:i*64+64, j*64:j*64+64] = 0
-                    partial_mask = get_partial(mask, i, j)
-                    partial_mask = partial_mask.to(device)
-                    partial_img = get_partial(img, i, j)
-                    x = partial_img * partial_mask if args.with_mask == 'True' else partial_img
-                    x = torch.cat((x, partial_mask), 1)
+                    mask = mask.to(device)
+                    x = img * mask if args.with_mask == 'True' else img
+                    x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*16+j].to(device)
                    
                     xs.append(x)
@@ -491,7 +433,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/fullvggfeature_mask_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -576,7 +518,7 @@ if __name__ == "__main__":
         ALLAUC.append(auc)
 
         if auc >= ALLAUC[MAXAUCEPOCH]:
-            MAXAUCEPOCH = epoch+1
+            MAXAUCEPOCH = epoch
 
         writer.add_scalar('roc_auc_score', auc, epoch)
         print("AUC score for testing data {}: {}".format(auc, args.data))
@@ -615,7 +557,7 @@ if __name__ == "__main__":
         if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
             os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
         
-        path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
+        path = "{}/models/{}/{}/exp1_{}_{}_smooth.ckpt".format(
             ROOT,
             args.model, 
             args.data, 
@@ -625,124 +567,111 @@ if __name__ == "__main__":
         torch.save(scratch_model.state_dict(), path)
 
 
-    print("Epoch with max auc for data {} : {}".format(args.data, MAXAUCEPOCH))
+
     try:
         global_index = MAXAUCEPOCH
         scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
         
         """ 透過 pca 將為之後的 cluster center 去算 feature error 來畫圖"""
         print("----- defect -----")
-        # img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
+        img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
         img_all_origin_feature = eval_with_origin_feature(scratch_model, eval_loader, args.data, global_index, good=False)
         print("----- good -----")
-        # img_good_feature = eval_feature_for_multiMap(scratch_model, test_loader, args.data, global_index, good=True)
-        img_good_origin_feature = eval_with_origin_feature(scratch_model, test_loader, args.data, global_index, good=True)
-
-        """ save feature """ 
-        save_all_path = "testing_multiMap/{}/all/".format(args.data)
-        if not os.path.isdir(save_all_path):
-            os.makedirs(save_all_path)
-        save_all_name = "{}_img_all_feature_{}_Origin.pickle".format(args.kmeans, args.index)
-        pickle.dump(img_all_origin_feature, open(save_all_path+save_all_name, "wb"))
-        
-        save_good_path = "testing_multiMap/{}/good/".format(args.data)
-        if not os.path.isdir(save_good_path):
-            os.makedirs(save_good_path)
-        save_good_name = "{}_img_good_feature_{}_Origin.pickle".format(args.kmeans, args.index)
-        pickle.dump(img_good_origin_feature, open(save_good_path+save_good_name, "wb"))
+        img_good_feature = eval_feature_for_multiMap(scratch_model, test_loader, args.data, global_index, good=True)
+        img_good_origin_feature = eval_with_orrigin_feature(scratch_model, test_loader, args.data, global_index, good=True)
 
         label_pred = []
         label_true = []
 
-        # """ for defect type """ 
-        # for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-        #     img = img.cuda()
-        #     idx = idx[0].item()
+        """ for defect type """ 
+        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
+            img = img.cuda()
+            idx = idx[0].item()
 
-        #     errorMap = img_all_feature[idx].reshape((1024, 1024))
-        #     """  draw errorMap """
-        #     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-        #     defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-        #     ironman_grid = plt.GridSpec(1,3)
-        #     fig = plt.figure(figsize=(18, 6), dpi=100)
-        #     ax1 = fig.add_subplot(ironman_grid[0,1])
-        #     ax1.set_axis_off()
-        #     im1 = ax1.imshow(errorMap, cmap="Blues")
-        #     ax2 = fig.add_subplot(ironman_grid[0,0])
-        #     ax2.set_axis_off()
-        #     ax3 = fig.add_subplot(ironman_grid[0,2])
-        #     ax3.set_axis_off()
-        #     im2 = ax2.imshow(img_)
-        #     im3 = ax3.imshow(defect_gt)
+            errorMap = img_all_feature[idx].reshape((1024, 1024))
+            """  draw errorMap """
+            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+            defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
+            ironman_grid = plt.GridSpec(1,3)
+            fig = plt.figure(figsize=(18, 6), dpi=100)
+            ax1 = fig.add_subplot(ironman_grid[0,1])
+            ax1.set_axis_off()
+            im1 = ax1.imshow(errorMap, cmap="Blues")
+            ax2 = fig.add_subplot(ironman_grid[0,0])
+            ax2.set_axis_off()
+            ax3 = fig.add_subplot(ironman_grid[0,2])
+            ax3.set_axis_off()
+            im2 = ax2.imshow(img_)
+            im3 = ax3.imshow(defect_gt)
 
 
-        #     errorMapPath = "testing_multiMap/{}/all/{}/pca_map/".format(test_data, args.kmeans)
-        #     if not os.path.isdir(errorMapPath):
-        #         os.makedirs(errorMapPath)
-        #         print("----- create folder for {} | type: all -----".format(test_data))
+            errorMapPath = "testing_multiMap/{}/all/{}/pca_map/".format(test_data, args.kmeans)
+            if not os.path.isdir(errorMapPath):
+                os.makedirs(errorMapPath)
+                print("----- create folder for {} | type: all -----".format(test_data))
             
-        #     errorMapName = "{}_{}.png".format(
-        #         str(idx),
-        #         str(global_index)
-        #     )
+            errorMapName = "{}_{}.png".format(
+                str(idx),
+                str(global_index)
+            )
 
-        #     plt.savefig(errorMapPath+errorMapName, dpi=100)
-        #     plt.close(fig)
+            plt.savefig(errorMapPath+errorMapName, dpi=100)
+            plt.close(fig)
 
-        #     """ for computing aucroc score """
-        #     defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-        #     true_mask = defect_gt[:, :, 0].astype('int32')
-        #     label_pred.append(errorMap)
-        #     label_true.append(true_mask)    
-        #     print(f'EP={global_index} defect_img_idx={idx}')
+            """ for computing aucroc score """
+            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+            true_mask = defect_gt[:, :, 0].astype('int32')
+            label_pred.append(errorMap)
+            label_true.append(true_mask)    
+            print(f'EP={global_index} defect_img_idx={idx}')
 
-        # """ for good type """
-        # for (idx, img) in test_loader:
-        #     img = img.cuda()
-        #     idx = idx[0].item()
+        """ for good type """
+        for (idx, img) in test_loader:
+            img = img.cuda()
+            idx = idx[0].item()
             
-        #     errorMap = img_good_feature[idx].reshape((1024, 1024))
+            errorMap = img_good_feature[idx].reshape((1024, 1024))
             
-        #     """ draw errorMap """
-        #     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-        #     ironman_grid = plt.GridSpec(1, 2)
-        #     fig = plt.figure(figsize=(12,6), dpi=100)
-        #     ax1 = fig.add_subplot(ironman_grid[0,0])
-        #     ax1.set_axis_off()
-        #     im1 = ax1.imshow(errorMap, cmap="Blues")
-        #     ax2 = fig.add_subplot(ironman_grid[0,1])
-        #     ax2.set_axis_off()
-        #     im2 = ax2.imshow(img_)
+            """ draw errorMap """
+            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+            ironman_grid = plt.GridSpec(1, 2)
+            fig = plt.figure(figsize=(12,6), dpi=100)
+            ax1 = fig.add_subplot(ironman_grid[0,0])
+            ax1.set_axis_off()
+            im1 = ax1.imshow(errorMap, cmap="Blues")
+            ax2 = fig.add_subplot(ironman_grid[0,1])
+            ax2.set_axis_off()
+            im2 = ax2.imshow(img_)
             
-        #     errorMapPath = "testing_multiMap/{}/good/{}/pca_map/".format(test_data, args.kmeans)
-        #     if not os.path.isdir(errorMapPath):
-        #         os.makedirs(errorMapPath)
-        #         print("----- create folder for {} | type: good -----".format(test_data))
+            errorMapPath = "testing_multiMap/{}/good/{}/pca_map/".format(test_data, args.kmeans)
+            if not os.path.isdir(errorMapPath):
+                os.makedirs(errorMapPath)
+                print("----- create folder for {} | type: good -----".format(test_data))
 
-        #     errorMapName = "{}_{}.png".format(
-        #         str(idx),
-        #         str(global_index)
-        #     )
+            errorMapName = "{}_{}.png".format(
+                str(idx),
+                str(global_index)
+            )
 
-        #     plt.axis('off')
-        #     plt.savefig(errorMapPath+errorMapName, dpi=100)
-        #     plt.close(fig)
+            plt.axis('off')
+            plt.savefig(errorMapPath+errorMapName, dpi=100)
+            plt.close(fig)
 
-        #     """ for computing aucroc score """
-        #     defect_gt = np.zeros((1024, 1024, 3))
-        #     true_mask = defect_gt[:, :, 0].astype('int32')
-        #     label_pred.append(errorMap)
-        #     label_true.append(true_mask)    
-        #     print(f'EP={global_index} good_img_idx={idx}')
+            """ for computing aucroc score """
+            defect_gt = np.zeros((1024, 1024, 3))
+            true_mask = defect_gt[:, :, 0].astype('int32')
+            label_pred.append(errorMap)
+            label_true.append(true_mask)    
+            print(f'EP={global_index} good_img_idx={idx}')
 
-        # label_pred = myNorm(np.array(label_pred))
-        # auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
+        label_pred = myNorm(np.array(label_pred))
+        auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
 
-        # f = open("overlap_score.txt", "a")
-        # f.write("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
-        # f.close()
+        f = open("overlap_score.txt", "a")
+        f.write("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
+        f.close()
         
-        # print("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
+        print("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
 
 
         label_pred = []

@@ -24,5 +24,7 @@
 cd $PWD
 source ../BoW_env/bin/activate
 
-CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 64 --kmeans=64 --data=tile --with_mask True --type=good --epoch 30 &
-CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 64 --kmeans=64 --data=tile --with_mask False --type=good --epoch 30 &
+CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 64 --kmeans=128 --data=capsule --with_mask True --type=good --epoch 30 &
+CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 64 --kmeans=128 --data=bottle --with_mask True --type=good --epoch 30 &
+
+wait
