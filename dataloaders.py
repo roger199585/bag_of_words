@@ -187,10 +187,11 @@ def fullPatchLabel(label_path, model, data, kmeans, batch):
     if not os.path.isdir(saveLabelPath):
         os.makedirs(saveLabelPath)
     
+    chunk_num = int(args.image_size / args.patch_size)
     for idx in range(len(index_label)):
-        for i in range(16):
-            for j in range(16):
-                label = index_label[idx][i*16+j]
+        for i in range(chunk_num):
+            for j in range(chunk_num):
+                label = index_label[idx][i*chunk_num+j]
                 label_list.append(label)
 
     print("save label: ", saveLabelPath+saveLabelName)
@@ -207,6 +208,8 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--batch', type=int, default=100)
     parser.add_argument('--model', type=str, default='vgg19')
+    parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--image_size', type=int, default=1024)
     args = parser.parse_args()
     out = args.kmeans
 

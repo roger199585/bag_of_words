@@ -51,6 +51,8 @@ if __name__ == "__main__":
     parser.add_argument('--kmeans', type=int, default=16, help='number of kmeans clusters')
     parser.add_argument('--batch', type=int, default=100)
     parser.add_argument('--dim', type=int, default=16)
+    parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--model', type=str, default='vgg19')
     args = parser.parse_args()
 
@@ -105,15 +107,16 @@ if __name__ == "__main__":
 
         patch_index_list = []
 
-        for i in range(16):
-            for j in range(16):
+        chunk_num = int(args.image_size / args.patch_size)
+        
+        for i in range(chunk_num):
+            for j in range(chunk_num):
                 """ Crop the image """
                 if (args.type == 'train'):
-                    index = idx*256+i*16+j
-                    patch = img[ :, :, i*64+left_i[index]:i*64+64+left_i[index], j*64+left_j[index]:j*64+64+left_j[index] ].to(device)
+                    index = idx*chunk_num*chunk_num+i*chunk_num+j
+                    patch = img[ :, :, i*args.patch_size+left_i[index]:i*args.patch_size+args.patch_size+left_i[index], j*args.patch_size+left_j[index]:j*args.patch_size+args.patch_size+left_j[index] ].to(device)
                 else:
-                    patch = img[:, :, i*64:i*64+64, j*64:j*64+64].to(device)
-
+                    patch = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
                 output = model.forward( patch )
 
                 """ flatten the dimension of H and W """
@@ -124,11 +127,9 @@ if __name__ == "__main__":
                 patch_index_list.append(patch_idx)
 
             if (args.type == 'train'):                
-                save_img(img, f'{ ROOT }/preprocessData/kmeans_img/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
+                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
             
         img_index_list.append(patch_index_list)
     torch.save(img_index_list, save_path)
 
     print(len(img_index_list), len(img_index_list[0]))
-
-

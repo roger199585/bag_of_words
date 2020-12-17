@@ -10,6 +10,8 @@ from config import ROOT
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default='ALL')
 parser.add_argument('--kmeans', type=int, default=128)
+parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--image_size', type=int, default=1024)
 args = parser.parse_args()
 
 total = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
@@ -26,9 +28,10 @@ if args.data == "ALL":
         center_features = np.zeros((args.kmeans, origin_features.shape[1]) )
         count = np.zeros(args.kmeans)
 
+        chunk_num = int(args.image_size / args.patch_size)
         for i in range(train_label.shape[0]):
             for j in range(train_label.shape[1]):
-                center_features[train_label[i][j][0]] += origin_features[i * 256 + j]
+                center_features[train_label[i][j][0]] += origin_features[i * chunk_num * chunk_num + j]
                 count[train_label[i][j][0]] += 1
 
         for i in range(args.kmeans):
@@ -54,9 +57,10 @@ else:
     center_features = np.zeros((args.kmeans, origin_features.shape[1]) )
     count = np.zeros(args.kmeans)
 
+    chunk_num = int(args.image_size / args.patch_size)
     for i in range(train_label.shape[0]):
         for j in range(train_label.shape[1]):
-            center_features[train_label[i][j][0]] += origin_features[i * 256 + j]
+            center_features[train_label[i][j][0]] += origin_features[i * chunk_num * chunk_num + j]
             count[train_label[i][j][0]] += 1
 
     for i in range(args.kmeans):

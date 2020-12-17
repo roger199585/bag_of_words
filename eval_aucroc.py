@@ -209,11 +209,18 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     im2 = ax2.imshow(img_)
     im3 = ax3.imshow(defect_gt)
 
+<<<<<<< HEAD
 
     for i in range(chunk_num):
         for j in range(chunk_num):
             ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
             ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+=======
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
+>>>>>>> 6cd62c88a1fb56a416e74f0a0b84091c54fdcc3b
 
 
     ## 可以在這邊算
@@ -258,10 +265,17 @@ for (idx, img) in test_good_loader:
     im2 = ax2.imshow(img_)
 
     
+<<<<<<< HEAD
     for i in range(chunk_num):
         for j in range(chunk_num):
             ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
             ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+=======
+    for i in range(16):
+        for j in range(16):
+            ax1.text((j+0.2)*64, (i+0.6)*64, total_good_idx[idx][i*16+j], fontsize=10)
+            ax2.text((j+0.2)*64, (i+0.6)*64, total_good_gt[idx][i*16+j], fontsize=10)
+>>>>>>> 6cd62c88a1fb56a416e74f0a0b84091c54fdcc3b
 
     defect_gt = np.zeros((1024, 1024, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
@@ -286,7 +300,10 @@ for (idx, img) in test_good_loader:
 # label_pred = np.random.normal(mu, sigma, np.array(label_gt).size )
 
 label_pred = norm(np.array(label_pred))
+<<<<<<< HEAD
 print('spend w/o auroc: ', time.time() - start)
+=======
+>>>>>>> 6cd62c88a1fb56a416e74f0a0b84091c54fdcc3b
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
 
 print("AUC score for testing data {}: {}".format(args.data, auc))
