@@ -6,7 +6,8 @@ import os
 from config import ROOT
 
 image_size = (1024, 1024)
-mask_size = (64, 64)
+# mask_size = (64, 64)
+mask_size = (128, 128)
 
 bg = numpy.uint8(255*numpy.ones(image_size))
 m = numpy.uint8(numpy.zeros(mask_size))
@@ -19,10 +20,10 @@ while x <= 1024 and y <= 1024:
     mask = Image.fromarray(m)
 
     background.paste(mask, (x, y))
-    background.save(ROOT + '/dataset/big_mask/mask' + str(count) +'.png')
+    background.save(ROOT + '/dataset/big_mask128/mask' + str(count) +'.png')
     
-    x += 64
+    x += 128
     if x == 1024:
         x = 0
-        y += 64
+        y += 128
     count += 1

@@ -33,34 +33,6 @@ from config import ROOT
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
 
-def get_partial(img, i, j):
-    i = i // 4
-    j = j // 4
-    # print("original img size: {}".format(img.size()))
-    if (i < 2 and j < 2):
-        img = img[:, :, i*64:(i+5)*64, j*64:(j+5)*64]
-    elif (i < 2 and j > 12):
-        img = img[:, :, i*64:(i+5)*64, (j-5)*64:j*64]
-    elif (i > 12 and j < 2):
-        img = img[:, :, (i-5)*64:i*64, j*64:(j+5)*64]
-    elif (i > 12 and j > 12):
-        img = img[:, :, (i-5)*64:i*64, (j-5)*64:j*64]
-    elif (i < 2 and 2 <= j <= 12):
-        img = img[:, :, i*64:(i+5)*64, (j-2)*64:(j+3)*64]
-    elif (i > 12 and 2 <= j <= 12):
-        img = img[:, :, (i-5)*64:i*64, (j-2)*64:(j+3)*64]
-    elif (j < 2 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, j*64:(j+5)*64]
-    elif (j > 12 and 2 <= i <= 12):
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-5)*64:j*64]
-
-    else:
-        img = img[:, :, (i-2)*64:(i+3)*64, (j-2)*64:(j+3)*64]
-        
-    # print("i: {},j: {} | img size: {}".format(i,j,img.size()))
-
-    return img
-
 def norm(feature):
     return feature / feature.max()
 
@@ -76,19 +48,19 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
         img_feature = []
         
         start = time.time()
-
+        chunk_num = int(args.image_size / args.patch_size)
         for (idx, img) in test_loader:
             each_pixel_err_sum = np.zeros([1024, 1024])
             each_pixel_err_count = np.zeros([1024, 1024])
 
-            # pixel_feature = []  
+            # pixel_feature = []
             img = img.to(device)
             idx = idx[0].item()
             
             print(f'eval phase: img idx={idx}')
 
             """ slide window = 16 """
-            map_num = int((1024 - 64) / 16 + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
@@ -105,7 +77,7 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                 batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
 
                 for i, j in batch_idxs:
-                    crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
+                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
@@ -116,7 +88,7 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                     crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
+                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask
                     x = torch.cat((x, mask), 1)
@@ -138,8 +110,8 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                     isWrongLabel = int(y_[n] != y[n].item())
                     diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[n])
                     
-                    each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
-                    each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
+                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
 
             
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
@@ -152,7 +124,6 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
     return img_feature
 
 def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_data, global_index, good=False):
-
     global label_pred
     global label_true
 
@@ -165,6 +136,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
         
         start = time.time()
 
+        chunk_num = int(args.image_size / args.patch_size)
         for (idx, img) in test_loader:
             sss = time.time()
             each_pixel_err_sum = np.zeros([1024, 1024])
@@ -177,7 +149,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             print(f'eval phase: img idx={idx}')
 
             """ slide window = 16 """
-            map_num = int((1024 - 64) / 16 + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
@@ -195,7 +167,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
 
                 for i, j in batch_idxs:
-                    crop_img = img[:, :, i*16:i*16+64, j*16:j*16+64].to(device)
+                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out = crop_output.flatten(1,2).flatten(1,2)
@@ -205,16 +177,9 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*16:i*16+64, j*16:j*16+64] = 0
+                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
                     mask = mask.to(device)
-                    # partial_mask = get_partial(mask, i, j)
-                    # partial_mask = partial_mask.to(device)
-                    # partial_img = get_partial(img, i, j)
-                    # print(i, j)
-                    # print(partial_mask.size(), partial_img.size())
-                    # x = partial_img * partial_mask
                     x = img * mask
-                    # x = torch.cat((x, partial_mask), 1)
                     x = torch.cat((x, mask), 1)
 
                     xs.append(x)
@@ -231,8 +196,8 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     isWrongLabel = int(y_[n] != y[n].item())
                     diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
                     
-                    each_pixel_err_sum[i*16:i*16+64, j*16:j*16+64] += diff.item()
-                    each_pixel_err_count[i*16:i*16+64, j*16:j*16+64] += 1
+                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
+                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
             pixel_feature = each_pixel_err_sum / each_pixel_err_count
             img_feature.append(pixel_feature)
             print(f'spend {time.time() - sss}')
@@ -250,6 +215,8 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--index', type=int, default=30)
     parser.add_argument('--resume', type=bool, default=False)
+    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=64)
     args = parser.parse_args()
 
     global_index = args.index
