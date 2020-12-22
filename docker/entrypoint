@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [[ $TASK = 0 ]]; then
+    # CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 32 --kmeans=128 --data=capsule --type=good --epoch 30 &
+    # CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --train_batch 32 --kmeans=128 --data=carpet --type=good --epoch 30 &
+    CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 32 --kmeans=128 --data=tile --type=good --epoch 30 &
+    CUDA_VISIBLE_DEVICES=2,3 python model_weightSample.py --train_batch 32 --kmeans=128 --data=toothbrush --type=good --epoch 30 &
+
+fi
+
+wait
+
+# docker run --gpus all -e TASK=0 --ipc=host -e HOME=/tmp -u `id -u`:`id -g` -v /home/dinosaur/bag_of_words:/ws_data/nctu/bag_of_words -v /home/dinosaur/tensorboard:/results -it --rm ad:ad > out.txt
