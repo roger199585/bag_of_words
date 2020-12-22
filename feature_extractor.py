@@ -58,9 +58,8 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=1000)
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
-    args = parser.parse_args()
-
-    
+    parser.add_argument('--resolution', type=int, default=4)
+    args = parser.parse_args() 
 
     train_loader = torch.utils.data.DataLoader(
         MVTecLoader(args.data),
@@ -79,7 +78,7 @@ if __name__ == "__main__":
 
     writer = SummaryWriter(log_dir=f"{RESULT_PATH}/image_test_{datetime.now()}")
 
-    model = autoencoder.autoencoder(3)
+    model = autoencoder.autoencoder(3, args.resolution)
     model = model.cuda()
     L1_loss = torch.nn.L1Loss()
 
@@ -87,9 +86,6 @@ if __name__ == "__main__":
         model.parameters(), 
         lr=args.lr
     )
-
-    # for idx, imgs in enumerate(train_loader):
-    #     print(imgs.reshape(imgs.shape[0] * imgs.shape[1], imgs.shape[2], args.patch_size, args.patch_size).shape)
 
     for epoch in range(args.epochs):
         model.train()
@@ -119,3 +115,8 @@ if __name__ == "__main__":
         writer.add_scalar('Loss/test', test_ae_loss, epoch)
 
         print(f"epoch [{epoch}/{args.epochs}] loss/train: {ae_loss.item()} loss/test: {test_ae_loss.item()}")
+
+        if epoch % 1000 == 0:
+            if not os.path.isdir(f"{ ROOT }/models/AE/bottle_{ args.resolution }/"):
+                os.makedirs(f"{ ROOT }/models/AE/bottle_{ args.resolution }/")
+            torch.save(model.state_dict(), f"{ ROOT }/models/AE/bottle_{ args.resolution }/{ epoch }.ckpt")
