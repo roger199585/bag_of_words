@@ -43,3 +43,10 @@ tar xvf mvtec_anomaly_detection.tar.xz
 
 ## Progress
 - 我們的 dataset 一共有 15 種不同的類型，目前剩下最後兩種 (wood, zipper) 還沒跑實驗
+
+
+
+## 環境變數設定
+ROOT=bag_of_words 這個專案的位置
+RESULT_PATH=<存 Tensorboard log 的位置>
+PYTHONPATH=$ROOT

@@ -20,6 +20,8 @@ from tqdm import tqdm
 
 """ sklearn Library """
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE, MDS
+from sklearn.cluster import DBSCAN
 
 """ Pytorch Library """
 import torch
@@ -54,16 +56,17 @@ if __name__ == "__main__":
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--model', type=str, default='vgg19')
+    parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
 
     """ Load preprocess datas """
-    kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
-    pca_path    = f"{ ROOT }/preprocessData/PCA/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+    kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+    dim_reduction_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
     left_i_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.data }/left_i.pickle"
     left_j_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.data }/left_j.pickle"
 
     kmeans = pickle.load(open(kmeans_path, "rb"))
-    pca    = pickle.load(open(pca_path, "rb"))
+    dim_reduction    = pickle.load(open(dim_reduction_path, "rb"))
     left_i = pickle.load(open(left_i_path, "rb"))
     left_j = pickle.load(open(left_j_path, "rb"))
 
@@ -121,13 +124,13 @@ if __name__ == "__main__":
 
                 """ flatten the dimension of H and W """
                 out = output.flatten(1,2).flatten(1,2)
-                out = pca.transform( out.detach().cpu().numpy() )
+                out = dim_reduction.transform( out.detach().cpu().numpy() )
                 patch_idx = kmeans.predict(out)
 
                 patch_index_list.append(patch_idx)
 
             if (args.type == 'train'):                
-                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
+                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
             
         img_index_list.append(patch_index_list)
     torch.save(img_index_list, save_path)

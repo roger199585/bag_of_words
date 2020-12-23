@@ -210,13 +210,15 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default='vgg19')
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
     out = args.kmeans
 
     train_path = "{}/dataset/{}/train_resize".format(ROOT, args.data)
-    label_path = "{}/preprocessData/label/{}/{}/train/{}_{}.pth".format(
+    label_path = "{}/preprocessData/label/{}/{}/{}/train/{}_{}.pth".format(
         ROOT,
-        str(args.model),
+        args.model,
+        str(args.dim_reduction)
         args.data,
         str(out),
         str(args.batch)
