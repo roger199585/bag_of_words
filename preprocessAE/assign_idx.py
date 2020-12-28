@@ -113,7 +113,7 @@ if __name__ == "__main__":
                 patch_index_list.append(patch_idx)
 
             if (args.type == 'train'):                
-                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/AE/{ args.data }/{ args.resolution }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
+                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/AE/{ args.data }/{ args.resolution }/{ str(args.kmeans) }/idx_{ str(patch_idx) }.png')
             
         img_index_list.append(patch_index_list)
 
@@ -121,6 +121,8 @@ if __name__ == "__main__":
 
     if args.type == 'train':
         saveLabelPath = f"{ ROOT }/preprocessData/label/fullPatch/AE/{ args.data }/{ args.resolution }/kmeans_128.pth"
+        if not os.path.isdir(f"{ ROOT }/preprocessData/label/fullPatch/AE/{ args.data }/{ args.resolution }/"):
+            os.makedirs(f"{ ROOT }/preprocessData/label/fullPatch/AE/{ args.data }/{ args.resolution }/")
         torch.save(np.array(img_index_list).reshape(-1, 1), saveLabelPath)
 
 

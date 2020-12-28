@@ -130,7 +130,7 @@ if __name__ == "__main__":
                 patch_index_list.append(patch_idx)
 
             if (args.type == 'train'):                
-                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(idx) }.png')
+                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx) }.png')
             
         img_index_list.append(patch_index_list)
     torch.save(img_index_list, save_path)
