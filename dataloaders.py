@@ -218,7 +218,7 @@ if __name__ == "__main__":
     label_path = "{}/preprocessData/label/{}/{}/{}/train/{}_{}.pth".format(
         ROOT,
         args.model,
-        str(args.dim_reduction)
+        str(args.dim_reduction),
         args.data,
         str(out),
         str(args.batch)
