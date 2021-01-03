@@ -117,6 +117,6 @@ if __name__ == "__main__":
         print(f"epoch [{epoch}/{args.epochs}] loss/train: {ae_loss.item()} loss/test: {test_ae_loss.item()}")
 
         if epoch % 1000 == 0:
-            if not os.path.isdir(f"{ ROOT }/models/AE/bottle_{ args.resolution }/"):
-                os.makedirs(f"{ ROOT }/models/AE/bottle_{ args.resolution }/")
-            torch.save(model.state_dict(), f"{ ROOT }/models/AE/bottle_{ args.resolution }/{ epoch }.ckpt")
+            if not os.path.isdir(f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/"):
+                os.makedirs(f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/")
+            torch.save(model.state_dict(), f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/{ epoch }.ckpt")
