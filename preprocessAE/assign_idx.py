@@ -112,8 +112,8 @@ if __name__ == "__main__":
 
                 patch_index_list.append(patch_idx)
 
-            if (args.type == 'train'):                
-                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/AE/{ args.data }/{ args.resolution }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png')
+                if (args.type == 'train'):
+                    save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/AE/{ args.data }/{ args.resolution }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png')
             
         img_index_list.append(patch_index_list)
 
