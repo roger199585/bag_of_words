@@ -26,6 +26,6 @@ python preprocessAE/getCenterFeature.py --data bottle --kmeans 128 --resolution 
 wait 
 
 # Train
-# python model_ae_weightSample.py --data bottle --kmeans 128 --type good --with_mask True --resolution 4 --epoch 40 &
+# CUDA_VISIBLE_DEVICES=0.1 python model_ae_weightSample.py --data bottle --kmeans 128 --type good --with_mask True --resolution 4 --epoch 40 &
 
 # wait
