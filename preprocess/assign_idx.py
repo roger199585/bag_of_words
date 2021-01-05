@@ -12,6 +12,7 @@
 """ STD Library """
 import os
 import sys
+import time
 import pickle
 import argparse
 import numpy as np
@@ -94,7 +95,7 @@ if __name__ == "__main__":
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = pretrain_vgg.model if args.model == 'vgg19' else pretrain_resnet if args.model == 'resnet34' else None
+    model = pretrain_vgg.model if args.model == 'vgg19' else pretrain_resnet.model if args.model == 'resnet34' else None
     model = model.to(device)
     model.eval()
 
@@ -129,8 +130,11 @@ if __name__ == "__main__":
 
                 patch_index_list.append(patch_idx)
 
-            if (args.type == 'train'):                
-                save_img(patch, f'{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx) }.png')
+            if (args.type == 'train'):
+                if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/"):
+                    print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
+                    os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")           
+                save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
             
         img_index_list.append(patch_index_list)
     torch.save(img_index_list, save_path)
