@@ -140,4 +140,7 @@ python preprocess/getCenterFeature.py --dim_reduction UMAP --patch_size 64 --dat
 
 wait
 
-python preprocess/checkPreprocessData.py
+CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --patch_size 64 --kmeans=128 --data=tile --with_mask True --type=good --epoch 30 &
+wait 
+# python preprocess/checkPreprocessData.py
+
