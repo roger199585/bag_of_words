@@ -28,7 +28,7 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import roc_auc_score
 
 """ Custom Library """
-import network.resnet as resnet
+import networks.resnet as resnet
 import preprocess.pretrain_vgg as pretrain_vgg
 
 import dataloaders
@@ -102,9 +102,9 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                 
                 new_outs = pca.transform(patches)
                 for i in range(new_outs.shape[0]):
-                    out_label = kmeans.predict(new_outs[i])
+                    out_label = kmeans.predict(new_outs[i].reshape(1, -1))
                     out_label = torch.from_numpy(out_label).to(device)
-                    out = pil_to_tensor(new_outs[i]).squeeze().to(device)
+                    out = pil_to_tensor(new_outs[i].reshape(1, -1)).squeeze().to(device)
 
                     crop_list.append(out)
                     ys.append(out_label)
@@ -187,6 +187,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     """ flatten the dimension of H and W """
                     out = crop_output.flatten(1,2).flatten(1,2)
                     patches.append(out.detach().cpu().numpy())
+                    crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
@@ -201,11 +202,8 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 
                 new_outs = pca.transform(patches)
                 for i in range(new_outs.shape[0]):
-                    out_label = kmeans.predict(new_outs[i])
+                    out_label = kmeans.predict(new_outs[i].reshape(1, -1))
                     out_label = torch.from_numpy(out_label).to(device)
-                    out = pil_to_tensor(new_outs[i]).squeeze().to(device)
-
-                    crop_list.append(out)
                     ys.append(out_label)
 
                 x = torch.cat(xs, 0)
@@ -348,4 +346,3 @@ if __name__ == "__main__":
     print(np.array(label_true).shape)
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
     print("AUC score for testing data {}: {}".format(args.data, auc))
-
