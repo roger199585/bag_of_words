@@ -8,6 +8,7 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from torchvision import transforms
 import torchvision.models as models
 
+# STL Library
 import os
 import sys
 import cv2
@@ -23,13 +24,11 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 # customize
-import resnet
+import networks.resnet as resnet
 import dataloaders
-import pretrain_vgg
-import pretrain_resnet
+import preprocess.pretrain_vgg as pretrain_vgg
+import preprocess.pretrain_resnet as pretrain_resnet
 from config import ROOT, RESULT_PATH
-from visualize import errorMap
-from utils.tools import one_hot, one_hot_forMap, draw_errorMap
 
 # evaluations
 from sklearn import preprocessing
@@ -54,34 +53,20 @@ parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--with_mask', type=str, default='True')
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--image_size', type=int, default=1024)
+parser.add_argument('--dim_reduction', type=str, default='PCA')
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
 ALLAUC = []
 
-kmeans_path = "{}/preprocessData/kmeans/{}/{}_{}_{}_{}.pickle".format(
-    ROOT,
-    args.data,
-    str(args.model),
-    str(args.kmeans),
-    str(args.batch),
-    str(args.dim)
-)
-
-pca_path = "{}/preprocessData/PCA/{}/{}_{}_{}_{}.pickle".format(
-    ROOT,
-    args.data, 
-    str(args.model), 
-    str(args.kmeans), 
-    str(args.batch), 
-    str(args.dim)
-)
+kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ args.kmeans }_{ args.batch }_{ args.dim }.pickle"
+pca_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
 
 left_i_path = "{}/preprocessData/coordinate/vgg19/{}/left_i.pickle".format(ROOT, args.data)
 left_j_path = "{}/preprocessData/coordinate/vgg19/{}/left_j.pickle".format(ROOT, args.data)
 
-kmeans = pickle.load(open(kmeans_path, "rb"))
 pca = pickle.load(open(pca_path, "rb"))
+kmeans = pickle.load(open(kmeans_path, "rb"))
 
 
 """ image transform """
@@ -92,19 +77,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 out = args.kmeans
 scratch_model = nn.Sequential(
-    resnet.resnet50(pretrained=False, num_classes=out),
+    resnet.resnet50(pretrained=False, num_classes=args.kmeans),
 )
 
 """ training """
-train_path = "{}/dataset/{}/train_resize/good".format(ROOT, args.data)
-label_name = "{}/preprocessData/label/fullPatch/{}/{}/kmeans_{}_{}.pth".format(
-    ROOT,
-    str(args.model),
-    args.data,
-    str(out),
-    str(args.batch)
-)
-mask_path = "{}/dataset/big_mask/".format(ROOT)
+train_path = f"{ ROOT }/dataset/{ args.data }/train_resize/good"
+label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.data }/kmeans_{ args.kmeans }_{ args.batch }.pth"
+mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 
 if args.model == 'vgg19':
     pretrain_model = nn.DataParallel(pretrain_vgg.model).to(device)
@@ -117,34 +96,13 @@ print('training label: ', label_name)
 
 """ testing """
 if (args.type == 'good'):
-    test_path = "{}/dataset/{}/test_resize/good".format(ROOT, args.data)
-    test_label_name = "{}/preprocessData/label/{}/{}/test/good_{}_{}.pth".format(
-        ROOT,
-        str(args.model),
-        args.data,
-        str(out),
-        str(args.batch)
-    )
-    
-    all_test_label_name = "{}/preprocessData/label/{}/{}/test/all_{}_{}.pth".format(
-        ROOT,
-        str(args.model),
-        args.data,
-        str(out),
-        str(args.batch)
-    )
-
+    test_path           = f"{ ROOT }/dataset/{ args.data }/test_resize/good"
+    test_label_name     = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/good_{ str(args.kmeans) }_{ str(args.batch) }.pth"
+    all_test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/all_{ str(args.kmeans) }_{ str(args.batch) }.pth"
 else:
-    test_path = "{}/dataset/{}/test_resize/{}".format(ROOT, args.data, args.type)
-    test_label_name = "{}/preprocessData/label/{}/{}/test/{}_{}_{}.pth".format(
-        ROOT,
-        str(args.model),
-        args.data,
-        args.type,
-        str(out),
-        str(args.batch)
-    )
-    defect_gt_path = "{}/dataset/{}/ground_truth_resize/{}/".format(ROOT, args.data, args.type)
+    test_path       = f"{ ROOT }/dataset/{ args.data }/test_resize/{ args.type }"
+    test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/{ args.type }_{ str(args.kmeans) }_{ str(args.batch) }.pth"
+    defect_gt_path  = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/{ args.type }/"
 
 
 test_label = torch.tensor(torch.load(test_label_name))
@@ -195,7 +153,7 @@ def eval_with_origin_feature(model, test_loader, test_data, global_index, good=F
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
-            batch_size = 16
+            batch_size = args.test_batch_size
 
             label_idx = []
             label_gt = []

@@ -5,6 +5,7 @@
     Update: 2020/12/3
     History: 
         2020/12/3 -> code refactor
+        2021/1/7 -> 修改資料儲存路徑
 
     Description: 使用 pretrain 的 vgg19 將每個 patch 轉換成 feature 並存下來
 """
@@ -36,8 +37,7 @@ import networks.autoencoder as autoencoder
 
 
 cfgs = {
-    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
-    # 'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512],
+    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
 }
 
 class VGG(nn.Module):
@@ -129,15 +129,14 @@ if __name__ == "__main__":
 
                 img_ = img[:, :, i * args.patch_size+noise_i:i*args.patch_size+noise_i+args.patch_size, j*args.patch_size+noise_j:j*args.patch_size+noise_j+args.patch_size].to(device)
                 output = model.forward(img_)
-                sys.exit(0)
                 """ flatten the dimension of H and W """
                 out_ = output.flatten(1,2).flatten(1,2).squeeze()
                 patch_list.append(out_.detach().cpu().numpy())
 
     save_chunk = f"{ ROOT }/preprocessData/chunks/vgg19/"
+    save_coor  = f"{ ROOT }/preprocessData/coordinate/vgg19/{ args.dim_reduction }/{ args.data }/"
     if not os.path.isdir(save_chunk):
         os.makedirs(save_chunk)
-    save_coor = f"{ ROOT }/preprocessData/coordinate/vgg19/{ args.data }/"
     if not os.path.isdir(save_coor):
         os.makedirs(save_coor)
 

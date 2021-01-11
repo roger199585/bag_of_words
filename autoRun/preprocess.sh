@@ -19,38 +19,38 @@ cd $PWD
 # wait
 # CUDA_VISIBLE_DEVICES=0 python pretrain_vgg.py --data pill --patch_size 64 &
 # CUDA_VISIBLE_DEVICES=1 python pretrain_vgg.py --data screw --patch_size 64 &
-# CUDA_VISIBLE_DEVICES=2 python pretrain_vgg.py --data tile --patch_size 64 &
+# CUDA_VISIBLE_DEVICES=2 python preprocess/pretrain_vgg.py --data tile --patch_size 64 &
 # CUDA_VISIBLE_DEVICES=3 python pretrain_vgg.py --data toothbrush --patch_size 64 &
 # wait
 # CUDA_VISIBLE_DEVICES=0 python pretrain_vgg.py --data transistor --patch_size 64 &
 # CUDA_VISIBLE_DEVICES=1 python pretrain_vgg.py --data wood --patch_size 64 &
 # CUDA_VISIBLE_DEVICES=2 python pretrain_vgg.py --data zipper --patch_size 64 &
-# wait
+wait
 
 # 透過上一步切好的資料給 kmeans 分群
-python preprocess/BoW_PCA.py --data bottle --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data cable --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data bottle --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data cable --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data capsule --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data carpet --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data grid --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data hazelnut --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data leather --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data metal_nut --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data pill --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data screw --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data tile --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data toothbrush --kmeans 128 --dim 128 --dim_reduction UMAP &
 wait
-python preprocess/BoW_PCA.py --data capsule --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data carpet --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data grid --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data hazelnut --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data leather --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data metal_nut --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data pill --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data screw --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data tile --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data toothbrush --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data transistor --kmeans 128 --dim 128 --dim_reduction UMAP &
-python preprocess/BoW_PCA.py --data wood --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
-python preprocess/BoW_PCA.py --data zipper --kmeans 128 --dim 128 --dim_reduction UMAP &
-wait
+# python preprocess/BoW_PCA.py --data transistor --kmeans 128 --dim 128 --dim_reduction UMAP &
+# python preprocess/BoW_PCA.py --data wood --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
+# python preprocess/BoW_PCA.py --data zipper --kmeans 128 --dim 128 --dim_reduction UMAP &
+# wait
 
 # 給定每個 patch 的 label
 # CUDA_VISIBLE_DEVICES=0 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data bottle --dim 128 --kmeans 128 --type train &
@@ -85,8 +85,8 @@ wait
 # CUDA_VISIBLE_DEVICES=1 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data screw --dim 128 --kmeans 128 --type train &
 # CUDA_VISIBLE_DEVICES=1 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data screw --dim 128 --kmeans 128 --type test &
 # CUDA_VISIBLE_DEVICES=1 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data screw --dim 128 --kmeans 128 --type all &
-CUDA_VISIBLE_DEVICES=2 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data tile --dim 128 --kmeans 128 --type train &
-CUDA_VISIBLE_DEVICES=2 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data tile --dim 128 --kmeans 128 --type test &
+CUDA_VISIBLE_DEVICES=0 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data tile --dim 128 --kmeans 128 --type train &
+CUDA_VISIBLE_DEVICES=1 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data tile --dim 128 --kmeans 128 --type test &
 CUDA_VISIBLE_DEVICES=2 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data tile --dim 128 --kmeans 128 --type all &
 # CUDA_VISIBLE_DEVICES=3 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data toothbrush --dim 128 --kmeans 128 --type train &
 # CUDA_VISIBLE_DEVICES=3 python preprocess/assign_idx.py --dim_reduction UMAP --patch_size 64 --data toothbrush --dim 128 --kmeans 128 --type test &
@@ -140,7 +140,7 @@ python preprocess/getCenterFeature.py --dim_reduction UMAP --patch_size 64 --dat
 
 wait
 
-CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --patch_size 64 --kmeans=128 --data=tile --with_mask True --type=good --epoch 30 &
+CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --dim_reduction UMAP --patch_size 64 --kmeans=128 --data=tile --with_mask True --type=good --epoch 30 &
 wait 
 # python preprocess/checkPreprocessData.py
 
