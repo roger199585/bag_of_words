@@ -1,33 +1,37 @@
 """
-Finial version
-use multi error map to calculate auc roc score
+    Author: Yong Yu Chen
+    Collaborator: Corn
+
+    Update: 2021/1/11
+    History: 
+        2021/1/11 -> 修正計算速度很慢的問題(原因應該是 PCA 的部分每個 patch 就做一次，其實可以將 patch 全部搜集起來，再一次降維)
+
+    Description: Use multi error map to calculate auc roc score
 """
+import os
+import sys
+import cv2
+import time
+import pickle
+import random
+import argparse
+import itertools
 import numpy as np
+
+""" Pytorch Library """
 import torch
 import torch.nn as nn
-import torchvision
-from torch.utils.tensorboard import SummaryWriter
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-from sklearn import preprocessing
-import torchvision.models as models
 from torchvision import transforms
-import os
-from PIL import Image
-from tqdm import tqdm
-import pretrain_vgg
-import resnet
-import argparse
-import pickle
-import cv2
-from visualize import errorMap
-from sklearn.preprocessing import OneHotEncoder
-import matplotlib.pyplot as plt
-import random
-import sys
-import dataloaders
+from torch.utils.data import DataLoader
+
+""" sklearn Library """
 from sklearn.metrics import roc_auc_score
-import time
-import itertools
+
+""" Custom Library """
+import network.resnet as resnet
+import preprocess.pretrain_vgg as pretrain_vgg
+
+import dataloaders
 from config import ROOT
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -68,6 +72,8 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
 
             label_idx = []
             label_gt = []
+            
+            patches = []
 
             for batch_start_idx in range(0, len(indices), batch_size):
                 xs = []
@@ -81,11 +87,7 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
-                    out = pca.transform(out_.detach().cpu().numpy())
-                    out_label = kmeans.predict(out)
-                    out_label = torch.from_numpy(out_label).to(device)
-                    out = pil_to_tensor(out).squeeze().to(device)
-                    crop_list.append(out)
+                    patches.append(out_.detach().cpu().numpy())
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
@@ -94,6 +96,17 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
                     x = torch.cat((x, mask), 1)
 
                     xs.append(x)
+
+                patches = np.array(patches)
+                patches = patches.reshape(-1, patches.shape[-1])
+                
+                new_outs = pca.transform(patches)
+                for i in range(new_outs.shape[0]):
+                    out_label = kmeans.predict(new_outs[i])
+                    out_label = torch.from_numpy(out_label).to(device)
+                    out = pil_to_tensor(new_outs[i]).squeeze().to(device)
+
+                    crop_list.append(out)
                     ys.append(out_label)
 
                 x = torch.cat(xs, 0)
@@ -166,15 +179,14 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
 
                 batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
 
+                patches = []
+
                 for i, j in batch_idxs:
                     crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out = crop_output.flatten(1,2).flatten(1,2)
-                    out_ = pca.transform(out.detach().cpu().numpy())
-                    out_label = kmeans.predict(out_)
-                    out_label = torch.from_numpy(out_label).to(device)
-                    crop_list.append(out)
+                    patches.append(out.detach().cpu().numpy())
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
@@ -183,7 +195,19 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                     x = torch.cat((x, mask), 1)
 
                     xs.append(x)
+                
+                patches = np.array(patches)
+                patches = patches.reshape(-1, patches.shape[-1])
+                
+                new_outs = pca.transform(patches)
+                for i in range(new_outs.shape[0]):
+                    out_label = kmeans.predict(new_outs[i])
+                    out_label = torch.from_numpy(out_label).to(device)
+                    out = pil_to_tensor(new_outs[i]).squeeze().to(device)
+
+                    crop_list.append(out)
                     ys.append(out_label)
+
                 x = torch.cat(xs, 0)
                 y = torch.stack(ys).squeeze().to(device)                        
                 output = model(x)

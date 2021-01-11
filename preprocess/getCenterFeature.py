@@ -12,6 +12,7 @@ parser.add_argument('--data', type=str, default='ALL')
 parser.add_argument('--kmeans', type=int, default=128)
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--image_size', type=int, default=1024)
+parser.add_argument('--dim_reduction', type=str, default='PCA')
 args = parser.parse_args()
 
 total = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
@@ -46,10 +47,10 @@ if args.data == "ALL":
         pickle.dump(center_features, open(save_path+save_name, "wb"))
         print("save center feature for {}".format(data))
 else:
-    train_label_name = "{}/preprocessData/label/vgg19/{}/train/{}_100.pth".format(ROOT, args.data, args.kmeans)
+    train_label_name = f"{ ROOT }/preprocessData/label/vgg19/{ args.dim_reduction }/{ args.data }/train/{ args.kmeans }_100.pth"
     train_label = torch.tensor(torch.load(train_label_name))
 
-    origin_features_path = "{}/preprocessData/chunks/vgg19/chunks_{}_train.pickle".format(ROOT, args.data)
+    origin_features_path = f"{ ROOT }/preprocessData/chunks/vgg19/chunks_{ args.data }_train.pickle"
     origin_features = pickle.load(open(origin_features_path, "rb"))
     origin_features = np.array(origin_features)
 
@@ -70,7 +71,7 @@ else:
 
     print(center_features.shape)
 
-    save_path = "{}/preprocessData/cluster_center/{}/".format(ROOT, args.kmeans)
+    save_path = f"{ ROOT }/preprocessData/cluster_center/{ args.kmeans }/"
     if not os.path.isdir(save_path):
         os.makedirs(save_path)
     save_name = "{}.pickle".format(args.data)

@@ -24,6 +24,8 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE, MDS
 from sklearn.cluster import MiniBatchKMeans, KMeans, DBSCAN
 
+import umap
+
 """ Custom Library """
 from config import ROOT
 
@@ -57,6 +59,8 @@ if __name__ == "__main__":
     elif args.dim_reduction == 'DBSCAN':
         pass
         # dim_reduction = DBSCAN(n_components=args.dim)
+    elif args.dim_reduction == 'UMAP':
+        dim_reduction = umap.UMAP(n_components=args.dim)
 
     new_feature = dim_reduction.fit_transform(chunks)
     
