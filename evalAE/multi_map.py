@@ -19,7 +19,6 @@ from torch.utils.data import DataLoader
 import dataloaders
 import networks.resnet as resnet
 import networks.autoencoder as autoencoder
-import preprocess.pretrain_vgg as pretrain_vgg
 
 
 from sklearn.metrics import roc_auc_score
@@ -167,28 +166,28 @@ if __name__ == "__main__":
     cluster_features = pickle.load(open(center_features_path, "rb"))
     
     print("----- defect -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/img_all_feature_{ args.index }.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/all/img_all_feature_{ args.index }.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/img_all_feature_{ args.index }.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle", 'rb'))
     else:
         img_all_feature = eval_OriginFeature(pretrain_model, scratch_model, test_all_loader, kmeans, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good/img_good_feature_{ args.index }.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/good/img_good_feature_{ args.index }.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good/img_good_feature_{ args.index }.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle", 'rb'))
     else:
         img_good_feature = eval_OriginFeature(pretrain_model, scratch_model, test_good_loader, kmeans, args.data, global_index, good=True)
     
     """ save feature """ 
     
-    save_all_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/".format(ROOT, args.data)
+    save_all_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/".format(ROOT, args.data)
     if not os.path.isdir(save_all_path):
         os.makedirs(save_all_path)
     save_all_name = f"{ args.kmeans }_img_all_feature_{ args.index }_Origin.pickle"
     pickle.dump(img_all_feature, open(save_all_path+save_all_name, "wb"))
     
-    save_good_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good"
+    save_good_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/"
     if not os.path.isdir(save_good_path):
         os.makedirs(save_good_path)
     save_good_name = f"{ args.kmeans }_img_good_feature_{ args.index }_Origin.pickle"

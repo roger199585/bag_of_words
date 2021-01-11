@@ -3,7 +3,6 @@ import pickle
 import argparse
 import numpy as np
 from PIL import Image
-import ipywidgets as widgets
 
 from sklearn import metrics
 from scipy.ndimage.measurements import label
@@ -171,14 +170,14 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--index', type=str, default='10')
     parser.add_argument('--kmeans', type=str, default='128')
+    parser.add_argument('--resolution', type=str, default='4')
     args = parser.parse_args()
     
-    # test image grid/all/048.png
-    y_pred = pickle.load(open("{}/Results/testing_multiMap/{}/all/{}_img_all_feature_{}_Origin.pickle".format(ROOT, args.data, args.kmeans, args.index), "rb"))
+    y_pred = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/{ args.kmeans }_img_all_feature_{ args.index }_Origin.pickle", "rb"))
     y_pred = y_pred.reshape(-1, 1024, 1024)
     # gt image
     y_true = []
-    mask_path = "{}/dataset/{}/ground_truth_resize/all".format(ROOT, args.data)
+    mask_path = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/all"
     mask_dataset = dataloaders.MaskLoader(mask_path)
     mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
     for (index, mask) in mask_loader:

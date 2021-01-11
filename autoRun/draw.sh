@@ -1,13 +1,16 @@
 cd $PWD
 
-# CUDA_VISIBLE_DEVICES=0,1 python eval_aucroc.py --patch_size 128 --kmeans 128 --data bottle --index 19 &
-# CUDA_VISIBLE_DEVICES=2,3 python eval_aucroc.py --patch_size 128 --kmeans 128 --data capsule --index 18 &
+CUDA_VISIBLE_DEVICES=2,3 python evalAE/eval_aucroc.py --patch_size 64 --kmeans 128 --data tile --resolution 4 --index 38 &
+CUDA_VISIBLE_DEVICES=0,1 python evalAE/eval_aucroc.py --patch_size 64 --kmeans 128 --data tile --resolution 8 --index 16 &
+
+wait
+
+# CUDA_VISIBLE_DEVICES=2,3 python evalAE/multi_map.py --patch_size 64 --kmeans 128 --data tile --resolution 4 --index 38
+# CUDA_VISIBLE_DEVICES=2,3 python evalAE/multi_map.py --patch_size 64 --kmeans 128 --data tile --resolution 8 --index 16
+
 # wait
 
-# CUDA_VISIBLE_DEVICES=0,1 python multi_map.py --patch_size 128 --kmeans 128 --data bottle --index 19 &
-CUDA_VISIBLE_DEVICES=2,3 python eval/multi_map.py --patch_size 128 --kmeans 128 --data bottle --index 35 &
-wait
+# python evalAE/draw_multiMap.py --patch_size 64 --kmeans 128 --data tile --resolution 4 --index 38 &
+# python evalAE/draw_multiMap.py --patch_size 64 --kmeans 128 --data tile --resolution 8 --index 16 &
 
-python draw_multiMap.py --kmeans 128 --data bottle --index 19 &
-python draw_multiMap.py --kmeans 128 --data capsule --index 18 &
-wait
+# wait

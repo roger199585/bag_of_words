@@ -16,7 +16,6 @@ from torch.utils.data import DataLoader
 import dataloaders
 import networks.resnet as resnet
 import networks.autoencoder as autoencoder
-import preprocess.pretrain_vgg as pretrain_vgg
 from config import ROOT
 
 from sklearn.metrics import roc_auc_score
@@ -58,18 +57,18 @@ if __name__ == "__main__":
 
     
     print("----- defect -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle", 'rb'))
     else:
         img_all_feature = eval_feature(pretrain_model, scratch_model, test_all_loader, kmeans, pca, args.data, global_index, good=False)
 
-    # print("----- good -----")
-    # if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle"):
-    #     print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle")
-    #     img_good_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle", 'rb'))
-    # else:
-    #     img_good_feature = eval_feature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
+    print("----- good -----")
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle")
+        img_good_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle", 'rb'))
+    else:
+        img_good_feature = eval_feature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
     
 
     label_pred = []
@@ -98,7 +97,7 @@ if __name__ == "__main__":
         im3 = ax3.imshow(defect_gt)
 
 
-        errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/all/{ args.kmeans }/map/"
+        errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/{ args.kmeans }/map/"
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
             print(f"----- create folder for { args.data } | type: all -----")
@@ -118,40 +117,40 @@ if __name__ == "__main__":
         
 
     """ for good type """
-    # for (idx, img) in test_good_loader:
-    #     img = img.cuda()
-    #     idx = idx[0].item()
+    for (idx, img) in test_good_loader:
+        img = img.cuda()
+        idx = idx[0].item()
         
-    #     errorMap = img_good_feature[idx].reshape((1024, 1024))
+        errorMap = img_good_feature[idx].reshape((1024, 1024))
         
-    #     """ draw errorMap """
-    #     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-    #     ironman_grid = plt.GridSpec(1, 2)
-    #     fig = plt.figure(figsize=(12,6), dpi=100)
-    #     ax1 = fig.add_subplot(ironman_grid[0,0])
-    #     ax1.set_axis_off()
-    #     im1 = ax1.imshow(errorMap, cmap="Blues")
-    #     ax2 = fig.add_subplot(ironman_grid[0,1])
-    #     ax2.set_axis_off()
-    #     im2 = ax2.imshow(img_)
+        """ draw errorMap """
+        img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+        ironman_grid = plt.GridSpec(1, 2)
+        fig = plt.figure(figsize=(12,6), dpi=100)
+        ax1 = fig.add_subplot(ironman_grid[0,0])
+        ax1.set_axis_off()
+        im1 = ax1.imshow(errorMap, cmap="Blues")
+        ax2 = fig.add_subplot(ironman_grid[0,1])
+        ax2.set_axis_off()
+        im2 = ax2.imshow(img_)
         
-    #     errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/good/{ args.kmeans }/map/"
-    #     if not os.path.isdir(errorMapPath):
-    #         os.makedirs(errorMapPath)
-    #         print(f"----- create folder for { args.data} | type: good -----")
+        errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/{ args.kmeans }/map/"
+        if not os.path.isdir(errorMapPath):
+            os.makedirs(errorMapPath)
+            print(f"----- create folder for { args.data} | type: good -----")
 
-    #     errorMapName = f"{ str(idx) }_{ str(global_index) }.png"
+        errorMapName = f"{ str(idx) }_{ str(global_index) }.png"
 
-    #     plt.axis('off')
-    #     plt.savefig(errorMapPath+errorMapName, dpi=100)
-    #     plt.close(fig)
+        plt.axis('off')
+        plt.savefig(errorMapPath+errorMapName, dpi=100)
+        plt.close(fig)
 
-    #     """ for computing aucroc score """
-    #     defect_gt = np.zeros((1024, 1024, 3))
-    #     true_mask = defect_gt[:, :, 0].astype('int32')
-    #     label_pred.append(errorMap)
-    #     label_true.append(true_mask)    
-    #     print(f'EP={ global_index } good_img_idx={ idx }')
+        """ for computing aucroc score """
+        defect_gt = np.zeros((1024, 1024, 3))
+        true_mask = defect_gt[:, :, 0].astype('int32')
+        label_pred.append(errorMap)
+        label_true.append(true_mask)    
+        print(f'EP={ global_index } good_img_idx={ idx }')
 
     label_pred = norm(np.array(label_pred))
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
