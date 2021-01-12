@@ -62,8 +62,8 @@ ALLAUC = []
 kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ args.kmeans }_{ args.batch }_{ args.dim }.pickle"
 pca_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
 
-left_i_path = "{}/preprocessData/coordinate/vgg19/{}/left_i.pickle".format(ROOT, args.data)
-left_j_path = "{}/preprocessData/coordinate/vgg19/{}/left_j.pickle".format(ROOT, args.data)
+left_i_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_i.pickle".format(ROOT, args.dim_reduction, args.data)
+left_j_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_j.pickle".format(ROOT, args.dim_reduction, args.data)
 
 pca = pickle.load(open(pca_path, "rb"))
 kmeans = pickle.load(open(kmeans_path, "rb"))
@@ -122,178 +122,6 @@ eval_fea_count = 0
 def myNorm(features):
     return features / features.max()
 
-def eval_with_origin_feature(model, test_loader, test_data, global_index, good=False):
-    global cluster_features
-    global pretrain_model
-    global kmeans
-    global pca
-
-    model.eval()
-    pretrain_model.eval()
-
-    with torch.no_grad():
-
-        img_feature = []
-        
-        start = time.time()
-
-        for (idx, img) in test_loader:
-            each_pixel_err_sum = np.zeros([1024, 1024])
-            each_pixel_err_count = np.zeros([1024, 1024])
-
-            # pixel_feature = []  
-            img = img.to(device)
-            idx = idx[0].item()
-            
-            print(f'eval phase: img idx={idx}')
-
-            chunk_num = int(args.image_size / args.patch_size)
-            """ slide window = 16 """
-            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
-            indices = list(itertools.product(range(map_num), range(map_num)))
-            
-            """ batch """
-            batch_size = args.test_batch_size
-
-            label_idx = []
-            label_gt = []
-
-            for batch_start_idx in range(0, len(indices), batch_size):
-                xs = []
-                ys = []
-                crop_list = []
-
-                batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
-
-                for i, j in batch_idxs:
-                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
-                    """ flatten the dimension of H and W """
-                    out = crop_output.flatten(1,2).flatten(1,2)
-                    out_ = pca.transform(out.detach().cpu().numpy())
-                    out_label = kmeans.predict(out_)
-                    out_label = torch.from_numpy(out_label).to(device)
-                    # out = pil_to_tensor(out).squeeze().to(device)
-                    crop_list.append(out)
-
-                    mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
-                    mask = mask.to(device)
-                    x = img * mask
-                    x = torch.cat((x, mask), 1)
-
-                    xs.append(x)
-                    ys.append(out_label)
-
-                x = torch.cat(xs, 0)
-                y = torch.stack(ys).squeeze().to(device)                        
-                output = model(x)
-                y_ = output.argmax(-1).detach().cpu().numpy()
-
-                for n, (i, j) in enumerate(batch_idxs):
-                    output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
-                    output_feature = torch.from_numpy(output_feature).cuda()
-
-                    isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
-                    
-                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
-                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
-
-            pixel_feature = each_pixel_err_sum / each_pixel_err_count
-
-            img_feature.append(pixel_feature)
-
-    print(np.array(img_feature).shape)
-    img_feature = np.array(img_feature).reshape((len(test_loader), -1))
-    return img_feature
-
-def eval_feature_for_multiMap(model, test_loader, test_data, global_index, good=False):
-    global pretrain_model
-    global kmeans
-    global pca
-
-    model.eval()
-    pretrain_model.eval()
-
-    with torch.no_grad():
-
-        img_feature = []
-        
-        start = time.time()
-
-        for (idx, img) in test_loader:
-            each_pixel_err_sum = np.zeros([1024, 1024])
-            each_pixel_err_count = np.zeros([1024, 1024])
-
-            # pixel_feature = []  
-            img = img.to(device)
-            idx = idx[0].item()
-            
-            print(f'eval phase: img idx={idx}')
-
-            chunk_num = int(args.image_size / args.patch_size)
-            """ slide window = 16 """
-            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
-            indices = list(itertools.product(range(map_num), range(map_num)))
-            
-            """ batch """
-            batch_size = 32
-
-            label_idx = []
-            label_gt = []
-
-            for batch_start_idx in range(0, len(indices), batch_size):
-                xs = []
-                ys = []
-                crop_list = []
-
-                batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
-
-                for i, j in batch_idxs:
-                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
-                    """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
-                    out = pca.transform(out_.detach().cpu().numpy())
-                    out_label = kmeans.predict(out)
-                    out_label = torch.from_numpy(out_label).to(device)
-                    out = pil_to_tensor(out).squeeze().to(device)
-                    crop_list.append(out)
-
-                    mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
-                    mask = mask.to(device)
-                    x = img * mask if args.with_mask == 'True' else img
-                    x = torch.cat((x, mask), 1)
-
-                    xs.append(x)
-                    ys.append(out_label)
-
-                x = torch.cat(xs, 0)
-                y = torch.stack(ys).squeeze().to(device)                        
-                output = model(x)
-                y_ = output.argmax(-1).detach().cpu().numpy()
-
-                for n, (i, j) in enumerate(batch_idxs):
-                    output_center = kmeans.cluster_centers_[y_[n]]
-                    output_center = np.reshape(output_center, (1, -1))
-                    output_center = pil_to_tensor(output_center).to(device)
-                    output_center = torch.squeeze(output_center)
-
-                    isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[n])
-                    
-                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
-                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
-            
-            pixel_feature = each_pixel_err_sum / each_pixel_err_count
-            img_feature.append(pixel_feature)
-
-    print(np.array(img_feature).shape)
-    img_feature = np.array(img_feature).reshape((len(test_loader), -1))
-    return img_feature
-
 def eval_feature(epoch, model, test_loader, __labels, isGood):
     global eval_fea_count
     global pretrain_model
@@ -321,6 +149,8 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             crop_list = []
             origin_feature_list = []
 
+            patches = []
+
             chunk_num = int(args.image_size / args.patch_size)
             for i in range(chunk_num):
                 for j in range(chunk_num):
@@ -328,9 +158,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
-                    out = pca.transform(out_.detach().cpu().numpy())
-                    out = pil_to_tensor(out).squeeze().to(device)
-                    crop_list.append(out)
+                    patches.append(out_.detach().cpu().numpy())
                     origin_feature_list.append(out_)
 
                     mask = torch.ones(1, 1, 1024, 1024)
@@ -339,15 +167,27 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*chunk_num+j].to(device)
-                   
-                    xs.append(x)
                     ys.append(label)
+                    xs.append(x)
+
 
                 if (len(xs) == args.test_batch_size):
+                    np_patches = np.array(patches)
+                    np_patches = np_patches.reshape(-1, np_patches.shape[-1])
+
+                    new_outs = pca.transform(np_patches)
+                    for i in range(new_outs.shape[0]):
+                        f = new_outs[i].reshape(1, -1)
+                        f = pil_to_tensor(f).to(device)
+                        f = torch.squeeze(f)
+
+                        crop_list.append(f)
+
                     x = torch.cat(xs, 0)
                     y = torch.stack(ys).squeeze().to(device)
                     xs.clear()
                     ys.clear()
+                    patches.clear()
 
                     output = model(x)
                     y_ = output.argmax(-1).detach().cpu().numpy()
@@ -366,6 +206,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         un_out = torch.unsqueeze(output[k], dim=0)
                         un_y = torch.unsqueeze(y[k], dim=0).long()
                         diff_label = nn.CrossEntropyLoss()(un_out, un_y)
+
                         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
                         value_feature.append(diff.item())
 
@@ -373,6 +214,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         output_feature = torch.from_numpy(output_feature).cuda()
 
                         isWrongLabel = int(y_[k] != y[k].item())
+                        
                         origin_feature_diff = isWrongLabel * nn.MSELoss()(output_feature, origin_feature_list[k])
                     
 
@@ -528,206 +370,3 @@ if __name__ == "__main__":
             str(epoch+1+epoch_num)
         )
         torch.save(scratch_model.state_dict(), path)
-
-
-
-    try:
-        global_index = MAXAUCEPOCH
-        scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
-        
-        """ 透過 pca 將為之後的 cluster center 去算 feature error 來畫圖"""
-        print("----- defect -----")
-        img_all_feature = eval_feature_for_multiMap(scratch_model, eval_loader, args.data, global_index, good=False)
-        img_all_origin_feature = eval_with_origin_feature(scratch_model, eval_loader, args.data, global_index, good=False)
-        print("----- good -----")
-        img_good_feature = eval_feature_for_multiMap(scratch_model, test_loader, args.data, global_index, good=True)
-        img_good_origin_feature = eval_with_orrigin_feature(scratch_model, test_loader, args.data, global_index, good=True)
-
-        label_pred = []
-        label_true = []
-
-        """ for defect type """ 
-        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-            img = img.cuda()
-            idx = idx[0].item()
-
-            errorMap = img_all_feature[idx].reshape((1024, 1024))
-            """  draw errorMap """
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1,3)
-            fig = plt.figure(figsize=(18, 6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,1])
-            ax1.set_axis_off()
-            im1 = ax1.imshow(errorMap, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,0])
-            ax2.set_axis_off()
-            ax3 = fig.add_subplot(ironman_grid[0,2])
-            ax3.set_axis_off()
-            im2 = ax2.imshow(img_)
-            im3 = ax3.imshow(defect_gt)
-
-
-            errorMapPath = "testing_multiMap/{}/all/{}/pca_map/".format(test_data, args.kmeans)
-            if not os.path.isdir(errorMapPath):
-                os.makedirs(errorMapPath)
-                print("----- create folder for {} | type: all -----".format(test_data))
-            
-            errorMapName = "{}_{}.png".format(
-                str(idx),
-                str(global_index)
-            )
-
-            plt.savefig(errorMapPath+errorMapName, dpi=100)
-            plt.close(fig)
-
-            """ for computing aucroc score """
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(errorMap)
-            label_true.append(true_mask)    
-            print(f'EP={global_index} defect_img_idx={idx}')
-
-        """ for good type """
-        for (idx, img) in test_loader:
-            img = img.cuda()
-            idx = idx[0].item()
-            
-            errorMap = img_good_feature[idx].reshape((1024, 1024))
-            
-            """ draw errorMap """
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1, 2)
-            fig = plt.figure(figsize=(12,6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,0])
-            ax1.set_axis_off()
-            im1 = ax1.imshow(errorMap, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,1])
-            ax2.set_axis_off()
-            im2 = ax2.imshow(img_)
-            
-            errorMapPath = "testing_multiMap/{}/good/{}/pca_map/".format(test_data, args.kmeans)
-            if not os.path.isdir(errorMapPath):
-                os.makedirs(errorMapPath)
-                print("----- create folder for {} | type: good -----".format(test_data))
-
-            errorMapName = "{}_{}.png".format(
-                str(idx),
-                str(global_index)
-            )
-
-            plt.axis('off')
-            plt.savefig(errorMapPath+errorMapName, dpi=100)
-            plt.close(fig)
-
-            """ for computing aucroc score """
-            defect_gt = np.zeros((1024, 1024, 3))
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(errorMap)
-            label_true.append(true_mask)    
-            print(f'EP={global_index} good_img_idx={idx}')
-
-        label_pred = myNorm(np.array(label_pred))
-        auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-
-        f = open("overlap_score.txt", "a")
-        f.write("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
-        f.close()
-        
-        print("AUC score for testing data {} with pca feature: {}".format(args.data, auc))
-
-
-        label_pred = []
-        label_true = []
-
-        """ for defect type """ 
-        for ((idx, img), (idx2, img2)) in zip(eval_loader, eval_mask_loader):
-            img = img.cuda()
-            idx = idx[0].item()
-
-            errorMap = img_all_origin_feature[idx].reshape((1024, 1024))
-            """  draw errorMap """
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1,3)
-            fig = plt.figure(figsize=(18, 6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,1])
-            ax1.set_axis_off()
-            im1 = ax1.imshow(errorMap, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,0])
-            ax2.set_axis_off()
-            ax3 = fig.add_subplot(ironman_grid[0,2])
-            ax3.set_axis_off()
-            im2 = ax2.imshow(img_)
-            im3 = ax3.imshow(defect_gt)
-
-
-            errorMapPath = "testing_multiMap/{}/all/{}/origin_map/".format(test_data, args.kmeans)
-            if not os.path.isdir(errorMapPath):
-                os.makedirs(errorMapPath)
-                print("----- create folder for {} | type: all -----".format(test_data))
-            
-            errorMapName = "{}_{}.png".format(
-                str(idx),
-                str(global_index)
-            )
-
-            plt.savefig(errorMapPath+errorMapName, dpi=100)
-            plt.close(fig)
-
-            """ for computing aucroc score """
-            defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(errorMap)
-            label_true.append(true_mask)    
-            print(f'EP={global_index} defect_img_idx={idx}')
-
-        """ for good type """
-        for (idx, img) in test_loader:
-            img = img.cuda()
-            idx = idx[0].item()
-            
-            errorMap = img_good_origin_feature[idx].reshape((1024, 1024))
-            
-            """ draw errorMap """
-            img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-            ironman_grid = plt.GridSpec(1, 2)
-            fig = plt.figure(figsize=(12,6), dpi=100)
-            ax1 = fig.add_subplot(ironman_grid[0,0])
-            ax1.set_axis_off()
-            im1 = ax1.imshow(errorMap, cmap="Blues")
-            ax2 = fig.add_subplot(ironman_grid[0,1])
-            ax2.set_axis_off()
-            im2 = ax2.imshow(img_)
-            
-            errorMapPath = "testing_multiMap/{}/good/{}/origin_map/".format(test_data, args.kmeans)
-            if not os.path.isdir(errorMapPath):
-                os.makedirs(errorMapPath)
-                print("----- create folder for {} | type: good -----".format(test_data))
-
-            errorMapName = "{}_{}.png".format(
-                str(idx),
-                str(global_index)
-            )
-
-            plt.axis('off')
-            plt.savefig(errorMapPath+errorMapName, dpi=100)
-            plt.close(fig)
-
-            """ for computing aucroc score """
-            defect_gt = np.zeros((1024, 1024, 3))
-            true_mask = defect_gt[:, :, 0].astype('int32')
-            label_pred.append(errorMap)
-            label_true.append(true_mask)    
-            print(f'EP={global_index} good_img_idx={idx}')
-
-        label_pred = myNorm(np.array(label_pred))
-        auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-
-        f = open("overlap_score.txt", "a")
-        f.write("AUC score for testing data {} with origin feature: {}".format(args.data, auc))
-        f.close()
-        
-        print("AUC score for testing data {} with origin feature: {}".format(args.data, auc))
-    except:
-        print('Multi Map calculate error')

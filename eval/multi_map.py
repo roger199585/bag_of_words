@@ -211,7 +211,6 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 output = model(x)
                 y_ = output.argmax(-1).detach().cpu().numpy()
                 for n, (i, j) in enumerate(batch_idxs):
-
                     output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
                     output_feature = torch.from_numpy(output_feature).cuda()
 

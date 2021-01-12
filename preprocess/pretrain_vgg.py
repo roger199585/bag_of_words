@@ -96,6 +96,7 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
 
     print('data: ', args.data)
@@ -112,7 +113,31 @@ if __name__ == "__main__":
     train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
 
+    test_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/test_resize/all/" )
+    test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+
     for idx, img in tqdm(train_loader):
+        model.train()
+        for i in range(int(args.image_size / args.patch_size)):
+            for j in range(int(args.image_size / args.patch_size)):
+                noise_i = random.randint(-1 * int(args.patch_size / 2) , int(args.patch_size / 2))
+                noise_j = random.randint(-1 * int(args.patch_size / 2) , int(args.patch_size / 2))
+
+                if (i * args.patch_size + args.patch_size + noise_i > args.image_size or i * args.patch_size + noise_i < 0):
+                    noise_i = 0
+                if (j * args.patch_size + args.patch_size + noise_j > args.image_size or j * args.patch_size + noise_j < 0):
+                    noise_j = 0
+                
+                patch_i.append(noise_i)
+                patch_j.append(noise_j)
+
+                img_ = img[:, :, i * args.patch_size+noise_i:i*args.patch_size+noise_i+args.patch_size, j*args.patch_size+noise_j:j*args.patch_size+noise_j+args.patch_size].to(device)
+                output = model.forward(img_)
+                """ flatten the dimension of H and W """
+                out_ = output.flatten(1,2).flatten(1,2).squeeze()
+                patch_list.append(out_.detach().cpu().numpy())
+    # 如果要用 UMAP 就需要把 testing data 也放進來
+    for idx, img in tqdm(test_loader):
         model.train()
         for i in range(int(args.image_size / args.patch_size)):
             for j in range(int(args.image_size / args.patch_size)):

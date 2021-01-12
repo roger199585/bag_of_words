@@ -133,25 +133,33 @@ if __name__ == "__main__":
 
                 patch_list.append(out.detach().cpu().numpy())
         image_list.append(patch_list)
-                # out = dim_reduction.transform( out.detach().cpu().numpy() )
-                # patch_idx = kmeans.predict(out)
-
-                # patch_index_list.append(patch_idx)
-
-            # if (args.type == 'train'):
-            #     if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/"):
-            #         print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
-            #         os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")           
-            #     save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
-        # img_index_list.append(patch_index_list)
+    
+    # 處理降維  
     image_list = np.array(image_list)
     image_list = image_list.reshape(-1, image_list.shape[-1])
 
     new_outs = dim_reduction.transform( image_list )
     print(new_outs.shape)
+    image_saved = []
+    chunk_num = int(args.image_size / args.patch_size)
     for i in range(new_outs.shape[0]):
         patch_idx = kmeans.predict(new_outs[i].reshape(1, -1))
         patch_index_list.append(patch_idx)
+
+        if args.type == 'train' and patch_idx not in image_saved:
+            image_saved.append(patch_idx)
+            if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/"):
+                print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
+                os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
+
+            img_idx = int(i / (chunk_num * chunk_num))
+            x = int((i % 256) / 16)
+            y = int((i % 256) % 16)
+            image = Image.open(f"{ ROOT }/dataset/{ args.data }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
+            patch = img[:, :, x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size]
+
+            
+            save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
 
         if len(patch_index_list) == 256:
             img_index_list.append(patch_index_list)
