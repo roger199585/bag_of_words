@@ -18,9 +18,9 @@ from sklearn.metrics import confusion_matrix
 
 
 
-import resnet
 import dataloaders
-import pretrain_vgg
+import networks.resnet as resnet
+import preprocess.pretrain_vgg as pretrain_vgg
 from config import ROOT
 
 parser = argparse.ArgumentParser()
@@ -30,6 +30,7 @@ parser.add_argument('--type', type=str, default="all")
 parser.add_argument('--index', type=int, default=30)
 parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--dim_reduction', type=str, default='PCA')
 args = parser.parse_args()
 
 
@@ -55,17 +56,17 @@ mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
 ## Clusters
-kmeans_path = "{}/preprocessData/kmeans/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
+kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 kmeans = pickle.load(open(kmeans_path, "rb"))
 
 pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
 pca = pickle.load(open(pca_path, "rb"))
 
 ## Label
-test_label_name = "{}/preprocessData/label/vgg19/{}/test/all_{}_100.pth".format(ROOT, args.data, args.kmeans)
+test_label_name = "{}/preprocessData/label/vgg19/{}/{}/test/all_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 test_label = torch.tensor(torch.load(test_label_name))
 
-test_good_label_name = "{}/preprocessData/label/vgg19/{}/test/good_{}_100.pth".format(ROOT, args.data, args.kmeans)
+test_good_label_name = "{}/preprocessData/label/vgg19/{}/{}/test/good_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 test_good_label = torch.tensor(torch.load(test_good_label_name))
 
 ## Others
@@ -192,7 +193,7 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
 
     error_map = np.zeros((1024, 1024))
     for index, scalar in enumerate(value_feature[idx]):
-        mask = cv2.imread('{}/dataset/big_mask128/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+        mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
         mask = np.invert(mask)
         mask[mask==255]=1
         
@@ -209,18 +210,11 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     im2 = ax2.imshow(img_)
     im3 = ax3.imshow(defect_gt)
 
-<<<<<<< HEAD
 
     for i in range(chunk_num):
         for j in range(chunk_num):
             ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
             ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
-=======
-    for i in range(16):
-        for j in range(16):
-            ax1.text((j+0.2)*64, (i+0.6)*64, total_idx[idx][i*16+j], fontsize=10)
-            ax2.text((j+0.2)*64, (i+0.6)*64, total_gt[idx][i*16+j], fontsize=10)
->>>>>>> 6cd62c88a1fb56a416e74f0a0b84091c54fdcc3b
 
 
     ## 可以在這邊算

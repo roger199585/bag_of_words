@@ -1,30 +1,29 @@
-import numpy as np
-import torch
-import torch.nn as nn
-import torchvision
-from torch.utils.tensorboard import SummaryWriter
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-from sklearn import preprocessing
-import torchvision.models as models
-from torchvision import transforms
 import os
-from PIL import Image
-from tqdm import tqdm
-import pretrain_vgg
-import resnet
-import argparse
-import pickle
 import cv2
-from visualize import errorMap
-from sklearn.preprocessing import OneHotEncoder
-import matplotlib.pyplot as plt
-import random
 import sys
-import dataloaders
-from sklearn.metrics import roc_auc_score
 import time
+import random
+import pickle
+import argparse
 import itertools
+import numpy as np
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+
+import torch
+import torchvision
+import torch.nn as nn
+from torchvision import transforms
+import torchvision.models as models
+from torch.utils.data import Dataset, DataLoader
+
+from sklearn.metrics import roc_auc_score
+
 from config import ROOT
+
+import dataloaders
+import networks.resnet as resnet
+import preprocess.pretrain_vgg as pretrain_vgg
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
@@ -40,6 +39,8 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--index', type=int, default=30)
     parser.add_argument('--resume', type=bool, default=True)
+    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=64)
     args = parser.parse_args()
 
     global_index = args.index

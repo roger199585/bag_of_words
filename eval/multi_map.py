@@ -238,6 +238,7 @@ if __name__ == "__main__":
     parser.add_argument('--resume', type=bool, default=False)
     parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
 
     global_index = args.index
@@ -267,7 +268,7 @@ if __name__ == "__main__":
     pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
     ## Clusters
-    kmeans_path = "{}/preprocessData/kmeans/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
+    kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
     pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)

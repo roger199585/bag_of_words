@@ -237,7 +237,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
 def weights_init(m):
     if isinstance(m, nn.Conv2d):
-        torch.nn.init.xavier_normal_(m.weight.data)
+        torch.nn.init.kaiming_uniform_(m.weight.data)
         if m.bias is not None:
             torch.nn.init.zeros_(m.bias)
         # xavier(m.weight.data)

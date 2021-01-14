@@ -21,3 +21,7 @@ wait
 CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --patch_size 64 --train_batch 32 --kmeans=128 --data=zipper --with_mask True --dim_reduction UMAP --type=good --epoch 40 &
 
 wait
+
+# Try different initialuzation
+# Train on 136
+# CUDA_VISIBLE_DEVICES=0,1 python model_weightSample.py --patch_size 64 --train_batch 16 --test_batch_size 32 --kmeans=128 --data=tile --with_mask True --dim_reduction PCA --type=good --epoch 40
