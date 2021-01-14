@@ -237,7 +237,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
 def weights_init(m):
     if isinstance(m, nn.Conv2d):
-        torch.nn.init.kaiming_uniform_(m.weight.data)
+        torch.nn.init.zeros_(m.weight.data)
         if m.bias is not None:
             torch.nn.init.zeros_(m.bias)
         # xavier(m.weight.data)
@@ -372,7 +372,7 @@ if __name__ == "__main__":
         if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
             os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
         
-        path = "{}/models/{}/{}/exp1_{}_{}_smooth.ckpt".format(
+        path = "{}/models/{}/{}/exp1_{}_{}_zeros_.ckpt".format(
             ROOT,
             args.model, 
             args.data, 

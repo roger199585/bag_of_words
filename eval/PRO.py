@@ -3,7 +3,6 @@ import pickle
 import argparse
 import numpy as np
 from PIL import Image
-import ipywidgets as widgets
 
 from sklearn import metrics
 from scipy.ndimage.measurements import label

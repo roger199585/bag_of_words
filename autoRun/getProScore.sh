@@ -1,5 +1,5 @@
 cd $PWD
 
-python PRO.py --kmeans 128 --data bottle --index 35 &
+python eval/PRO.py --kmeans 128 --data tile --index 26 &
 
 wait
