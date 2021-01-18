@@ -185,10 +185,10 @@ if __name__ == "__main__":
     y_true = np.array(y_true)
 
 
-    evalTool = PRO_curve(y_pred, y_true, spacing=0.001)
+    evalTool = PRO_curve(y_pred, y_true, spacing=0.0001)
     start = time.time()
     evalTool.test_all_threshold()
     evalTool.calculate_PRO_score()
     # evalTool.printFPR()
-    print(evalTool.getScore())
+    print(f"{args.data} PRO ={ evalTool.getScore() }")
     print(f'spend {time.time() - start}')

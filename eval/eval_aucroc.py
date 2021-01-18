@@ -59,7 +59,7 @@ pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 kmeans = pickle.load(open(kmeans_path, "rb"))
 
-pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
+pca_path = "{}/preprocessData/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 pca = pickle.load(open(pca_path, "rb"))
 
 ## Label
@@ -112,6 +112,8 @@ def eval_feature(epoch, model, test_loader, test_label):
             xs = []
             ys = []
             crop_list = []
+            
+            patches = []
 
             chunk_num = int(args.image_size / args.patch_size)
             for i in range(chunk_num):
@@ -120,9 +122,11 @@ def eval_feature(epoch, model, test_loader, test_label):
                     crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
-                    out = pca.transform(out_.detach().cpu().numpy())
-                    out = pil_to_tensor(out).squeeze().cuda()
-                    crop_list.append(out)
+                    patches.append(out_.detach().cpu().numpy())
+                    
+                    # out = pca.transform(out_.detach().cpu().numpy())
+                    # out = pil_to_tensor(out).squeeze().cuda()
+                    # crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
@@ -135,11 +139,22 @@ def eval_feature(epoch, model, test_loader, test_label):
                     ys.append(label)
 
                 if (len(xs) == chunk_num):
+                    np_patches = np.array(patches)
+                    np_patches = np_patches.reshape(-1, np_patches.shape[-1])
+
+                    new_outs = pca.transform(np_patches)
+                    for i in range(new_outs.shape[0]):
+                        f = new_outs[i].reshape(1, -1)
+                        f = pil_to_tensor(f).cuda()
+                        f = torch.squeeze(f)
+
+                        crop_list.append(f)
 
                     x = torch.cat(xs, 0)
                     y = torch.stack(ys).squeeze().cuda()
                     xs.clear()
                     ys.clear()
+                    patches.clear()
 
                     output = model(x)
                     y_ = output.argmax(-1).detach().cpu().numpy()
@@ -290,7 +305,7 @@ label_pred = norm(np.array(label_pred))
 print('spend w/o auroc: ', time.time() - start)
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
 
-print("AUC score for testing data {}: {}".format(args.data, auc))
+print("Single Map AUC score for testing data {}: {}".format(args.data, auc))
 print('spend with auroc: ', time.time() - start)
 # np.save("out", label_pred)
 # print(label_pred)

@@ -17,6 +17,7 @@ import random
 import argparse
 import itertools
 import numpy as np
+from tqdm import tqdm
 
 """ Pytorch Library """
 import torch
@@ -57,7 +58,6 @@ def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, glo
             each_pixel_err_sum = np.zeros([1024, 1024])
             each_pixel_err_count = np.zeros([1024, 1024])
 
-            # pixel_feature = []
             img = img.to(device)
             idx = idx[0].item()
             
@@ -155,7 +155,6 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             each_pixel_err_sum = np.zeros([1024, 1024])
             each_pixel_err_count = np.zeros([1024, 1024])
 
-            # pixel_feature = []  
             img = img.to(device)
             idx = idx[0].item()
             
@@ -171,7 +170,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             label_idx = []
             label_gt = []
 
-            for batch_start_idx in range(0, len(indices), batch_size):
+            for batch_start_idx in tqdm(range(0, len(indices), batch_size)):
                 b_start = time.time()
                 xs = []
                 ys = []
@@ -271,7 +270,7 @@ if __name__ == "__main__":
     kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    pca_path = "{}/preprocessData/PCA/{}/vgg19_{}_100_128.pickle".format(ROOT, args.data, args.kmeans)
+    pca_path = "{}/preprocessData/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
     pca = pickle.load(open(pca_path, "rb"))
 
     ## Cluster Center Features
@@ -345,4 +344,4 @@ if __name__ == "__main__":
     print(label_pred.shape)
     print(np.array(label_true).shape)
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-    print("AUC score for testing data {}: {}".format(args.data, auc))
+    print("MultiMap AUC score for testing data {}: {}".format(args.data, auc))
