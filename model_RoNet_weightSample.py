@@ -8,7 +8,6 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from torchvision import transforms
 import torchvision.models as models
 
-# STL Library
 import os
 import sys
 import cv2
@@ -18,56 +17,45 @@ import random
 import argparse
 import itertools
 import numpy as np
-from PIL import Image
 from tqdm import tqdm
 from datetime import datetime
 import matplotlib.pyplot as plt
 
 # customize
-import networks.resnet as resnet
 import dataloaders
-import preprocess.pretrain_vgg as pretrain_vgg
-import preprocess.pretrain_resnet as pretrain_resnet
+import networks.resnet as resnet
+import networks.AlexNet as AlexNet
+
 from config import ROOT, RESULT_PATH
 
 # evaluations
-from sklearn import preprocessing
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.metrics import roc_auc_score
 
 
 # from config import gamma
 
 """ set parameters """
 parser = argparse.ArgumentParser()
-parser.add_argument('--kmeans', type=int, default=16)
+parser.add_argument('--data', type=str, default='bottle')
+parser.add_argument('--kmeans', type=int, default=128)
+parser.add_argument('--type', type=str, default='good')
 parser.add_argument('--lr', type=float, default=1e-3)
 parser.add_argument('--epoch', type=int, default=10)
-parser.add_argument('--data', type=str, default='bottle')
-parser.add_argument('--type', type=str, default='good')
-parser.add_argument('--batch', type=int, default=100)
-parser.add_argument('--dim', type=int, default=128)
-parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=16)
-parser.add_argument('--test_batch_size', type=int, default=64)
+parser.add_argument('--test_batch_size', type=int, default=32)
 parser.add_argument('--with_mask', type=str, default='True')
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--image_size', type=int, default=1024)
-parser.add_argument('--dim_reduction', type=str, default='PCA')
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
 ALLAUC = []
 
-kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ args.kmeans }_{ args.batch }_{ args.dim }.pickle"
-pca_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
+kmeans_path = f"{ ROOT }/preprocessData/kmeans/RoNet/{ args.data }/RoNet_{ args.kmeans }.pickle"
+left_i_path = f"{ ROOT }/preprocessData/coordinate/RoNet/{ args.data }/left_i.pickle"
+left_j_path = f"{ ROOT }/preprocessData/coordinate/RoNet/{ args.data }/left_j.pickle"
 
-left_i_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_i.pickle".format(ROOT, args.dim_reduction, args.data)
-left_j_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_j.pickle".format(ROOT, args.dim_reduction, args.data)
-
-pca = pickle.load(open(pca_path, "rb"))
 kmeans = pickle.load(open(kmeans_path, "rb"))
-
 
 """ image transform """
 pil_to_tensor = transforms.ToTensor()
@@ -75,21 +63,19 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #-------------------------------------
 
-out = args.kmeans
 scratch_model = nn.Sequential(
     resnet.resnet50(pretrained=False, num_classes=args.kmeans),
 )
 
 """ training """
 train_path = f"{ ROOT }/dataset/{ args.data }/train_resize/good"
-label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.data }/kmeans_{ args.kmeans }_{ args.batch }.pth"
-mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
+label_name = f"{ ROOT }/preprocessData/label/fullPatch/RoNet/{ args.data }/kmeans_{ args.kmeans }.pth"
+mask_path  = f"{ ROOT }/dataset/big_mask/"
 
-if args.model == 'vgg19':
-    pretrain_model = nn.DataParallel(pretrain_vgg.model).to(device)
-
-if args.model == 'resnet34':
-    pretrain_model = nn.DataParallel(pretrain_resnet.model).to(device)
+""" Load part of pretrained model """
+pretrain_model = AlexNet.AlexNet({'num_classes': 4})
+pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/model_net_epoch50")['network'])
+pretrain_model = pretrain_model.to(device) # nn.DataParallel(pretrain_model).to(device)
 
 print('training data: ', train_path)
 print('training label: ', label_name)
@@ -97,22 +83,22 @@ print('training label: ', label_name)
 """ testing """
 if (args.type == 'good'):
     test_path           = f"{ ROOT }/dataset/{ args.data }/test_resize/good"
-    test_label_name     = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/good_{ str(args.kmeans) }_{ str(args.batch) }.pth"
-    all_test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/all_{ str(args.kmeans) }_{ str(args.batch) }.pth"
+    test_label_name     = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/test/good_{ args.kmeans }.pth"
+    all_test_label_name = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/test/all_{ args.kmeans}.pth"
 else:
-    test_path       = f"{ ROOT }/dataset/{ args.data }/test_resize/{ args.type }"
-    test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/{ args.type }_{ str(args.kmeans) }_{ str(args.batch) }.pth"
-    defect_gt_path  = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/{ args.type }/"
+    test_path           = f"{ ROOT }/dataset/{ args.data }/test_resize/{ args.type }"
+    defect_gt_path      = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/{ args.type }"
+    test_label_name     = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/test/{ args.type }_{ args.kmeans }.pth"
 
 
 test_label = torch.tensor(torch.load(test_label_name))
-print(test_label.shape)
 all_test_label = torch.tensor(torch.load(all_test_label_name))
+print(test_label.shape)
 print(all_test_label.shape)
 
 """ eval """
-eval_path = "{}/dataset/{}/test_resize/all".format(ROOT, args.data)
-eval_mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
+eval_path      = f"{ ROOT }/dataset/{ args.data }/test_resize/all"
+eval_mask_path = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/all/"
 
 print('testing data: ', test_path)
 print('testing label: ', test_label_name)
@@ -149,16 +135,25 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             crop_list = []
             origin_feature_list = []
 
-            patches = []
-
             chunk_num = int(args.image_size / args.patch_size)
             for i in range(chunk_num):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
+                    latent_code = pretrain_model(crop_img, out_feat_keys=[
+                        'conv1',
+                        'pool1',
+                        'conv2',
+                        'pool2',
+                        'conv3',
+                        'conv4',
+                        'conv5',
+                        'pool5',
+                    ])
                     """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
-                    patches.append(out_.detach().cpu().numpy())
+                    out_ = latent_code[7].flatten(1,2).flatten(1,2)
+                    out = out_.detach().cpu().numpy()
+                    out = pil_to_tensor(out).squeeze().to(device)
+                    crop_list.append(out)
                     origin_feature_list.append(out_)
 
                     mask = torch.ones(1, 1, 1024, 1024)
@@ -167,27 +162,15 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     x = img * mask if args.with_mask == 'True' else img
                     x = torch.cat((x, mask), 1)
                     label = __labels[idx][i*chunk_num+j].to(device)
-                    ys.append(label)
+                   
                     xs.append(x)
-
+                    ys.append(label)
 
                 if (len(xs) == args.test_batch_size):
-                    np_patches = np.array(patches)
-                    np_patches = np_patches.reshape(-1, np_patches.shape[-1])
-
-                    new_outs = pca.transform(np_patches)
-                    for i in range(new_outs.shape[0]):
-                        f = new_outs[i].reshape(1, -1)
-                        f = pil_to_tensor(f).to(device)
-                        f = torch.squeeze(f)
-
-                        crop_list.append(f)
-
                     x = torch.cat(xs, 0)
                     y = torch.stack(ys).squeeze().to(device)
                     xs.clear()
                     ys.clear()
-                    patches.clear()
 
                     output = model(x)
                     y_ = output.argmax(-1).detach().cpu().numpy()
@@ -206,7 +189,6 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         un_out = torch.unsqueeze(output[k], dim=0)
                         un_y = torch.unsqueeze(y[k], dim=0).long()
                         diff_label = nn.CrossEntropyLoss()(un_out, un_y)
-
                         diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
                         value_feature.append(diff.item())
 
@@ -214,7 +196,6 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                         output_feature = torch.from_numpy(output_feature).cuda()
 
                         isWrongLabel = int(y_[k] != y[k].item())
-                        
                         origin_feature_diff = isWrongLabel * nn.MSELoss()(output_feature, origin_feature_list[k])
                     
 
@@ -235,18 +216,9 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
     return img_feature
 
-def weights_init(m):
-    if isinstance(m, nn.Conv2d):
-        torch.nn.init.zeros_(m.weight.data)
-        if m.bias is not None:
-            torch.nn.init.zeros_(m.bias)
-        # xavier(m.weight.data)
-        # xavier(m.bias.data)
-
 if __name__ == "__main__":
-
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir=f"{ RESULT_PATH }/RoNet_{args.data}_mask_{ args.with_mask }_patch_{ args.patch_size }_type_{ args.type }_kmeans_{ args.kmeans }_{ datetime.now() }")
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
@@ -264,13 +236,11 @@ if __name__ == "__main__":
     eval_mask_loader = DataLoader(eval_mask_dataset, batch_size=1, shuffle=False)
 
     ## Cluster Center Features
-    center_features_path = "{}/preprocessData/cluster_center/{}/{}.pickle".format(ROOT, args.kmeans, args.data)
+    center_features_path = f"{ ROOT }/preprocessData/cluster_center/RoNet/{ args.data }/{ args.kmeans }.pickle"
     cluster_features = pickle.load(open(center_features_path, "rb"))
 
     scratch_model = nn.DataParallel(scratch_model).to(device)
     epoch_num = 0
-
-    # scratch_model.apply(weights_init)
 
     """ training config """ 
     # criterion = nn.MSELoss()
@@ -296,7 +266,7 @@ if __name__ == "__main__":
 
             error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread(f"{ ROOT }/dataset/big_mask/mask{ index }.png", cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 
@@ -317,7 +287,7 @@ if __name__ == "__main__":
 
             error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread(f"{ ROOT }/dataset/big_mask/mask{ index }.png", cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 error_map += mask * scalar
@@ -369,14 +339,8 @@ if __name__ == "__main__":
             if iter_count % 1000 == 0:
                 value_good_feature = eval_feature(epoch, scratch_model, test_loader, test_label, isGood=True)
         
-        if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
-            os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
+        if not os.path.isdir(f"{ ROOT }/models/RoNet/{ args.data }"):
+            os.makedirs(f"{ ROOT }/models/RoNet/{ args.data }")
         
-        path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
-            ROOT,
-            args.model, 
-            args.data, 
-            str(out), 
-            str(epoch+1+epoch_num)
-        )
+        path = f"{ ROOT }/models/RoNet/{ args.data }/exp_{ args.kmeans }_{ str(epoch+1+epoch_num) }.ckpt"
         torch.save(scratch_model.state_dict(), path)

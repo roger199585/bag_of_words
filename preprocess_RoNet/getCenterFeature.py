@@ -14,13 +14,12 @@ if __name__ == "__main__":
     parser.add_argument('--kmeans', type=int, default=128)
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
-    parser.add_argument('--resolution', type=int, default=4)
     args = parser.parse_args()
 
-    train_label_name     = f"{ ROOT }/preprocessData/label/AE/{ args.data }/{ args.resolution }/train/{ args.kmeans }.pth"
+    train_label_name     = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/train/{ args.kmeans }.pth"
     train_label          = torch.tensor(torch.load(train_label_name))
 
-    origin_features_path = f"{ ROOT }/preprocessData/chunks/AE/{ args.data }/{ args.resolution }/chunks_{ args.data }_train.pickle".format(ROOT, args.data)
+    origin_features_path = f"{ ROOT }/preprocessData/chunks/RoNet/{ args.data }/chunks_{ args.data }_train.pickle".format(ROOT, args.data)
     origin_features      = pickle.load(open(origin_features_path, "rb"))
     origin_features      = np.array(origin_features)
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
 
     print(center_features.shape)
 
-    save_path = f"{ ROOT }/preprocessData/cluster_center/AE/{ args.data }/{ args.resolution }/"
+    save_path = f"{ ROOT }/preprocessData/cluster_center/RoNet/{ args.data }/"
     if not os.path.isdir(save_path):
         os.makedirs(save_path)
     save_name = f"{ args.kmeans }.pickle"

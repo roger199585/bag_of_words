@@ -1,12 +1,12 @@
 """
-    Author: Yong Yu Chen
-    Collaborator: Corn
+    Author: Corn
 
-    Update: 2020/12/24
+    Update: 2020/1/19
     History: 
         2020/12/24 -> Prprocess by pretrain autoencoder 
+        2021/1/19 -> Prprocess by pretrain RoNet
 
-    Description: Prprocess by pretrained autoencoder 
+    Description: Prprocess by pretrained RoNet 
 """
 
 """ STD Library """
@@ -32,7 +32,7 @@ from torch.utils.data import Dataset, DataLoader
 sys.path.append("../")
 import dataloaders
 from config import ROOT
-import networks.autoencoder as autoencoder
+import networks.AlexNet as AlexNet
 
 """ Save chunks of training datas to fit the corresponding kmeans """
 if __name__ == "__main__":
@@ -43,7 +43,6 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle', help='category of dataset, EX: bottle, cable ...')
     parser.add_argument('--patch_size', type=int, default=64, help='Size of the patch you cut, default is 64')
     parser.add_argument('--image_size', type=int, default=1024, help='Size of your origin image')
-    parser.add_argument('--resolution', type=int, default=4, help='Dimension of the autoencoder\'s latent code resolution')
     args = parser.parse_args()
 
     print('data: ', args.data)
@@ -51,8 +50,8 @@ if __name__ == "__main__":
     print('image size: ', args.image_size)
     
     """ Load part of pretrained model """
-    model =  autoencoder.autoencoder(3, args.resolution)
-    model.load_state_dict(torch.load(f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/40000.ckpt"))
+    model = AlexNet.AlexNet({'num_classes': 4})
+    model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/model_net_epoch50")['network'])
     model = model.to(device)
 
     patch_list = []
@@ -79,16 +78,24 @@ if __name__ == "__main__":
                 patch_j.append(noise_j)
 
                 img_ = img[:, :, i * args.patch_size+noise_i:i*args.patch_size+noise_i+args.patch_size, j*args.patch_size+noise_j:j*args.patch_size+noise_j+args.patch_size].to(device)
-                output, latent_code = model.forward(img_)
+                output = model(img_, out_feat_keys=[
+                    'conv1',
+                    'pool1',
+                    'conv2',
+                    'pool2',
+                    'conv3',
+                    'conv4',
+                    'conv5',
+                    'pool5',
+                ])
                 """ flatten the dimension of H and W """
-                # out_ = output.flatten(1,2).flatten(1,2).squeeze()
-                out_ = latent_code.flatten(1,2).flatten(1,2).squeeze()
+                out_ = output[7].flatten(1,2).flatten(1,2).squeeze()
                 patch_list.append(out_.detach().cpu().numpy())
 
-    save_chunk = f"{ ROOT }/preprocessData/chunks/AE/{ args.data }/{ args.resolution }"
+    save_chunk = f"{ ROOT }/preprocessData/chunks/RoNet/{ args.data }"
     if not os.path.isdir(save_chunk):
         os.makedirs(save_chunk)
-    save_coor = f"{ ROOT }/preprocessData/coordinate/AE/{ args.data }/{ args.resolution }"
+    save_coor = f"{ ROOT }/preprocessData/coordinate/RoNet/{ args.data }"
     if not os.path.isdir(save_coor):
         os.makedirs(save_coor)
 
