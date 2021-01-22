@@ -1,5 +1,5 @@
 # 切 patch
-CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/pretrain_RoNet.py --data bottle &
+CUDA_VISIBLE_DEVICES=0,1 python preprocess_Artificial/artificial_feature.py --data tile &
 # CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/pretrain_RoNet.py --data cable &
 # wait
 # CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/pretrain_RoNet.py --data capsule &
@@ -23,7 +23,7 @@ wait
 # CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/pretrain_RoNet.py --data zipper &
 
 # 分群生成 Bow
-CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/BoW.py --data bottle --kmeans 128 &
+CUDA_VISIBLE_DEVICES=2,3 python preprocess_Artificial/BoW.py --data tile --kmeans 128 &
 # wait 
 # CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/BoW.py --data cable --kmeans 128 &
 # CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/BoW.py --data capsule --kmeans 128 &
@@ -48,9 +48,9 @@ CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/BoW.py --data bottle --kmeans 1
 wait
 
 # 生成 GT
-CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/assign_idx.py --data bottle --type train --kmeans 128 &
-CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/assign_idx.py --data bottle --type test --kmeans 128 &
-CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/assign_idx.py --data bottle --type all --kmeans 128 &
+CUDA_VISIBLE_DEVICES=0,1 python preprocess_Artificial/assign_idx.py --data tile --type train --kmeans 128 &
+CUDA_VISIBLE_DEVICES=0,1 python preprocess_Artificial/assign_idx.py --data tile --type test --kmeans 128 &
+CUDA_VISIBLE_DEVICES=0,1 python preprocess_Artificial/assign_idx.py --data tile --type all --kmeans 128 &
 # CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/assign_idx.py --data cable --type train --kmeans 128 &
 # CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/assign_idx.py --data cable --type test --kmeans 128 &
 # CUDA_VISIBLE_DEVICES=2,3 python preprocess_RoNet/assign_idx.py --data cable --type all --kmeans 128 &
@@ -102,7 +102,7 @@ CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/assign_idx.py --data bottle --t
 # CUDA_VISIBLE_DEVICES=0,1 python preprocess_RoNet/assign_idx.py --data zipper --type all --kmeans 128 &
 wait
 
-python preprocess_RoNet/getCenterFeature.py --data bottle --kmeans 128 &
+python preprocess_Artificial/getCenterFeature.py --data tile --kmeans 128 &
 # python preprocess_RoNet/getCenterFeature.py --data cable --kmeans 128 &
 # python preprocess_RoNet/getCenterFeature.py --data capsule --kmeans 128 &
 # python preprocess_RoNet/getCenterFeature.py --data carpet --kmeans 128 &
@@ -119,4 +119,4 @@ python preprocess_RoNet/getCenterFeature.py --data bottle --kmeans 128 &
 # python preprocess_RoNet/getCenterFeature.py --data zipper --kmeans 128 &
 wait 
 
-python preprocess_RoNet/checkPreprocessData.py
+python preprocess_Artificial/checkPreprocessData.py
