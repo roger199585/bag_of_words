@@ -18,8 +18,7 @@ from torch.utils.data import DataLoader
 
 import dataloaders
 import networks.resnet as resnet
-import networks.autoencoder as autoencoder
-
+import networks.AlexNet as AlexNet
 
 from sklearn.metrics import roc_auc_score
 from config import ROOT
@@ -75,9 +74,18 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, test_data, gl
 
                 for i, j in batch_idxs:
                     crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
-                    _, latent_code = pretrain_model(crop_img)
+                    latent_code = pretrain_model(crop_img, out_feat_keys=[
+                        'conv1',
+                        'pool1',
+                        'conv2',
+                        'pool2',
+                        'conv3',
+                        'conv4',
+                        'conv5',
+                        'pool5',
+                    ])
                     """ flatten the dimension of H and W """
-                    out = latent_code.flatten(1,2).flatten(1,2)
+                    out = latent_code[7].flatten(1,2).flatten(1,2)
                     out_ = out.detach().cpu().numpy()
                     out_label = kmeans.predict(out_)
                     out_label = torch.from_numpy(out_label).to(device)
@@ -124,7 +132,6 @@ if __name__ == "__main__":
     parser.add_argument('--resume', type=bool, default=False)
     parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--patch_size', type=int, default=64)
-    parser.add_argument('--resolution', type=int, default=4)
     args = parser.parse_args()
 
     global_index = args.index
@@ -135,7 +142,7 @@ if __name__ == "__main__":
         resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).to(device)
-    scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/AE/{ args.data }/{ args.resolution }/exp_{ args.kmeans }_{ args.index }.ckpt"))
+    scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/{ args.data }/exp_{ args.kmeans }_{ args.index }.ckpt"))
 
 
     ### DataSet for all defect type
@@ -153,41 +160,41 @@ if __name__ == "__main__":
 
     ## Models
     # AE
-    pretrain_model =  autoencoder.autoencoder(3, 4)
-    pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/40000.ckpt"))
-    pretrain_model = nn.DataParallel(pretrain_model).to(device)
+    pretrain_model = AlexNet.AlexNet({'num_classes': 4})
+    pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/model_net_epoch50")['network'])
+    pretrain_model = pretrain_model.cuda() # nn.DataParallel(pretrain_model).to(device)
 
     ## Clusters
-    kmeans_path = f"{ ROOT }/preprocessData/kmeans/AE/{ args.data }/{ args.resolution }/AE_{ args.kmeans }.pickle"
+    kmeans_path = f"{ ROOT }/preprocessData/kmeans/RoNet/{ args.data }/RoNet_{ args.kmeans }.pickle"
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
     ## Cluster Center Features
-    center_features_path = f"{ ROOT }/preprocessData/cluster_center/AE/{ args.data }/{ args.resolution }/{ args.kmeans}.pickle"
+    center_features_path = f"{ ROOT }/preprocessData/cluster_center/RoNet/{ args.data }/{ args.kmeans}.pickle"
     cluster_features = pickle.load(open(center_features_path, "rb"))
     
     print("----- defect -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/img_all_feature_{ args.index }.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/img_all_feature_{ args.index }.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/img_all_feature_{ args.index }.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/img_all_feature_{ args.index }.pickle", 'rb'))
     else:
         img_all_feature = eval_OriginFeature(pretrain_model, scratch_model, test_all_loader, kmeans, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/img_good_feature_{ args.index }.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/img_good_feature_{ args.index }.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/img_good_feature_{ args.index }.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/img_good_feature_{ args.index }.pickle", 'rb'))
     else:
         img_good_feature = eval_OriginFeature(pretrain_model, scratch_model, test_good_loader, kmeans, args.data, global_index, good=True)
     
     """ save feature """ 
     
-    save_all_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/".format(ROOT, args.data)
+    save_all_path = f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/".format(ROOT, args.data)
     if not os.path.isdir(save_all_path):
         os.makedirs(save_all_path)
     save_all_name = f"{ args.kmeans }_img_all_feature_{ args.index }_Origin.pickle"
     pickle.dump(img_all_feature, open(save_all_path+save_all_name, "wb"))
     
-    save_good_path = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/"
+    save_good_path = f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/"
     if not os.path.isdir(save_good_path):
         os.makedirs(save_good_path)
     save_good_name = f"{ args.kmeans }_img_good_feature_{ args.index }_Origin.pickle"
@@ -229,8 +236,6 @@ if __name__ == "__main__":
         print(f'EP={global_index} good_img_idx={idx}')
 
     label_pred = norm(np.array(label_pred))
-    print(label_pred.shape)
-    print(np.array(label_true).shape)
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-    print("AUC score for testing data {}: {}".format(args.data, auc))
+    print("Multi Map AUC score for testing data {}: {}".format(args.data, auc))
 
