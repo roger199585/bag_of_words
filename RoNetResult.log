@@ -1,0 +1,1528 @@
+------- For defect type -------
+total running time:  243.70809078216553
+------- For good type -------
+total running time:  76.5542356967926
+spend with auroc:  541.9400360584259
+Single Map AUC score for testing data bottle: 0.6876649983552185
+------- For defect type -------
+total running time:  359.1668016910553
+------- For good type -------
+total running time:  226.6026213169098
+----- create folder for type:cable -----
+----- create folder for type:cable -----
+spend with auroc:  981.6106948852539
+Single Map AUC score for testing data cable: 0.7938481276346785
+------- For defect type -------
+total running time:  340.9524555206299
+------- For good type -------
+total running time:  105.41284227371216
+----- create folder for type:carpet -----
+----- create folder for type:carpet -----
+spend with auroc:  758.5420439243317
+Single Map AUC score for testing data carpet: 0.9291318809910498
+------- For defect type -------
+total running time:  412.67351603507996
+------- For good type -------
+total running time:  85.8248496055603
+----- create folder for type:capsule -----
+----- create folder for type:capsule -----
+spend with auroc:  856.9113953113556
+Single Map AUC score for testing data capsule: 0.8546256438703241
+------- For defect type -------
+total running time:  220.54777002334595
+------- For good type -------
+total running time:  80.15144085884094
+----- create folder for type:grid -----
+----- create folder for type:grid -----
+spend with auroc:  513.103616476059
+Single Map AUC score for testing data grid: 0.7788184361405373
+------- For defect type -------
+total running time:  269.20695400238037
+------- For good type -------
+total running time:  151.2206199169159
+----- create folder for type:hazelnut -----
+----- create folder for type:hazelnut -----
+spend with auroc:  717.2347123622894
+Single Map AUC score for testing data hazelnut: 0.9711181368041192
+------- For defect type -------
+total running time:  361.6238296031952
+------- For good type -------
+total running time:  85.2700355052948
+----- create folder for type:metal_nut -----
+----- create folder for type:metal_nut -----
+spend with auroc:  759.5137646198273
+Single Map AUC score for testing data metal_nut: 0.691539617794786
+------- For defect type -------
+total running time:  357.03171610832214
+------- For good type -------
+total running time:  123.42240071296692
+----- create folder for type:leather -----
+----- create folder for type:leather -----
+spend with auroc:  815.3042411804199
+Single Map AUC score for testing data leather: 0.8998154853141559
+----- defect -----
+eval phase: img idx=0
+spend 57.62818360328674
+eval phase: img idx=1
+spend 55.00043225288391
+eval phase: img idx=2
+spend 54.94420075416565
+eval phase: img idx=3
+spend 54.84406328201294
+eval phase: img idx=4
+spend 53.996498107910156
+eval phase: img idx=5
+spend 54.01805830001831
+eval phase: img idx=6
+spend 54.04790759086609
+eval phase: img idx=7
+spend 53.59897232055664
+eval phase: img idx=8
+spend 53.98852062225342
+eval phase: img idx=9
+spend 53.79145407676697
+eval phase: img idx=10
+spend 54.072190046310425
+eval phase: img idx=11
+spend 54.01387286186218
+eval phase: img idx=12
+spend 53.74936318397522
+eval phase: img idx=13
+spend 53.70709228515625
+eval phase: img idx=14
+spend 53.72534990310669
+eval phase: img idx=15
+spend 53.67489242553711
+eval phase: img idx=16
+spend 53.605496406555176
+eval phase: img idx=17
+spend 53.87458252906799
+eval phase: img idx=18
+spend 53.575520277023315
+eval phase: img idx=19
+spend 53.69855618476868
+eval phase: img idx=20
+spend 53.89577007293701
+eval phase: img idx=21
+spend 53.6569459438324
+eval phase: img idx=22
+spend 53.490198850631714
+eval phase: img idx=23
+spend 53.4894745349884
+eval phase: img idx=24
+spend 53.58824610710144
+eval phase: img idx=25
+spend 53.16053533554077
+eval phase: img idx=26
+spend 53.28012657165527
+eval phase: img idx=27
+spend 53.224623918533325
+eval phase: img idx=28
+spend 53.200504541397095
+eval phase: img idx=29
+spend 53.54345655441284
+eval phase: img idx=30
+spend 53.44364070892334
+eval phase: img idx=31
+spend 53.338029623031616
+eval phase: img idx=32
+spend 53.28638768196106
+eval phase: img idx=33
+spend 53.359538078308105
+eval phase: img idx=34
+spend 53.55328869819641
+eval phase: img idx=35
+spend 53.7490599155426
+eval phase: img idx=36
+spend 53.76047921180725
+eval phase: img idx=37
+spend 53.38871955871582
+eval phase: img idx=38
+spend 53.48267221450806
+eval phase: img idx=39
+spend 53.64715886116028
+eval phase: img idx=40
+spend 53.696792125701904
+eval phase: img idx=41
+spend 53.50086712837219
+eval phase: img idx=42
+spend 53.74192428588867
+eval phase: img idx=43
+spend 53.39109444618225
+eval phase: img idx=44
+spend 53.438451051712036
+eval phase: img idx=45
+spend 53.478325605392456
+eval phase: img idx=46
+spend 53.74758315086365
+eval phase: img idx=47
+spend 54.63470530509949
+eval phase: img idx=48
+spend 53.293224573135376
+eval phase: img idx=49
+spend 53.35516595840454
+eval phase: img idx=50
+spend 54.12879776954651
+eval phase: img idx=51
+spend 53.260146141052246
+eval phase: img idx=52
+spend 53.4352912902832
+eval phase: img idx=53
+spend 53.49964618682861
+eval phase: img idx=54
+spend 53.25639533996582
+eval phase: img idx=55
+spend 53.35046577453613
+eval phase: img idx=56
+spend 53.52475309371948
+eval phase: img idx=57
+spend 53.217931509017944
+eval phase: img idx=58
+spend 53.22761154174805
+eval phase: img idx=59
+spend 53.42122745513916
+eval phase: img idx=60
+spend 53.841381311416626
+eval phase: img idx=61
+spend 53.60319256782532
+eval phase: img idx=62
+spend 53.57385540008545
+(63, 1024, 1024)
+----- good -----
+eval phase: img idx=0
+spend 53.76344275474548
+eval phase: img idx=1
+spend 53.5208945274353
+eval phase: img idx=2
+spend 53.62735962867737
+eval phase: img idx=3
+spend 53.57771039009094
+eval phase: img idx=4
+spend 53.83594083786011
+eval phase: img idx=5
+spend 53.60991835594177
+eval phase: img idx=6
+spend 53.65569734573364
+eval phase: img idx=7
+spend 53.766117811203
+eval phase: img idx=8
+spend 53.41609025001526
+eval phase: img idx=9
+spend 53.35246729850769
+eval phase: img idx=10
+spend 53.59272313117981
+eval phase: img idx=11
+spend 53.36341381072998
+eval phase: img idx=12
+spend 53.56739020347595
+eval phase: img idx=13
+spend 53.74947547912598
+eval phase: img idx=14
+spend 53.64909029006958
+eval phase: img idx=15
+spend 53.64414119720459
+eval phase: img idx=16
+spend 53.694000005722046
+eval phase: img idx=17
+spend 53.50242519378662
+eval phase: img idx=18
+spend 53.43085741996765
+eval phase: img idx=19
+spend 53.22239708900452
+(20, 1024, 1024)
+EP=2 defect_img_idx=0
+EP=2 defect_img_idx=1
+EP=2 defect_img_idx=2
+EP=2 defect_img_idx=3
+EP=2 defect_img_idx=4
+EP=2 defect_img_idx=5
+EP=2 defect_img_idx=6
+EP=2 defect_img_idx=7
+EP=2 defect_img_idx=8
+EP=2 defect_img_idx=9
+EP=2 defect_img_idx=10
+EP=2 defect_img_idx=11
+EP=2 defect_img_idx=12
+EP=2 defect_img_idx=13
+EP=2 defect_img_idx=14
+EP=2 defect_img_idx=15
+EP=2 defect_img_idx=16
+EP=2 defect_img_idx=17
+EP=2 defect_img_idx=18
+EP=2 defect_img_idx=19
+EP=2 defect_img_idx=20
+EP=2 defect_img_idx=21
+EP=2 defect_img_idx=22
+EP=2 defect_img_idx=23
+EP=2 defect_img_idx=24
+EP=2 defect_img_idx=25
+EP=2 defect_img_idx=26
+EP=2 defect_img_idx=27
+EP=2 defect_img_idx=28
+EP=2 defect_img_idx=29
+EP=2 defect_img_idx=30
+EP=2 defect_img_idx=31
+EP=2 defect_img_idx=32
+EP=2 defect_img_idx=33
+EP=2 defect_img_idx=34
+EP=2 defect_img_idx=35
+EP=2 defect_img_idx=36
+EP=2 defect_img_idx=37
+EP=2 defect_img_idx=38
+EP=2 defect_img_idx=39
+EP=2 defect_img_idx=40
+EP=2 defect_img_idx=41
+EP=2 defect_img_idx=42
+EP=2 defect_img_idx=43
+EP=2 defect_img_idx=44
+EP=2 defect_img_idx=45
+EP=2 defect_img_idx=46
+EP=2 defect_img_idx=47
+EP=2 defect_img_idx=48
+EP=2 defect_img_idx=49
+EP=2 defect_img_idx=50
+EP=2 defect_img_idx=51
+EP=2 defect_img_idx=52
+EP=2 defect_img_idx=53
+EP=2 defect_img_idx=54
+EP=2 defect_img_idx=55
+EP=2 defect_img_idx=56
+EP=2 defect_img_idx=57
+EP=2 defect_img_idx=58
+EP=2 defect_img_idx=59
+EP=2 defect_img_idx=60
+EP=2 defect_img_idx=61
+EP=2 defect_img_idx=62
+EP=2 good_img_idx=0
+EP=2 good_img_idx=1
+EP=2 good_img_idx=2
+EP=2 good_img_idx=3
+EP=2 good_img_idx=4
+EP=2 good_img_idx=5
+EP=2 good_img_idx=6
+EP=2 good_img_idx=7
+EP=2 good_img_idx=8
+EP=2 good_img_idx=9
+EP=2 good_img_idx=10
+EP=2 good_img_idx=11
+EP=2 good_img_idx=12
+EP=2 good_img_idx=13
+EP=2 good_img_idx=14
+EP=2 good_img_idx=15
+EP=2 good_img_idx=16
+EP=2 good_img_idx=17
+EP=2 good_img_idx=18
+EP=2 good_img_idx=19
+Multi Map AUC score for testing data bottle: 0.5469080504756505
+----- defect -----
+eval phase: img idx=0
+spend 57.92828321456909
+eval phase: img idx=1
+spend 54.871992349624634
+eval phase: img idx=2
+spend 54.95269417762756
+eval phase: img idx=3
+spend 55.344736099243164
+eval phase: img idx=4
+spend 55.055455684661865
+eval phase: img idx=5
+spend 55.08361005783081
+eval phase: img idx=6
+spend 55.3282835483551
+eval phase: img idx=7
+spend 55.17787432670593
+eval phase: img idx=8
+spend 55.23573279380798
+eval phase: img idx=9
+spend 54.95175123214722
+eval phase: img idx=10
+spend 55.017457008361816
+eval phase: img idx=11
+spend 55.14681625366211
+eval phase: img idx=12
+spend 55.10552358627319
+eval phase: img idx=13
+spend 54.94856381416321
+eval phase: img idx=14
+spend 55.06018853187561
+eval phase: img idx=15
+spend 55.000004529953
+eval phase: img idx=16
+spend 55.166518211364746
+eval phase: img idx=17
+spend 55.20943999290466
+eval phase: img idx=18
+spend 55.26719856262207
+eval phase: img idx=19
+spend 55.105027198791504
+eval phase: img idx=20
+spend 55.058156967163086
+eval phase: img idx=21
+spend 54.935136556625366
+eval phase: img idx=22
+spend 55.04282879829407
+eval phase: img idx=23
+spend 55.112592935562134
+eval phase: img idx=24
+spend 55.06824779510498
+eval phase: img idx=25
+spend 55.06494164466858
+eval phase: img idx=26
+spend 55.053842544555664
+eval phase: img idx=27
+spend 54.84703540802002
+eval phase: img idx=28
+spend 55.066378116607666
+eval phase: img idx=29
+spend 55.14432120323181
+eval phase: img idx=30
+spend 55.05934977531433
+eval phase: img idx=31
+spend 54.98130202293396
+eval phase: img idx=32
+spend 55.05693197250366
+eval phase: img idx=33
+spend 55.46586537361145
+eval phase: img idx=34
+spend 55.19771766662598
+eval phase: img idx=35
+spend 55.33681011199951
+eval phase: img idx=36
+spend 55.271164655685425
+eval phase: img idx=37
+spend 55.28812551498413
+eval phase: img idx=38
+spend 55.19361424446106
+eval phase: img idx=39
+spend 55.02393174171448
+eval phase: img idx=40
+spend 55.27636408805847
+eval phase: img idx=41
+spend 55.55569529533386
+eval phase: img idx=42
+spend 55.27438950538635
+eval phase: img idx=43
+spend 55.09356069564819
+eval phase: img idx=44
+spend 55.127620220184326
+eval phase: img idx=45
+spend 55.330591917037964
+eval phase: img idx=46
+spend 55.45688796043396
+eval phase: img idx=47
+spend 55.15426707267761
+eval phase: img idx=48
+spend 55.094125270843506
+eval phase: img idx=49
+spend 55.17332935333252
+eval phase: img idx=50
+spend 55.366519927978516
+eval phase: img idx=51
+spend 55.10591769218445
+eval phase: img idx=52
+spend 55.00225806236267
+eval phase: img idx=53
+spend 55.86001133918762
+eval phase: img idx=54
+spend 55.14234209060669
+eval phase: img idx=55
+spend 55.12516117095947
+eval phase: img idx=56
+spend 55.04184556007385
+eval phase: img idx=57
+spend 55.086304664611816
+eval phase: img idx=58
+spend 55.06812119483948
+eval phase: img idx=59
+spend 55.32533550262451
+eval phase: img idx=60
+spend 55.38749980926514
+eval phase: img idx=61
+spend 55.44157910346985
+eval phase: img idx=62
+spend 55.285194635391235
+eval phase: img idx=63
+spend 55.19423222541809
+eval phase: img idx=64
+spend 55.31284308433533
+eval phase: img idx=65
+spend 55.4337055683136
+eval phase: img idx=66
+spend 55.327792167663574
+eval phase: img idx=67
+spend 55.60181522369385
+eval phase: img idx=68
+spend 54.93907570838928
+eval phase: img idx=69
+spend 55.38684821128845
+eval phase: img idx=70
+spend 55.14098882675171
+eval phase: img idx=71
+spend 55.213998794555664
+eval phase: img idx=72
+spend 55.09418725967407
+eval phase: img idx=73
+spend 55.1298394203186
+eval phase: img idx=74
+spend 55.22196435928345
+eval phase: img idx=75
+spend 55.364295959472656
+eval phase: img idx=76
+spend 55.23496985435486
+eval phase: img idx=77
+spend 55.66992902755737
+eval phase: img idx=78
+spend 55.77505707740784
+eval phase: img idx=79
+spend 55.353838205337524
+eval phase: img idx=80
+spend 55.41727089881897
+eval phase: img idx=81
+spend 54.97736120223999
+eval phase: img idx=82
+spend 54.9066219329834
+eval phase: img idx=83
+spend 54.94722104072571
+eval phase: img idx=84
+spend 54.80542993545532
+eval phase: img idx=85
+spend 54.6242151260376
+eval phase: img idx=86
+spend 55.17685651779175
+eval phase: img idx=87
+spend 55.24456191062927
+eval phase: img idx=88
+spend 55.53000617027283
+eval phase: img idx=89
+spend 54.98902368545532
+eval phase: img idx=90
+spend 55.05029249191284
+eval phase: img idx=91
+spend 55.082114458084106
+(92, 1024, 1024)
+----- good -----
+eval phase: img idx=0
+spend 55.03819513320923
+eval phase: img idx=1
+spend 54.994948625564575
+eval phase: img idx=2
+spend 55.005143880844116
+eval phase: img idx=3
+spend 55.04483699798584
+eval phase: img idx=4
+spend 54.86767315864563
+eval phase: img idx=5
+spend 54.58777666091919
+eval phase: img idx=6
+spend 54.89062166213989
+eval phase: img idx=7
+spend 54.94507884979248
+eval phase: img idx=8
+spend 55.04099750518799
+eval phase: img idx=9
+spend 55.00184488296509
+eval phase: img idx=10
+spend 54.64320182800293
+eval phase: img idx=11
+spend 54.86418890953064
+eval phase: img idx=12
+spend 54.958399295806885
+eval phase: img idx=13
+spend 54.854225635528564
+eval phase: img idx=14
+spend 54.94865679740906
+eval phase: img idx=15
+spend 54.746785163879395
+eval phase: img idx=16
+spend 54.749139070510864
+eval phase: img idx=17
+spend 54.75763130187988
+eval phase: img idx=18
+spend 54.72790861129761
+eval phase: img idx=19
+spend 54.729212284088135
+eval phase: img idx=20
+spend 54.73407983779907
+eval phase: img idx=21
+spend 54.72151041030884
+eval phase: img idx=22
+spend 54.79507827758789
+eval phase: img idx=23
+spend 54.8545081615448
+eval phase: img idx=24
+spend 54.81293749809265
+eval phase: img idx=25
+spend 54.772507190704346
+eval phase: img idx=26
+spend 54.99131488800049
+eval phase: img idx=27
+spend 54.980327129364014
+eval phase: img idx=28
+spend 54.893308877944946
+eval phase: img idx=29
+spend 54.85602021217346
+eval phase: img idx=30
+spend 54.83292508125305
+eval phase: img idx=31
+spend 54.87320423126221
+eval phase: img idx=32
+spend 54.86149740219116
+eval phase: img idx=33
+spend 54.82293939590454
+eval phase: img idx=34
+spend 54.864872217178345
+eval phase: img idx=35
+spend 54.957170486450195
+eval phase: img idx=36
+spend 54.79103946685791
+eval phase: img idx=37
+spend 54.80431509017944
+eval phase: img idx=38
+spend 54.81700849533081
+eval phase: img idx=39
+spend 54.842132806777954
+eval phase: img idx=40
+spend 54.887296199798584
+eval phase: img idx=41
+spend 55.01849675178528
+eval phase: img idx=42
+spend 54.90973091125488
+eval phase: img idx=43
+spend 55.01765465736389
+eval phase: img idx=44
+spend 54.961275577545166
+eval phase: img idx=45
+spend 54.82775950431824
+eval phase: img idx=46
+spend 54.864357709884644
+eval phase: img idx=47
+spend 54.87193584442139
+eval phase: img idx=48
+spend 54.8820686340332
+eval phase: img idx=49
+spend 54.943798542022705
+eval phase: img idx=50
+spend 54.91056513786316
+eval phase: img idx=51
+spend 54.9345588684082
+eval phase: img idx=52
+spend 54.908660650253296
+eval phase: img idx=53
+spend 54.87160015106201
+eval phase: img idx=54
+spend 54.99604105949402
+eval phase: img idx=55
+spend 54.989729166030884
+eval phase: img idx=56
+spend 55.00392031669617
+eval phase: img idx=57
+spend 55.02221632003784
+(58, 1024, 1024)
+EP=7 defect_img_idx=0
+EP=7 defect_img_idx=1
+EP=7 defect_img_idx=2
+EP=7 defect_img_idx=3
+EP=7 defect_img_idx=4
+EP=7 defect_img_idx=5
+EP=7 defect_img_idx=6
+EP=7 defect_img_idx=7
+EP=7 defect_img_idx=8
+EP=7 defect_img_idx=9
+EP=7 defect_img_idx=10
+EP=7 defect_img_idx=11
+EP=7 defect_img_idx=12
+EP=7 defect_img_idx=13
+EP=7 defect_img_idx=14
+EP=7 defect_img_idx=15
+EP=7 defect_img_idx=16
+EP=7 defect_img_idx=17
+EP=7 defect_img_idx=18
+EP=7 defect_img_idx=19
+EP=7 defect_img_idx=20
+EP=7 defect_img_idx=21
+EP=7 defect_img_idx=22
+EP=7 defect_img_idx=23
+EP=7 defect_img_idx=24
+EP=7 defect_img_idx=25
+EP=7 defect_img_idx=26
+EP=7 defect_img_idx=27
+EP=7 defect_img_idx=28
+EP=7 defect_img_idx=29
+EP=7 defect_img_idx=30
+EP=7 defect_img_idx=31
+EP=7 defect_img_idx=32
+EP=7 defect_img_idx=33
+EP=7 defect_img_idx=34
+EP=7 defect_img_idx=35
+EP=7 defect_img_idx=36
+EP=7 defect_img_idx=37
+EP=7 defect_img_idx=38
+EP=7 defect_img_idx=39
+EP=7 defect_img_idx=40
+EP=7 defect_img_idx=41
+EP=7 defect_img_idx=42
+EP=7 defect_img_idx=43
+EP=7 defect_img_idx=44
+EP=7 defect_img_idx=45
+EP=7 defect_img_idx=46
+EP=7 defect_img_idx=47
+EP=7 defect_img_idx=48
+EP=7 defect_img_idx=49
+EP=7 defect_img_idx=50
+EP=7 defect_img_idx=51
+EP=7 defect_img_idx=52
+EP=7 defect_img_idx=53
+EP=7 defect_img_idx=54
+EP=7 defect_img_idx=55
+EP=7 defect_img_idx=56
+EP=7 defect_img_idx=57
+EP=7 defect_img_idx=58
+EP=7 defect_img_idx=59
+EP=7 defect_img_idx=60
+EP=7 defect_img_idx=61
+EP=7 defect_img_idx=62
+EP=7 defect_img_idx=63
+EP=7 defect_img_idx=64
+EP=7 defect_img_idx=65
+EP=7 defect_img_idx=66
+EP=7 defect_img_idx=67
+EP=7 defect_img_idx=68
+EP=7 defect_img_idx=69
+EP=7 defect_img_idx=70
+EP=7 defect_img_idx=71
+EP=7 defect_img_idx=72
+EP=7 defect_img_idx=73
+EP=7 defect_img_idx=74
+EP=7 defect_img_idx=75
+EP=7 defect_img_idx=76
+EP=7 defect_img_idx=77
+EP=7 defect_img_idx=78
+EP=7 defect_img_idx=79
+EP=7 defect_img_idx=80
+EP=7 defect_img_idx=81
+EP=7 defect_img_idx=82
+EP=7 defect_img_idx=83
+EP=7 defect_img_idx=84
+EP=7 defect_img_idx=85
+EP=7 defect_img_idx=86
+EP=7 defect_img_idx=87
+EP=7 defect_img_idx=88
+EP=7 defect_img_idx=89
+EP=7 defect_img_idx=90
+EP=7 defect_img_idx=91
+EP=7 good_img_idx=0
+EP=7 good_img_idx=1
+EP=7 good_img_idx=2
+EP=7 good_img_idx=3
+EP=7 good_img_idx=4
+EP=7 good_img_idx=5
+EP=7 good_img_idx=6
+EP=7 good_img_idx=7
+EP=7 good_img_idx=8
+EP=7 good_img_idx=9
+EP=7 good_img_idx=10
+EP=7 good_img_idx=11
+EP=7 good_img_idx=12
+EP=7 good_img_idx=13
+EP=7 good_img_idx=14
+EP=7 good_img_idx=15
+EP=7 good_img_idx=16
+EP=7 good_img_idx=17
+EP=7 good_img_idx=18
+EP=7 good_img_idx=19
+EP=7 good_img_idx=20
+EP=7 good_img_idx=21
+EP=7 good_img_idx=22
+EP=7 good_img_idx=23
+EP=7 good_img_idx=24
+EP=7 good_img_idx=25
+EP=7 good_img_idx=26
+EP=7 good_img_idx=27
+EP=7 good_img_idx=28
+EP=7 good_img_idx=29
+EP=7 good_img_idx=30
+EP=7 good_img_idx=31
+EP=7 good_img_idx=32
+EP=7 good_img_idx=33
+EP=7 good_img_idx=34
+EP=7 good_img_idx=35
+EP=7 good_img_idx=36
+EP=7 good_img_idx=37
+EP=7 good_img_idx=38
+EP=7 good_img_idx=39
+EP=7 good_img_idx=40
+EP=7 good_img_idx=41
+EP=7 good_img_idx=42
+EP=7 good_img_idx=43
+EP=7 good_img_idx=44
+EP=7 good_img_idx=45
+EP=7 good_img_idx=46
+EP=7 good_img_idx=47
+EP=7 good_img_idx=48
+EP=7 good_img_idx=49
+EP=7 good_img_idx=50
+EP=7 good_img_idx=51
+EP=7 good_img_idx=52
+EP=7 good_img_idx=53
+EP=7 good_img_idx=54
+EP=7 good_img_idx=55
+EP=7 good_img_idx=56
+EP=7 good_img_idx=57
+Multi Map AUC score for testing data cable: 0.6774368100048431
+----- defect -----
+eval phase: img idx=0
+spend 57.63036870956421
+eval phase: img idx=1
+spend 54.90672969818115
+eval phase: img idx=2
+spend 55.17255401611328
+eval phase: img idx=3
+spend 55.20805478096008
+eval phase: img idx=4
+spend 55.10090684890747
+eval phase: img idx=5
+spend 55.30493140220642
+eval phase: img idx=6
+spend 55.010913133621216
+eval phase: img idx=7
+spend 55.15517544746399
+eval phase: img idx=8
+spend 54.97212314605713
+eval phase: img idx=9
+spend 55.10901618003845
+eval phase: img idx=10
+spend 55.13070011138916
+eval phase: img idx=11
+spend 55.07579207420349
+eval phase: img idx=12
+spend 55.09034705162048
+eval phase: img idx=13
+spend 55.0916166305542
+eval phase: img idx=14
+spend 55.005728244781494
+eval phase: img idx=15
+spend 55.090638160705566
+eval phase: img idx=16
+spend 55.13402795791626
+eval phase: img idx=17
+spend 55.28574228286743
+eval phase: img idx=18
+spend 55.10152077674866
+eval phase: img idx=19
+spend 55.043009757995605
+eval phase: img idx=20
+spend 55.202486515045166
+eval phase: img idx=21
+spend 55.16235613822937
+eval phase: img idx=22
+spend 55.127331018447876
+eval phase: img idx=23
+spend 55.062028884887695
+eval phase: img idx=24
+spend 55.3041467666626
+eval phase: img idx=25
+spend 55.29587960243225
+eval phase: img idx=26
+spend 55.0709810256958
+eval phase: img idx=27
+spend 55.22372078895569
+eval phase: img idx=28
+spend 55.14493250846863
+eval phase: img idx=29
+spend 55.208351373672485
+eval phase: img idx=30
+spend 55.25430631637573
+eval phase: img idx=31
+spend 55.34630084037781
+eval phase: img idx=32
+spend 55.51067137718201
+eval phase: img idx=33
+spend 55.25302696228027
+eval phase: img idx=34
+spend 55.22116947174072
+eval phase: img idx=35
+spend 55.294832706451416
+eval phase: img idx=36
+spend 55.387378215789795
+eval phase: img idx=37
+spend 55.18817734718323
+eval phase: img idx=38
+spend 55.05814862251282
+eval phase: img idx=39
+spend 55.04496741294861
+eval phase: img idx=40
+spend 55.24410581588745
+eval phase: img idx=41
+spend 55.22012996673584
+eval phase: img idx=42
+spend 55.329554319381714
+eval phase: img idx=43
+spend 55.11902093887329
+eval phase: img idx=44
+spend 55.26719856262207
+eval phase: img idx=45
+spend 55.12350678443909
+eval phase: img idx=46
+spend 55.34610414505005
+eval phase: img idx=47
+spend 55.17543172836304
+eval phase: img idx=48
+spend 55.29323744773865
+eval phase: img idx=49
+spend 55.159794330596924
+eval phase: img idx=50
+spend 55.414198875427246
+eval phase: img idx=51
+spend 55.250946044921875
+eval phase: img idx=52
+spend 55.30792498588562
+eval phase: img idx=53
+spend 55.17053937911987
+eval phase: img idx=54
+spend 55.296324253082275
+eval phase: img idx=55
+spend 55.26765322685242
+eval phase: img idx=56
+spend 55.238940477371216
+eval phase: img idx=57
+spend 54.991063356399536
+eval phase: img idx=58
+spend 55.35432696342468
+eval phase: img idx=59
+spend 55.334333658218384
+eval phase: img idx=60
+spend 55.274802923202515
+eval phase: img idx=61
+spend 55.227771520614624
+eval phase: img idx=62
+spend 55.23199939727783
+eval phase: img idx=63
+spend 55.196354389190674
+eval phase: img idx=64
+spend 55.46051096916199
+eval phase: img idx=65
+spend 55.15661120414734
+eval phase: img idx=66
+spend 55.18955135345459
+eval phase: img idx=67
+spend 55.12537455558777
+eval phase: img idx=68
+spend 55.199893951416016
+eval phase: img idx=69
+spend 55.253929138183594
+eval phase: img idx=70
+spend 55.191635608673096
+eval phase: img idx=71
+spend 54.977763175964355
+eval phase: img idx=72
+spend 55.22852277755737
+eval phase: img idx=73
+spend 55.28485560417175
+eval phase: img idx=74
+spend 55.16785955429077
+eval phase: img idx=75
+spend 55.213221073150635
+eval phase: img idx=76
+spend 55.42646360397339
+eval phase: img idx=77
+spend 55.310765981674194
+eval phase: img idx=78
+spend 55.372647762298584
+eval phase: img idx=79
+spend 55.28093695640564
+eval phase: img idx=80
+spend 55.06577706336975
+eval phase: img idx=81
+spend 55.269543409347534
+eval phase: img idx=82
+spend 55.194968938827515
+eval phase: img idx=83
+spend 55.214682817459106
+eval phase: img idx=84
+spend 55.239821434020996
+eval phase: img idx=85
+spend 55.27750205993652
+eval phase: img idx=86
+spend 55.25761318206787
+eval phase: img idx=87
+spend 55.25370979309082
+eval phase: img idx=88
+spend 55.31512379646301
+(89, 1024, 1024)
+----- good -----
+eval phase: img idx=0
+spend 55.22149133682251
+eval phase: img idx=1
+spend 55.279759883880615
+eval phase: img idx=2
+spend 55.22090172767639
+eval phase: img idx=3
+spend 55.12560725212097
+eval phase: img idx=4
+spend 55.05411696434021
+eval phase: img idx=5
+spend 55.41354823112488
+eval phase: img idx=6
+spend 55.263718605041504
+eval phase: img idx=7
+spend 55.27437973022461
+eval phase: img idx=8
+spend 55.10341453552246
+eval phase: img idx=9
+spend 55.37794756889343
+eval phase: img idx=10
+spend 55.32743787765503
+eval phase: img idx=11
+spend 55.21827793121338
+eval phase: img idx=12
+spend 55.1885781288147
+eval phase: img idx=13
+spend 55.34882664680481
+eval phase: img idx=14
+spend 55.25329613685608
+eval phase: img idx=15
+spend 55.30870294570923
+eval phase: img idx=16
+spend 54.95031547546387
+eval phase: img idx=17
+spend 55.262619495391846
+eval phase: img idx=18
+spend 55.208329916000366
+eval phase: img idx=19
+spend 55.25404191017151
+eval phase: img idx=20
+spend 55.20266056060791
+eval phase: img idx=21
+spend 55.046759605407715
+eval phase: img idx=22
+spend 55.180864572525024
+eval phase: img idx=23
+spend 55.275623083114624
+eval phase: img idx=24
+spend 54.995092153549194
+eval phase: img idx=25
+spend 55.038776874542236
+eval phase: img idx=26
+spend 55.1296808719635
+eval phase: img idx=27
+spend 55.21035838127136
+(28, 1024, 1024)
+EP=25 defect_img_idx=0
+EP=25 defect_img_idx=1
+EP=25 defect_img_idx=2
+EP=25 defect_img_idx=3
+EP=25 defect_img_idx=4
+EP=25 defect_img_idx=5
+EP=25 defect_img_idx=6
+EP=25 defect_img_idx=7
+EP=25 defect_img_idx=8
+EP=25 defect_img_idx=9
+EP=25 defect_img_idx=10
+EP=25 defect_img_idx=11
+EP=25 defect_img_idx=12
+EP=25 defect_img_idx=13
+EP=25 defect_img_idx=14
+EP=25 defect_img_idx=15
+EP=25 defect_img_idx=16
+EP=25 defect_img_idx=17
+EP=25 defect_img_idx=18
+EP=25 defect_img_idx=19
+EP=25 defect_img_idx=20
+EP=25 defect_img_idx=21
+EP=25 defect_img_idx=22
+EP=25 defect_img_idx=23
+EP=25 defect_img_idx=24
+EP=25 defect_img_idx=25
+EP=25 defect_img_idx=26
+EP=25 defect_img_idx=27
+EP=25 defect_img_idx=28
+EP=25 defect_img_idx=29
+EP=25 defect_img_idx=30
+EP=25 defect_img_idx=31
+EP=25 defect_img_idx=32
+EP=25 defect_img_idx=33
+EP=25 defect_img_idx=34
+EP=25 defect_img_idx=35
+EP=25 defect_img_idx=36
+EP=25 defect_img_idx=37
+EP=25 defect_img_idx=38
+EP=25 defect_img_idx=39
+EP=25 defect_img_idx=40
+EP=25 defect_img_idx=41
+EP=25 defect_img_idx=42
+EP=25 defect_img_idx=43
+EP=25 defect_img_idx=44
+EP=25 defect_img_idx=45
+EP=25 defect_img_idx=46
+EP=25 defect_img_idx=47
+EP=25 defect_img_idx=48
+EP=25 defect_img_idx=49
+EP=25 defect_img_idx=50
+EP=25 defect_img_idx=51
+EP=25 defect_img_idx=52
+EP=25 defect_img_idx=53
+EP=25 defect_img_idx=54
+EP=25 defect_img_idx=55
+EP=25 defect_img_idx=56
+EP=25 defect_img_idx=57
+EP=25 defect_img_idx=58
+EP=25 defect_img_idx=59
+EP=25 defect_img_idx=60
+EP=25 defect_img_idx=61
+EP=25 defect_img_idx=62
+EP=25 defect_img_idx=63
+EP=25 defect_img_idx=64
+EP=25 defect_img_idx=65
+EP=25 defect_img_idx=66
+EP=25 defect_img_idx=67
+EP=25 defect_img_idx=68
+EP=25 defect_img_idx=69
+EP=25 defect_img_idx=70
+EP=25 defect_img_idx=71
+EP=25 defect_img_idx=72
+EP=25 defect_img_idx=73
+EP=25 defect_img_idx=74
+EP=25 defect_img_idx=75
+EP=25 defect_img_idx=76
+EP=25 defect_img_idx=77
+EP=25 defect_img_idx=78
+EP=25 defect_img_idx=79
+EP=25 defect_img_idx=80
+EP=25 defect_img_idx=81
+EP=25 defect_img_idx=82
+EP=25 defect_img_idx=83
+EP=25 defect_img_idx=84
+EP=25 defect_img_idx=85
+EP=25 defect_img_idx=86
+EP=25 defect_img_idx=87
+EP=25 defect_img_idx=88
+EP=25 good_img_idx=0
+EP=25 good_img_idx=1
+EP=25 good_img_idx=2
+EP=25 good_img_idx=3
+EP=25 good_img_idx=4
+EP=25 good_img_idx=5
+EP=25 good_img_idx=6
+EP=25 good_img_idx=7
+EP=25 good_img_idx=8
+EP=25 good_img_idx=9
+EP=25 good_img_idx=10
+EP=25 good_img_idx=11
+EP=25 good_img_idx=12
+EP=25 good_img_idx=13
+EP=25 good_img_idx=14
+EP=25 good_img_idx=15
+EP=25 good_img_idx=16
+EP=25 good_img_idx=17
+EP=25 good_img_idx=18
+EP=25 good_img_idx=19
+EP=25 good_img_idx=20
+EP=25 good_img_idx=21
+EP=25 good_img_idx=22
+EP=25 good_img_idx=23
+EP=25 good_img_idx=24
+EP=25 good_img_idx=25
+EP=25 good_img_idx=26
+EP=25 good_img_idx=27
+Multi Map AUC score for testing data carpet: 0.9803024923767972
+----- defect -----
+eval phase: img idx=0
+spend 57.4380419254303
+eval phase: img idx=1
+spend 54.70780158042908
+eval phase: img idx=2
+spend 54.510164737701416
+eval phase: img idx=3
+spend 54.79449772834778
+eval phase: img idx=4
+spend 54.862510204315186
+eval phase: img idx=5
+spend 54.719568729400635
+eval phase: img idx=6
+spend 54.641674280166626
+eval phase: img idx=7
+spend 54.78357195854187
+eval phase: img idx=8
+spend 54.93887639045715
+eval phase: img idx=9
+spend 55.030150413513184
+eval phase: img idx=10
+spend 55.03776478767395
+eval phase: img idx=11
+spend 54.74602270126343
+eval phase: img idx=12
+spend 55.069167137145996
+eval phase: img idx=13
+spend 55.11851739883423
+eval phase: img idx=14
+spend 54.92317533493042
+eval phase: img idx=15
+spend 54.94006562232971
+eval phase: img idx=16
+spend 54.666794538497925
+eval phase: img idx=17
+spend 54.59664440155029
+eval phase: img idx=18
+spend 55.528053998947144
+eval phase: img idx=19
+spend 54.673176527023315
+eval phase: img idx=20
+spend 54.869770765304565
+eval phase: img idx=21
+spend 54.970951795578
+eval phase: img idx=22
+spend 55.62797164916992
+eval phase: img idx=23
+spend 55.003151655197144
+eval phase: img idx=24
+spend 54.85045504570007
+eval phase: img idx=25
+spend 54.8810396194458
+eval phase: img idx=26
+spend 54.962647914886475
+eval phase: img idx=27
+spend 54.766489028930664
+eval phase: img idx=28
+spend 54.61603093147278
+eval phase: img idx=29
+spend 54.78328514099121
+eval phase: img idx=30
+spend 54.81452798843384
+eval phase: img idx=31
+spend 55.58088803291321
+eval phase: img idx=32
+spend 54.9270498752594
+eval phase: img idx=33
+spend 55.12335419654846
+eval phase: img idx=34
+spend 54.740097761154175
+eval phase: img idx=35
+spend 54.86090588569641
+eval phase: img idx=36
+spend 55.04184150695801
+eval phase: img idx=37
+spend 54.82319164276123
+eval phase: img idx=38
+spend 54.79244947433472
+eval phase: img idx=39
+spend 54.64617395401001
+eval phase: img idx=40
+spend 54.75680160522461
+eval phase: img idx=41
+spend 55.4323616027832
+eval phase: img idx=42
+spend 54.92079997062683
+eval phase: img idx=43
+spend 54.942413330078125
+eval phase: img idx=44
+spend 55.19621253013611
+eval phase: img idx=45
+spend 54.74627089500427
+eval phase: img idx=46
+spend 54.84189987182617
+eval phase: img idx=47
+spend 55.02628993988037
+eval phase: img idx=48
+spend 54.84121298789978
+eval phase: img idx=49
+spend 54.77520799636841
+eval phase: img idx=50
+spend 54.91906261444092
+eval phase: img idx=51
+spend 54.802255153656006
+eval phase: img idx=52
+spend 55.02738642692566
+eval phase: img idx=53
+spend 54.93149375915527
+eval phase: img idx=54
+spend 54.90600562095642
+eval phase: img idx=55
+spend 54.80482292175293
+eval phase: img idx=56
+spend 55.050795555114746
+eval phase: img idx=57
+spend 54.82792520523071
+eval phase: img idx=58
+spend 55.06963586807251
+eval phase: img idx=59
+spend 54.96462154388428
+eval phase: img idx=60
+spend 54.772865772247314
+eval phase: img idx=61
+spend 54.776758432388306
+eval phase: img idx=62
+spend 54.690802574157715
+eval phase: img idx=63
+spend 55.35153150558472
+eval phase: img idx=64
+spend 54.697967290878296
+eval phase: img idx=65
+spend 54.93409538269043
+eval phase: img idx=66
+spend 54.64630651473999
+eval phase: img idx=67
+spend 54.77897572517395
+eval phase: img idx=68
+spend 55.04681086540222
+eval phase: img idx=69
+spend 54.8422794342041
+eval phase: img idx=70
+spend 54.90429139137268
+eval phase: img idx=71
+spend 55.081992626190186
+eval phase: img idx=72
+spend 54.969319581985474
+eval phase: img idx=73
+spend 55.0000901222229
+eval phase: img idx=74
+spend 54.84928274154663
+eval phase: img idx=75
+spend 54.81690430641174
+eval phase: img idx=76
+spend 54.71078634262085
+eval phase: img idx=77
+spend 55.035882234573364
+eval phase: img idx=78
+spend 54.85218381881714
+eval phase: img idx=79
+spend 54.8986291885376
+eval phase: img idx=80
+spend 55.06232571601868
+eval phase: img idx=81
+spend 54.70849347114563
+eval phase: img idx=82
+spend 54.784998416900635
+eval phase: img idx=83
+spend 54.822548151016235
+eval phase: img idx=84
+spend 54.83733081817627
+eval phase: img idx=85
+spend 55.11726260185242
+eval phase: img idx=86
+spend 54.85069274902344
+eval phase: img idx=87
+spend 54.81819295883179
+eval phase: img idx=88
+spend 54.75319766998291
+eval phase: img idx=89
+spend 54.9211049079895
+eval phase: img idx=90
+spend 54.876381158828735
+eval phase: img idx=91
+spend 54.78706121444702
+eval phase: img idx=92
+spend 54.67302083969116
+eval phase: img idx=93
+spend 55.04016160964966
+eval phase: img idx=94
+spend 55.167593002319336
+eval phase: img idx=95
+spend 55.789907693862915
+eval phase: img idx=96
+spend 54.81927561759949
+eval phase: img idx=97
+spend 54.756444454193115
+eval phase: img idx=98
+spend 54.71454620361328
+eval phase: img idx=99
+spend 54.8747284412384
+eval phase: img idx=100
+spend 54.878098249435425
+eval phase: img idx=101
+spend 54.75422143936157
+eval phase: img idx=102
+spend 55.12414216995239
+eval phase: img idx=103
+spend 54.93254566192627
+eval phase: img idx=104
+spend 54.87015151977539
+eval phase: img idx=105
+spend 54.76304364204407
+eval phase: img idx=106
+spend 54.92607378959656
+eval phase: img idx=107
+spend 54.86897921562195
+eval phase: img idx=108
+spend 54.99068570137024
+(109, 1024, 1024)
+----- good -----
+eval phase: img idx=0
+spend 55.122249364852905
+eval phase: img idx=1
+spend 54.96683716773987
+eval phase: img idx=2
+spend 54.844396352767944
+eval phase: img idx=3
+spend 54.596440076828
+eval phase: img idx=4
+spend 54.69049549102783
+eval phase: img idx=5
+spend 54.65679860115051
+eval phase: img idx=6
+spend 54.63086748123169
+eval phase: img idx=7
+spend 54.683863401412964
+eval phase: img idx=8
+spend 55.043967485427856
+eval phase: img idx=9
+spend 55.42628312110901
+eval phase: img idx=10
+spend 54.655566453933716
+eval phase: img idx=11
+spend 54.55851602554321
+eval phase: img idx=12
+spend 54.379438638687134
+eval phase: img idx=13
+spend 54.8183650970459
+eval phase: img idx=14
+spend 54.79004907608032
+eval phase: img idx=15
+spend 54.905046463012695
+eval phase: img idx=16
+spend 54.8921594619751
+eval phase: img idx=17
+spend 54.491623401641846
+eval phase: img idx=18
+spend 54.721365213394165
+eval phase: img idx=19
+spend 54.75208759307861
+eval phase: img idx=20
+spend 54.75590944290161
+eval phase: img idx=21
+spend 54.80229997634888
+eval phase: img idx=22
+spend 54.86490535736084
+(23, 1024, 1024)
+EP=5 defect_img_idx=0
+EP=5 defect_img_idx=1
+EP=5 defect_img_idx=2
+EP=5 defect_img_idx=3
+EP=5 defect_img_idx=4
+EP=5 defect_img_idx=5
+EP=5 defect_img_idx=6
+EP=5 defect_img_idx=7
+EP=5 defect_img_idx=8
+EP=5 defect_img_idx=9
+EP=5 defect_img_idx=10
+EP=5 defect_img_idx=11
+EP=5 defect_img_idx=12
+EP=5 defect_img_idx=13
+EP=5 defect_img_idx=14
+EP=5 defect_img_idx=15
+EP=5 defect_img_idx=16
+EP=5 defect_img_idx=17
+EP=5 defect_img_idx=18
+EP=5 defect_img_idx=19
+EP=5 defect_img_idx=20
+EP=5 defect_img_idx=21
+EP=5 defect_img_idx=22
+EP=5 defect_img_idx=23
+EP=5 defect_img_idx=24
+EP=5 defect_img_idx=25
+EP=5 defect_img_idx=26
+EP=5 defect_img_idx=27
+EP=5 defect_img_idx=28
+EP=5 defect_img_idx=29
+EP=5 defect_img_idx=30
+EP=5 defect_img_idx=31
+EP=5 defect_img_idx=32
+EP=5 defect_img_idx=33
+EP=5 defect_img_idx=34
+EP=5 defect_img_idx=35
+EP=5 defect_img_idx=36
+EP=5 defect_img_idx=37
+EP=5 defect_img_idx=38
+EP=5 defect_img_idx=39
+EP=5 defect_img_idx=40
+EP=5 defect_img_idx=41
+EP=5 defect_img_idx=42
+EP=5 defect_img_idx=43
+EP=5 defect_img_idx=44
+EP=5 defect_img_idx=45
+EP=5 defect_img_idx=46
+EP=5 defect_img_idx=47
+EP=5 defect_img_idx=48
+EP=5 defect_img_idx=49
+EP=5 defect_img_idx=50
+EP=5 defect_img_idx=51
+EP=5 defect_img_idx=52
+EP=5 defect_img_idx=53
+EP=5 defect_img_idx=54
+EP=5 defect_img_idx=55
+EP=5 defect_img_idx=56
+EP=5 defect_img_idx=57
+EP=5 defect_img_idx=58
+EP=5 defect_img_idx=59
+EP=5 defect_img_idx=60
+EP=5 defect_img_idx=61
+EP=5 defect_img_idx=62
+EP=5 defect_img_idx=63
+EP=5 defect_img_idx=64
+EP=5 defect_img_idx=65
+EP=5 defect_img_idx=66
+EP=5 defect_img_idx=67
+EP=5 defect_img_idx=68
+EP=5 defect_img_idx=69
+EP=5 defect_img_idx=70
+EP=5 defect_img_idx=71
+EP=5 defect_img_idx=72
+EP=5 defect_img_idx=73
+EP=5 defect_img_idx=74
+EP=5 defect_img_idx=75
+EP=5 defect_img_idx=76
+EP=5 defect_img_idx=77
+EP=5 defect_img_idx=78
+EP=5 defect_img_idx=79
+EP=5 defect_img_idx=80
+EP=5 defect_img_idx=81
+EP=5 defect_img_idx=82
+EP=5 defect_img_idx=83
+EP=5 defect_img_idx=84
+EP=5 defect_img_idx=85
+EP=5 defect_img_idx=86
+EP=5 defect_img_idx=87
+EP=5 defect_img_idx=88
+EP=5 defect_img_idx=89
+EP=5 defect_img_idx=90
+EP=5 defect_img_idx=91
+EP=5 defect_img_idx=92
+EP=5 defect_img_idx=93
+EP=5 defect_img_idx=94
+EP=5 defect_img_idx=95
+EP=5 defect_img_idx=96
+EP=5 defect_img_idx=97
+EP=5 defect_img_idx=98
+EP=5 defect_img_idx=99
+EP=5 defect_img_idx=100
+EP=5 defect_img_idx=101
+EP=5 defect_img_idx=102
+EP=5 defect_img_idx=103
+EP=5 defect_img_idx=104
+EP=5 defect_img_idx=105
+EP=5 defect_img_idx=106
+EP=5 defect_img_idx=107
+EP=5 defect_img_idx=108
+EP=5 good_img_idx=0
+EP=5 good_img_idx=1
+EP=5 good_img_idx=2
+EP=5 good_img_idx=3
+EP=5 good_img_idx=4
+EP=5 good_img_idx=5
+EP=5 good_img_idx=6
+EP=5 good_img_idx=7
+EP=5 good_img_idx=8
+EP=5 good_img_idx=9
+EP=5 good_img_idx=10
+EP=5 good_img_idx=11
+EP=5 good_img_idx=12
+EP=5 good_img_idx=13
+EP=5 good_img_idx=14
+EP=5 good_img_idx=15
+EP=5 good_img_idx=16
+EP=5 good_img_idx=17
+EP=5 good_img_idx=18
+EP=5 good_img_idx=19
+EP=5 good_img_idx=20
+EP=5 good_img_idx=21
+EP=5 good_img_idx=22
+Multi Map AUC score for testing data capsule: 0.8227397383294155

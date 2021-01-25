@@ -57,16 +57,16 @@ if __name__ == "__main__":
 
     
     print("----- defect -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/128_img_all_feature_{ args.index }_Origin.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle")
+        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle", 'rb'))
     else:
         img_all_feature = eval_feature(pretrain_model, scratch_model, test_all_loader, kmeans, pca, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle")
-        img_good_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/128_img_good_feature_{ args.index }_Origin.pickle", 'rb'))
+    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle"):
+        print(f"load from { ROOT }/Results/testing_multiMap/Ronet/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle")
+        img_good_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle", 'rb'))
     else:
         img_good_feature = eval_feature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
     
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         im3 = ax3.imshow(defect_gt)
 
 
-        errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/{ args.kmeans }/map/"
+        errorMapPath = f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/{ args.kmeans }/map/"
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
             print(f"----- create folder for { args.data } | type: all -----")
@@ -134,7 +134,7 @@ if __name__ == "__main__":
         ax2.set_axis_off()
         im2 = ax2.imshow(img_)
         
-        errorMapPath = f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/good/{ args.kmeans }/map/"
+        errorMapPath = f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/good/{ args.kmeans }/map/"
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
             print(f"----- create folder for { args.data} | type: good -----")
@@ -154,5 +154,5 @@ if __name__ == "__main__":
 
     label_pred = norm(np.array(label_pred))
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-    print("AUC score for testing data {}: {}".format(args.data, auc))
+    print("Multi Map AUC score during drawing for testing data {}: {}".format(args.data, auc))
 

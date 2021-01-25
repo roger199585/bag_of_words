@@ -16,10 +16,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
-
-
 import networks.resnet as resnet
-import networks.autoencoder as autoencoder
+import networks.AlexNet as AlexNet
 import dataloaders
 from config import ROOT
 
@@ -30,7 +28,6 @@ parser.add_argument('--type', type=str, default="all")
 parser.add_argument('--index', type=int, default=30)
 parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--patch_size', type=int, default=64)
-parser.add_argument('--resolution', type=int, default=64)
 args = parser.parse_args()
 
 
@@ -53,20 +50,19 @@ mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader  = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
 ## Models
-# pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
-pretrain_model =  autoencoder.autoencoder(3, args.resolution)
-pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/AE/{ args.data }_{ args.resolution }/40000.ckpt"))
-pretrain_model = nn.DataParallel(pretrain_model).cuda()
+pretrain_model = AlexNet.AlexNet({'num_classes': 4})
+pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/model_net_epoch50")['network'])
+pretrain_model = pretrain_model.cuda() # nn.DataParallel(pretrain_model).to(device)
 
 ## Clusters
-kmeans_path = f"{ ROOT }/preprocessData/kmeans/AE/{ args.data }/{ args.resolution }/AE_{ args.kmeans }.pickle"
+kmeans_path = f"{ ROOT }/preprocessData/kmeans/RoNet/{ args.data }/RoNet_{ args.kmeans }.pickle"
 kmeans      = pickle.load(open(kmeans_path, "rb"))
 
 ## Label
-test_label_name = f"{ ROOT }/preprocessData/label/AE/{ args.data }/{ args.resolution }/test/all_{ args.kmeans }.pth"
+test_label_name = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/test/all_{ args.kmeans }.pth"
 test_label      = torch.tensor(torch.load(test_label_name))
 
-test_good_label_name = f"{ ROOT }/preprocessData/label/AE/{ args.data }/{ args.resolution }/test/good_{ args.kmeans }.pth"
+test_good_label_name = f"{ ROOT }/preprocessData/label/RoNet/{ args.data }/test/good_{ args.kmeans }.pth"
 test_good_label      = torch.tensor(torch.load(test_good_label_name))
 
 ## Others
@@ -96,7 +92,7 @@ def eval_feature(epoch, model, test_loader, test_label):
             img = img.cuda()
             idx = idx[0].item()
 
-            print(f'eval phase: img idx={idx}')
+            # print(f'eval phase: img idx={idx}')
 
             value_feature = []
             value_label = []
@@ -111,9 +107,18 @@ def eval_feature(epoch, model, test_loader, test_label):
             for i in range(chunk_num):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].cuda()
-                    _, crop_output = pretrain_model(crop_img)
+                    latent_code = pretrain_model(crop_img, out_feat_keys=[
+                        'conv1',
+                        'pool1',
+                        'conv2',
+                        'pool2',
+                        'conv3',
+                        'conv4',
+                        'conv5',
+                        'pool5',
+                    ])
                     """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
+                    out_ = latent_code[7].flatten(1,2).flatten(1,2)
                     out = out_.detach().cpu().numpy()
                     out = pil_to_tensor(out).squeeze().cuda()
                     crop_list.append(out)
@@ -168,7 +173,7 @@ def eval_feature(epoch, model, test_loader, test_label):
 start = time.time()
 """ load model """
 global_index = args.index
-scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/AE/{ args.data }/{ args.resolution }/exp_{ args.kmeans }_{ args.index }.ckpt"))
+scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/RoNet/{ args.data }/exp_{ args.kmeans }_{ args.index }.ckpt"))
 
 print("------- For defect type -------")
 value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
@@ -216,9 +221,9 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    
-    print(f'EP={global_index} defect_img_idx={idx}')
+    # print(f'EP={global_index} defect_img_idx={idx}')
 
-    errorMapPath = f"{ ROOT }/testing/AE/{ args.data }/{ args.resolution }/all/{ args.kmeans }/"
+    errorMapPath = f"{ ROOT }/testing/RoNet/{ args.data }/all/{ args.kmeans }/"
     if not os.path.isdir(errorMapPath):
         os.makedirs(errorMapPath)
         print(f"----- create folder for type:{ args.data } -----")
@@ -258,9 +263,9 @@ for (idx, img) in test_good_loader:
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    
-    print(f'EP={global_index} good_img_idx={idx}')
+    # print(f'EP={global_index} good_img_idx={idx}')
 
-    errorMapPath = f"{ ROOT }/testing/AE/{ args.data }/{ args.resolution }/good/{ args.kmeans }/"
+    errorMapPath = f"{ ROOT }/testing/RoNet/{ args.data }/good/{ args.kmeans }/"
     if not os.path.isdir(errorMapPath):
         os.makedirs(errorMapPath)
         print(f"----- create folder for type:{ args.data } -----")
@@ -271,8 +276,7 @@ for (idx, img) in test_good_loader:
     plt.close(fig)
 
 label_pred = norm(np.array(label_pred))
-print('spend w/o auroc: ', time.time() - start)
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
-
-print("AUC score for testing data {}: {}".format(args.data, auc))
 print('spend with auroc: ', time.time() - start)
+
+print("Single Map AUC score for testing data {}: {}".format(args.data, auc))
