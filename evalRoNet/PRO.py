@@ -170,10 +170,9 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--index', type=str, default='10')
     parser.add_argument('--kmeans', type=str, default='128')
-    parser.add_argument('--resolution', type=str, default='4')
     args = parser.parse_args()
     
-    y_pred = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/AE/{ args.data }/{ args.resolution }/all/{ args.kmeans }_img_all_feature_{ args.index }_Origin.pickle", "rb"))
+    y_pred = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/RoNet/{ args.data }/all/{ args.kmeans }_img_all_feature_{ args.index }_Origin.pickle", "rb"))
     y_pred = y_pred.reshape(-1, 1024, 1024)
     # gt image
     y_true = []
@@ -189,6 +188,7 @@ if __name__ == "__main__":
     start = time.time()
     evalTool.test_all_threshold()
     evalTool.calculate_PRO_score()
-    # evalTool.printFPR()
+
+    print(f"{ args.data } PRO score = ")
     print(evalTool.getScore())
     print(f'spend {time.time() - start}')
