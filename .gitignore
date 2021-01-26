@@ -13,3 +13,4 @@ testing/**
 **/*.png
 **/*.pickle
 Results/**
+**/*.log
