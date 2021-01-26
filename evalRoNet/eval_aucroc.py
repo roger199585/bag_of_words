@@ -256,8 +256,8 @@ for (idx, img) in test_good_loader:
     
     for i in range(chunk_num):
         for j in range(chunk_num):
-            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
-            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_idx[idx][i*chunk_num+j], fontsize=10)
+            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_gt[idx][i*chunk_num+j], fontsize=10)
 
     defect_gt = np.zeros((1024, 1024, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
