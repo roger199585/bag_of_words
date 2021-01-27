@@ -80,7 +80,6 @@ if __name__ == "__main__":
 
     """ kmeans version """
     for idx, img in tqdm(train_loader):
-        img = img.cuda()
         idx = idx[0].item()
 
         patch_index_list = []
@@ -92,9 +91,9 @@ if __name__ == "__main__":
                 """ Crop the image """
                 if (args.type == 'train'):
                     index = idx*chunk_num*chunk_num+i*chunk_num+j
-                    patch = img[ :, :, i*args.patch_size+left_i[index]:i*args.patch_size+args.patch_size+left_i[index], j*args.patch_size+left_j[index]:j*args.patch_size+args.patch_size+left_j[index] ].cuda()
+                    patch = img[ :, :, i*args.patch_size+left_i[index]:i*args.patch_size+args.patch_size+left_i[index], j*args.patch_size+left_j[index]:j*args.patch_size+args.patch_size+left_j[index] ]
                 else:
-                    patch = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].cuda()
+                    patch = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size]
                 out = to_hist(patch)
 
                 """ flatten the dimension of H and W """
