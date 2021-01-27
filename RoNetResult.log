@@ -1,3415 +1,1104 @@
 ------- For defect type -------
-total running time:  641.4635560512543
+total running time:  391.97438526153564
 ------- For good type -------
-total running time:  117.13492155075073
------ create folder for type:pill -----
------ create folder for type:pill -----
-spend with auroc:  1453.3652086257935
-Single Map AUC score for testing data pill: 0.8790229330052839
+total running time:  151.34545707702637
+spend with auroc:  1096.4785273075104
+Single Map AUC score for testing data tile: 0.8224883104160321
 ------- For defect type -------
-total running time:  670.2032699584961
+total running time:  672.1958248615265
 ------- For good type -------
-total running time:  226.6955530643463
------ create folder for type:screw -----
------ create folder for type:screw -----
-spend with auroc:  1582.0328135490417
-Single Map AUC score for testing data screw: 0.9669434278635362
-------- For defect type -------
-total running time:  173.73169445991516
-------- For good type -------
-total running time:  67.45365262031555
------ create folder for type:toothbrush -----
------ create folder for type:toothbrush -----
-spend with auroc:  427.97177290916443
-Single Map AUC score for testing data toothbrush: 0.9313662363720652
-------- For defect type -------
-total running time:  382.32567143440247
-------- For good type -------
-total running time:  146.56014275550842
------ create folder for type:tile -----
------ create folder for type:tile -----
-spend with auroc:  998.1350481510162
-Single Map AUC score for testing data tile: 0.8228525831109901
-------- For defect type -------
-total running time:  186.2746524810791
-------- For good type -------
-total running time:  271.6695625782013
------ create folder for type:transistor -----
------ create folder for type:transistor -----
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mIndexError[0m                                Traceback (most recent call last)
-[0;32m/train-data2/corn/bag_of_words/evalRoNet/eval_aucroc.py[0m in [0;36m<module>[0;34m[0m
-[1;32m    257[0m     [0;32mfor[0m [0mi[0m [0;32min[0m [0mrange[0m[0;34m([0m[0mchunk_num[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    258[0m         [0;32mfor[0m [0mj[0m [0;32min[0m [0mrange[0m[0;34m([0m[0mchunk_num[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 259[0;31m             [0max1[0m[0;34m.[0m[0mtext[0m[0;34m([0m[0;34m([0m[0mj[0m[0;34m+[0m[0;36m0.2[0m[0;34m)[0m[0;34m*[0m[0margs[0m[0;34m.[0m[0mpatch_size[0m[0;34m,[0m [0;34m([0m[0mi[0m[0;34m+[0m[0;36m0.6[0m[0;34m)[0m[0;34m*[0m[0margs[0m[0;34m.[0m[0mpatch_size[0m[0;34m,[0m [0mtotal_idx[0m[0;34m[[0m[0midx[0m[0;34m][0m[0;34m[[0m[0mi[0m[0;34m*[0m[0mchunk_num[0m[0;34m+[0m[0mj[0m[0;34m][0m[0;34m,[0m [0mfontsize[0m[0;34m=[0m[0;36m10[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    260[0m             [0max2[0m[0;34m.[0m[0mtext[0m[0;34m([0m[0;34m([0m[0mj[0m[0;34m+[0m[0;36m0.2[0m[0;34m)[0m[0;34m*[0m[0margs[0m[0;34m.[0m[0mpatch_size[0m[0;34m,[0m [0;34m([0m[0mi[0m[0;34m+[0m[0;36m0.6[0m[0;34m)[0m[0;34m*[0m[0margs[0m[0;34m.[0m[0mpatch_size[0m[0;34m,[0m [0mtotal_gt[0m[0;34m[[0m[0midx[0m[0;34m][0m[0;34m[[0m[0mi[0m[0;34m*[0m[0mchunk_num[0m[0;34m+[0m[0mj[0m[0;34m][0m[0;34m,[0m [0mfontsize[0m[0;34m=[0m[0;36m10[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m    261[0m [0;34m[0m[0m
-
-[0;31mIndexError[0m: index 40 is out of bounds for axis 0 with size 40
-
-Select a stack frame to embed IPython shell (default: 0):
-0. <frame at 0x7fefec0e7640, file 'evalRoNet/eval_aucroc.py', line 259, code <module>>
-> ------- For defect type -------
-total running time:  344.2799229621887
-------- For good type -------
-total running time:  107.17140817642212
------ create folder for type:wood -----
------ create folder for type:wood -----
-spend with auroc:  792.5369575023651
-Single Map AUC score for testing data wood: 0.9057548235857742
-------- For defect type -------
-total running time:  655.7910046577454
-------- For good type -------
-total running time:  174.75377535820007
------ create folder for type:zipper -----
------ create folder for type:zipper -----
-spend with auroc:  1435.6709802150726
-Single Map AUC score for testing data zipper: 0.8438271956469628
+total running time:  175.85706973075867
+spend with auroc:  1510.3220658302307
+Single Map AUC score for testing data zipper: 0.830960420446958
 ----- defect -----
 eval phase: img idx=0
-spend 75.73975038528442
+spend 76.3381724357605
 eval phase: img idx=1
-spend 70.27402853965759
+spend 70.92703771591187
 eval phase: img idx=2
-spend 70.55031514167786
+spend 71.41412711143494
 eval phase: img idx=3
-spend 70.46199989318848
+spend 70.97346186637878
 eval phase: img idx=4
-spend 70.43618321418762
+spend 70.85003161430359
 eval phase: img idx=5
-spend 70.26617383956909
+spend 71.09096121788025
 eval phase: img idx=6
-spend 70.11764597892761
+spend 70.75376462936401
 eval phase: img idx=7
-spend 70.40747380256653
+spend 70.61864709854126
 eval phase: img idx=8
-spend 70.24797439575195
+spend 70.97839760780334
 eval phase: img idx=9
-spend 70.42566752433777
+spend 71.12347674369812
 eval phase: img idx=10
-spend 70.65560221672058
+spend 70.93123149871826
 eval phase: img idx=11
-spend 70.49154996871948
+spend 71.28382182121277
 eval phase: img idx=12
-spend 70.4690592288971
+spend 70.57473254203796
 eval phase: img idx=13
-spend 70.41103458404541
+spend 70.27999711036682
 eval phase: img idx=14
-spend 70.34990668296814
+spend 70.39772129058838
 eval phase: img idx=15
-spend 70.54395651817322
+spend 70.11389446258545
 eval phase: img idx=16
-spend 70.34134674072266
+spend 70.2641670703888
 eval phase: img idx=17
-spend 70.45167851448059
+spend 70.27692818641663
 eval phase: img idx=18
-spend 70.34797382354736
+spend 70.34832715988159
 eval phase: img idx=19
-spend 70.20810270309448
+spend 70.33115744590759
 eval phase: img idx=20
-spend 70.37827062606812
+spend 70.30434608459473
 eval phase: img idx=21
-spend 70.31095719337463
+spend 70.12849855422974
 eval phase: img idx=22
-spend 70.18102979660034
+spend 70.14478516578674
 eval phase: img idx=23
-spend 70.33064460754395
+spend 70.31598329544067
 eval phase: img idx=24
-spend 70.3411157131195
+spend 70.14316606521606
 eval phase: img idx=25
-spend 70.31504583358765
+spend 70.30973720550537
 eval phase: img idx=26
-spend 70.24270677566528
+spend 70.35361814498901
 eval phase: img idx=27
-spend 70.33000421524048
+spend 70.31908464431763
 eval phase: img idx=28
-spend 69.8494222164154
+spend 70.29108929634094
 eval phase: img idx=29
-spend 70.411367893219
+spend 70.16933679580688
 eval phase: img idx=30
-spend 70.39641976356506
+spend 70.31282663345337
 eval phase: img idx=31
-spend 70.32691287994385
+spend 70.35105204582214
 eval phase: img idx=32
-spend 70.22046828269958
+spend 70.17658829689026
 eval phase: img idx=33
-spend 70.21554350852966
+spend 70.2042338848114
 eval phase: img idx=34
-spend 70.24221730232239
+spend 70.19651579856873
 eval phase: img idx=35
-spend 70.1848452091217
+spend 70.20952892303467
 eval phase: img idx=36
-spend 70.16224455833435
+spend 70.21901798248291
 eval phase: img idx=37
-spend 70.40119218826294
+spend 70.30978918075562
 eval phase: img idx=38
-spend 70.24562120437622
+spend 70.39531230926514
 eval phase: img idx=39
-spend 70.19579672813416
+spend 70.31818008422852
 eval phase: img idx=40
-spend 70.29557609558105
+spend 70.07901334762573
 eval phase: img idx=41
-spend 70.37333130836487
+spend 70.29263162612915
 eval phase: img idx=42
-spend 70.30004572868347
+spend 70.14205884933472
 eval phase: img idx=43
-spend 70.32630443572998
+spend 70.36876368522644
 eval phase: img idx=44
-spend 70.36712098121643
+spend 70.20872211456299
 eval phase: img idx=45
-spend 70.36229276657104
+spend 70.29632687568665
 eval phase: img idx=46
-spend 70.28362512588501
+spend 70.25961828231812
 eval phase: img idx=47
-spend 70.29847383499146
+spend 70.14378118515015
 eval phase: img idx=48
-spend 70.33887600898743
+spend 70.33792328834534
 eval phase: img idx=49
-spend 70.36277890205383
+spend 70.25358366966248
 eval phase: img idx=50
-spend 70.25695729255676
+spend 70.10302591323853
 eval phase: img idx=51
-spend 70.35623836517334
+spend 70.08475422859192
 eval phase: img idx=52
-spend 70.28426790237427
+spend 70.44424533843994
 eval phase: img idx=53
-spend 70.24847936630249
+spend 70.27505445480347
 eval phase: img idx=54
-spend 70.16033244132996
+spend 70.37579607963562
 eval phase: img idx=55
-spend 70.20546984672546
+spend 70.32218480110168
 eval phase: img idx=56
-spend 70.17030835151672
+spend 70.44067716598511
 eval phase: img idx=57
-spend 70.23465275764465
+spend 70.24393391609192
 eval phase: img idx=58
-spend 70.38260626792908
+spend 70.27587509155273
 eval phase: img idx=59
-spend 70.28751730918884
+spend 70.38344383239746
 eval phase: img idx=60
-spend 70.27893733978271
+spend 70.4508204460144
 eval phase: img idx=61
-spend 70.4124801158905
+spend 70.61318588256836
 eval phase: img idx=62
-spend 70.25082659721375
+spend 70.34868121147156
 eval phase: img idx=63
-spend 70.29707503318787
+spend 70.39349102973938
 eval phase: img idx=64
-spend 70.23069739341736
+spend 70.60725569725037
 eval phase: img idx=65
-spend 70.27709197998047
+spend 70.39279246330261
 eval phase: img idx=66
-spend 70.36868453025818
+spend 70.46094155311584
 eval phase: img idx=67
-spend 70.10790944099426
+spend 70.46107888221741
 eval phase: img idx=68
-spend 70.1854817867279
+spend 70.34502792358398
 eval phase: img idx=69
-spend 70.10155010223389
+spend 70.25368666648865
 eval phase: img idx=70
-spend 70.30347776412964
+spend 70.3456506729126
 eval phase: img idx=71
-spend 70.27216863632202
+spend 70.22708415985107
 eval phase: img idx=72
-spend 70.24985027313232
+spend 70.30099749565125
 eval phase: img idx=73
-spend 70.31829810142517
+spend 70.3748288154602
 eval phase: img idx=74
-spend 70.28259921073914
+spend 70.3401870727539
 eval phase: img idx=75
-spend 70.24225997924805
+spend 70.4339370727539
 eval phase: img idx=76
-spend 70.25104880332947
+spend 70.37532210350037
 eval phase: img idx=77
-spend 70.13247680664062
+spend 70.39923548698425
 eval phase: img idx=78
-spend 70.30152201652527
+spend 70.25734877586365
 eval phase: img idx=79
-spend 70.08328914642334
+spend 70.29450511932373
 eval phase: img idx=80
-spend 70.13744020462036
+spend 70.33873295783997
 eval phase: img idx=81
-spend 70.24657726287842
+spend 70.33001017570496
 eval phase: img idx=82
-spend 70.31929588317871
+spend 70.53546452522278
 eval phase: img idx=83
-spend 70.32025909423828
-eval phase: img idx=84
-spend 70.2180073261261
-eval phase: img idx=85
-spend 70.25503993034363
-eval phase: img idx=86
-spend 70.39539337158203
-eval phase: img idx=87
-spend 70.31435441970825
-eval phase: img idx=88
-spend 70.20963501930237
-eval phase: img idx=89
-spend 70.33169484138489
-eval phase: img idx=90
-spend 70.29495453834534
-eval phase: img idx=91
-spend 70.25581121444702
-eval phase: img idx=92
-spend 70.24833416938782
-eval phase: img idx=93
-spend 70.40928173065186
-eval phase: img idx=94
-spend 70.46061587333679
-eval phase: img idx=95
-spend 70.27134919166565
-eval phase: img idx=96
-spend 70.44350075721741
-eval phase: img idx=97
-spend 70.23939633369446
-eval phase: img idx=98
-spend 70.37722849845886
-eval phase: img idx=99
-spend 70.29348039627075
-eval phase: img idx=100
-spend 70.30269265174866
-eval phase: img idx=101
-spend 70.31172919273376
-eval phase: img idx=102
-spend 70.3535225391388
-eval phase: img idx=103
-spend 70.34459781646729
-eval phase: img idx=104
-spend 70.36097574234009
-eval phase: img idx=105
-spend 70.33054661750793
-eval phase: img idx=106
-spend 70.16330170631409
-eval phase: img idx=107
-spend 70.15739464759827
-eval phase: img idx=108
-spend 70.339919090271
-eval phase: img idx=109
-spend 70.4093451499939
-eval phase: img idx=110
-spend 70.33167147636414
-eval phase: img idx=111
-spend 70.28073859214783
-eval phase: img idx=112
-spend 70.46292114257812
-eval phase: img idx=113
-spend 70.23621082305908
-eval phase: img idx=114
-spend 70.3149733543396
-eval phase: img idx=115
-spend 70.37607216835022
-eval phase: img idx=116
-spend 70.2342598438263
-eval phase: img idx=117
-spend 70.13088989257812
-eval phase: img idx=118
-spend 70.34081292152405
-eval phase: img idx=119
-spend 70.28022408485413
-eval phase: img idx=120
-spend 70.21798539161682
-eval phase: img idx=121
-spend 70.21436285972595
-eval phase: img idx=122
-spend 70.27024984359741
-eval phase: img idx=123
-spend 70.26044535636902
-eval phase: img idx=124
-spend 70.22921919822693
-eval phase: img idx=125
-spend 70.42743754386902
-eval phase: img idx=126
-spend 70.37062788009644
-eval phase: img idx=127
-spend 70.28108239173889
-eval phase: img idx=128
-spend 70.3293707370758
-eval phase: img idx=129
-spend 70.38810873031616
-eval phase: img idx=130
-spend 70.28335165977478
-eval phase: img idx=131
-spend 70.21409249305725
-eval phase: img idx=132
-spend 70.35312628746033
-eval phase: img idx=133
-spend 70.24330687522888
-eval phase: img idx=134
-spend 70.16046667098999
-eval phase: img idx=135
-spend 70.26142883300781
-eval phase: img idx=136
-spend 70.25911068916321
-eval phase: img idx=137
-spend 70.1403124332428
-eval phase: img idx=138
-spend 70.17714810371399
-eval phase: img idx=139
-spend 70.2390308380127
-eval phase: img idx=140
-spend 70.27984118461609
-(141, 1024, 1024)
------ good -----
-eval phase: img idx=0
-spend 70.36102938652039
-eval phase: img idx=1
-spend 70.29564070701599
-eval phase: img idx=2
-spend 70.23580265045166
-eval phase: img idx=3
-spend 70.23779129981995
-eval phase: img idx=4
-spend 70.19129347801208
-eval phase: img idx=5
-spend 70.25332236289978
-eval phase: img idx=6
-spend 70.21184635162354
-eval phase: img idx=7
-spend 70.36431932449341
-eval phase: img idx=8
-spend 70.33473753929138
-eval phase: img idx=9
-spend 70.24420642852783
-eval phase: img idx=10
-spend 70.30242919921875
-eval phase: img idx=11
-spend 70.40855979919434
-eval phase: img idx=12
-spend 70.45594429969788
-eval phase: img idx=13
-spend 70.35544228553772
-eval phase: img idx=14
-spend 70.41280674934387
-eval phase: img idx=15
-spend 70.29181122779846
-eval phase: img idx=16
-spend 70.19506740570068
-eval phase: img idx=17
-spend 70.23262596130371
-eval phase: img idx=18
-spend 70.26534461975098
-eval phase: img idx=19
-spend 70.26378011703491
-eval phase: img idx=20
-spend 70.2862663269043
-eval phase: img idx=21
-spend 70.4433798789978
-eval phase: img idx=22
-spend 70.18543076515198
-eval phase: img idx=23
-spend 70.39127850532532
-eval phase: img idx=24
-spend 70.20787787437439
-eval phase: img idx=25
-spend 70.23441529273987
-(26, 1024, 1024)
-EP=38 defect_img_idx=0
-EP=38 defect_img_idx=1
-EP=38 defect_img_idx=2
-EP=38 defect_img_idx=3
-EP=38 defect_img_idx=4
-EP=38 defect_img_idx=5
-EP=38 defect_img_idx=6
-EP=38 defect_img_idx=7
-EP=38 defect_img_idx=8
-EP=38 defect_img_idx=9
-EP=38 defect_img_idx=10
-EP=38 defect_img_idx=11
-EP=38 defect_img_idx=12
-EP=38 defect_img_idx=13
-EP=38 defect_img_idx=14
-EP=38 defect_img_idx=15
-EP=38 defect_img_idx=16
-EP=38 defect_img_idx=17
-EP=38 defect_img_idx=18
-EP=38 defect_img_idx=19
-EP=38 defect_img_idx=20
-EP=38 defect_img_idx=21
-EP=38 defect_img_idx=22
-EP=38 defect_img_idx=23
-EP=38 defect_img_idx=24
-EP=38 defect_img_idx=25
-EP=38 defect_img_idx=26
-EP=38 defect_img_idx=27
-EP=38 defect_img_idx=28
-EP=38 defect_img_idx=29
-EP=38 defect_img_idx=30
-EP=38 defect_img_idx=31
-EP=38 defect_img_idx=32
-EP=38 defect_img_idx=33
-EP=38 defect_img_idx=34
-EP=38 defect_img_idx=35
-EP=38 defect_img_idx=36
-EP=38 defect_img_idx=37
-EP=38 defect_img_idx=38
-EP=38 defect_img_idx=39
-EP=38 defect_img_idx=40
-EP=38 defect_img_idx=41
-EP=38 defect_img_idx=42
-EP=38 defect_img_idx=43
-EP=38 defect_img_idx=44
-EP=38 defect_img_idx=45
-EP=38 defect_img_idx=46
-EP=38 defect_img_idx=47
-EP=38 defect_img_idx=48
-EP=38 defect_img_idx=49
-EP=38 defect_img_idx=50
-EP=38 defect_img_idx=51
-EP=38 defect_img_idx=52
-EP=38 defect_img_idx=53
-EP=38 defect_img_idx=54
-EP=38 defect_img_idx=55
-EP=38 defect_img_idx=56
-EP=38 defect_img_idx=57
-EP=38 defect_img_idx=58
-EP=38 defect_img_idx=59
-EP=38 defect_img_idx=60
-EP=38 defect_img_idx=61
-EP=38 defect_img_idx=62
-EP=38 defect_img_idx=63
-EP=38 defect_img_idx=64
-EP=38 defect_img_idx=65
-EP=38 defect_img_idx=66
-EP=38 defect_img_idx=67
-EP=38 defect_img_idx=68
-EP=38 defect_img_idx=69
-EP=38 defect_img_idx=70
-EP=38 defect_img_idx=71
-EP=38 defect_img_idx=72
-EP=38 defect_img_idx=73
-EP=38 defect_img_idx=74
-EP=38 defect_img_idx=75
-EP=38 defect_img_idx=76
-EP=38 defect_img_idx=77
-EP=38 defect_img_idx=78
-EP=38 defect_img_idx=79
-EP=38 defect_img_idx=80
-EP=38 defect_img_idx=81
-EP=38 defect_img_idx=82
-EP=38 defect_img_idx=83
-EP=38 defect_img_idx=84
-EP=38 defect_img_idx=85
-EP=38 defect_img_idx=86
-EP=38 defect_img_idx=87
-EP=38 defect_img_idx=88
-EP=38 defect_img_idx=89
-EP=38 defect_img_idx=90
-EP=38 defect_img_idx=91
-EP=38 defect_img_idx=92
-EP=38 defect_img_idx=93
-EP=38 defect_img_idx=94
-EP=38 defect_img_idx=95
-EP=38 defect_img_idx=96
-EP=38 defect_img_idx=97
-EP=38 defect_img_idx=98
-EP=38 defect_img_idx=99
-EP=38 defect_img_idx=100
-EP=38 defect_img_idx=101
-EP=38 defect_img_idx=102
-EP=38 defect_img_idx=103
-EP=38 defect_img_idx=104
-EP=38 defect_img_idx=105
-EP=38 defect_img_idx=106
-EP=38 defect_img_idx=107
-EP=38 defect_img_idx=108
-EP=38 defect_img_idx=109
-EP=38 defect_img_idx=110
-EP=38 defect_img_idx=111
-EP=38 defect_img_idx=112
-EP=38 defect_img_idx=113
-EP=38 defect_img_idx=114
-EP=38 defect_img_idx=115
-EP=38 defect_img_idx=116
-EP=38 defect_img_idx=117
-EP=38 defect_img_idx=118
-EP=38 defect_img_idx=119
-EP=38 defect_img_idx=120
-EP=38 defect_img_idx=121
-EP=38 defect_img_idx=122
-EP=38 defect_img_idx=123
-EP=38 defect_img_idx=124
-EP=38 defect_img_idx=125
-EP=38 defect_img_idx=126
-EP=38 defect_img_idx=127
-EP=38 defect_img_idx=128
-EP=38 defect_img_idx=129
-EP=38 defect_img_idx=130
-EP=38 defect_img_idx=131
-EP=38 defect_img_idx=132
-EP=38 defect_img_idx=133
-EP=38 defect_img_idx=134
-EP=38 defect_img_idx=135
-EP=38 defect_img_idx=136
-EP=38 defect_img_idx=137
-EP=38 defect_img_idx=138
-EP=38 defect_img_idx=139
-EP=38 defect_img_idx=140
-EP=38 good_img_idx=0
-EP=38 good_img_idx=1
-EP=38 good_img_idx=2
-EP=38 good_img_idx=3
-EP=38 good_img_idx=4
-EP=38 good_img_idx=5
-EP=38 good_img_idx=6
-EP=38 good_img_idx=7
-EP=38 good_img_idx=8
-EP=38 good_img_idx=9
-EP=38 good_img_idx=10
-EP=38 good_img_idx=11
-EP=38 good_img_idx=12
-EP=38 good_img_idx=13
-EP=38 good_img_idx=14
-EP=38 good_img_idx=15
-EP=38 good_img_idx=16
-EP=38 good_img_idx=17
-EP=38 good_img_idx=18
-EP=38 good_img_idx=19
-EP=38 good_img_idx=20
-EP=38 good_img_idx=21
-EP=38 good_img_idx=22
-EP=38 good_img_idx=23
-EP=38 good_img_idx=24
-EP=38 good_img_idx=25
-Multi Map AUC score for testing data pill: 0.8499907893160372
------ defect -----
-eval phase: img idx=0
-spend 92.3512933254242
-eval phase: img idx=1
-spend 86.81470489501953
-eval phase: img idx=2
-spend 86.87301445007324
-eval phase: img idx=3
-spend 86.82062482833862
-eval phase: img idx=4
-spend 86.68217468261719
-eval phase: img idx=5
-spend 86.85308241844177
-eval phase: img idx=6
-spend 86.7262487411499
-eval phase: img idx=7
-spend 86.82345700263977
-eval phase: img idx=8
-spend 86.8511598110199
-eval phase: img idx=9
-spend 86.87070298194885
-eval phase: img idx=10
-spend 86.83754110336304
-eval phase: img idx=11
-spend 86.78202819824219
-eval phase: img idx=12
-spend 86.93475580215454
-eval phase: img idx=13
-spend 86.87360382080078
-eval phase: img idx=14
-spend 86.9864661693573
-eval phase: img idx=15
-spend 86.55087947845459
-eval phase: img idx=16
-spend 86.66414165496826
-eval phase: img idx=17
-spend 86.79267430305481
-eval phase: img idx=18
-spend 86.57620882987976
-eval phase: img idx=19
-spend 86.67402815818787
-eval phase: img idx=20
-spend 86.65735101699829
-eval phase: img idx=21
-spend 86.64419794082642
-eval phase: img idx=22
-spend 86.66244864463806
-eval phase: img idx=23
-spend 86.61930680274963
-eval phase: img idx=24
-spend 86.69833612442017
-eval phase: img idx=25
-spend 86.66032528877258
-eval phase: img idx=26
-spend 86.71874213218689
-eval phase: img idx=27
-spend 86.64392828941345
-eval phase: img idx=28
-spend 86.55215454101562
-eval phase: img idx=29
-spend 86.54799437522888
-eval phase: img idx=30
-spend 86.71085214614868
-eval phase: img idx=31
-spend 86.52239274978638
-eval phase: img idx=32
-spend 86.65997433662415
-eval phase: img idx=33
-spend 86.67356252670288
-eval phase: img idx=34
-spend 86.73496103286743
-eval phase: img idx=35
-spend 86.72486186027527
-eval phase: img idx=36
-spend 86.71230554580688
-eval phase: img idx=37
-spend 86.6686635017395
-eval phase: img idx=38
-spend 86.61060690879822
-eval phase: img idx=39
-spend 86.75415420532227
-eval phase: img idx=40
-spend 86.69474911689758
-eval phase: img idx=41
-spend 86.67105102539062
-eval phase: img idx=42
-spend 86.64068388938904
-eval phase: img idx=43
-spend 86.67023062705994
-eval phase: img idx=44
-spend 86.63694500923157
-eval phase: img idx=45
-spend 86.6936948299408
-eval phase: img idx=46
-spend 86.72515034675598
-eval phase: img idx=47
-spend 86.65474653244019
-eval phase: img idx=48
-spend 86.70777034759521
-eval phase: img idx=49
-spend 86.70192646980286
-eval phase: img idx=50
-spend 86.81338572502136
-eval phase: img idx=51
-spend 86.86318874359131
-eval phase: img idx=52
-spend 86.80221891403198
-eval phase: img idx=53
-spend 86.94746589660645
-eval phase: img idx=54
-spend 86.51142382621765
-eval phase: img idx=55
-spend 86.59927010536194
-eval phase: img idx=56
-spend 86.55541157722473
-eval phase: img idx=57
-spend 86.65418791770935
-eval phase: img idx=58
-spend 86.71636605262756
-eval phase: img idx=59
-spend 86.52401041984558
-eval phase: img idx=60
-spend 86.67380475997925
-eval phase: img idx=61
-spend 86.87417459487915
-eval phase: img idx=62
-spend 86.65189933776855
-eval phase: img idx=63
-spend 86.7395851612091
-eval phase: img idx=64
-spend 86.77877402305603
-eval phase: img idx=65
-spend 86.86777687072754
-eval phase: img idx=66
-spend 86.7667670249939
-eval phase: img idx=67
-spend 86.66803503036499
-eval phase: img idx=68
-spend 86.74210834503174
-eval phase: img idx=69
-spend 86.68319320678711
-eval phase: img idx=70
-spend 86.79222297668457
-eval phase: img idx=71
-spend 86.77322483062744
-eval phase: img idx=72
-spend 86.58220839500427
-eval phase: img idx=73
-spend 86.86118578910828
-eval phase: img idx=74
-spend 86.60471987724304
-eval phase: img idx=75
-spend 86.62894105911255
-eval phase: img idx=76
-spend 86.79301023483276
-eval phase: img idx=77
-spend 86.78347134590149
-eval phase: img idx=78
-spend 86.700270652771
-eval phase: img idx=79
-spend 86.67022895812988
-eval phase: img idx=80
-spend 86.81638956069946
-eval phase: img idx=81
-spend 86.7165937423706
-eval phase: img idx=82
-spend 86.64067506790161
-eval phase: img idx=83
-spend 86.62650537490845
-eval phase: img idx=84
-spend 86.60199737548828
-eval phase: img idx=85
-spend 86.70324206352234
-eval phase: img idx=86
-spend 86.91632676124573
-eval phase: img idx=87
-spend 86.87915873527527
-eval phase: img idx=88
-spend 86.56868577003479
-eval phase: img idx=89
-spend 86.68949866294861
-eval phase: img idx=90
-spend 86.69547128677368
-eval phase: img idx=91
-spend 86.74782800674438
-eval phase: img idx=92
-spend 86.78746557235718
-eval phase: img idx=93
-spend 86.82311058044434
-eval phase: img idx=94
-spend 86.5660457611084
-eval phase: img idx=95
-spend 86.74884819984436
-eval phase: img idx=96
-spend 86.7991943359375
-eval phase: img idx=97
-spend 86.73454236984253
-eval phase: img idx=98
-spend 86.7115581035614
-eval phase: img idx=99
-spend 86.69162321090698
-eval phase: img idx=100
-spend 86.62609553337097
-eval phase: img idx=101
-spend 86.60852766036987
-eval phase: img idx=102
-spend 86.64760208129883
-eval phase: img idx=103
-spend 86.66661787033081
-eval phase: img idx=104
-spend 86.6559522151947
-eval phase: img idx=105
-spend 86.73068499565125
-eval phase: img idx=106
-spend 86.87685632705688
-eval phase: img idx=107
-spend 86.80210375785828
-eval phase: img idx=108
-spend 86.80263686180115
-eval phase: img idx=109
-spend 86.6015944480896
-eval phase: img idx=110
-spend 86.68505907058716
-eval phase: img idx=111
-spend 86.69749355316162
-eval phase: img idx=112
-spend 86.75495052337646
-eval phase: img idx=113
-spend 86.57838988304138
-eval phase: img idx=114
-spend 86.7791702747345
-eval phase: img idx=115
-spend 86.73107504844666
-eval phase: img idx=116
-spend 86.65683341026306
-eval phase: img idx=117
-spend 86.6894428730011
-eval phase: img idx=118
-spend 86.65001654624939
-(119, 1024, 1024)
------ good -----
-eval phase: img idx=0
-spend 86.7885594367981
-eval phase: img idx=1
-spend 86.5499997138977
-eval phase: img idx=2
-spend 86.69689774513245
-eval phase: img idx=3
-spend 86.54839944839478
-eval phase: img idx=4
-spend 86.62972736358643
-eval phase: img idx=5
-spend 86.66615343093872
-eval phase: img idx=6
-spend 86.58162784576416
-eval phase: img idx=7
-spend 86.62142705917358
-eval phase: img idx=8
-spend 86.59705090522766
-eval phase: img idx=9
-spend 86.52420735359192
-eval phase: img idx=10
-spend 86.68779158592224
-eval phase: img idx=11
-spend 86.69312644004822
-eval phase: img idx=12
-spend 86.5285701751709
-eval phase: img idx=13
-spend 86.64827084541321
-eval phase: img idx=14
-spend 86.64374351501465
-eval phase: img idx=15
-spend 86.79802536964417
-eval phase: img idx=16
-spend 86.39752507209778
-eval phase: img idx=17
-spend 86.16164231300354
-eval phase: img idx=18
-spend 85.54167461395264
-eval phase: img idx=19
-spend 85.69742441177368
-eval phase: img idx=20
-spend 85.62539219856262
-eval phase: img idx=21
-spend 85.56269192695618
-eval phase: img idx=22
-spend 85.77137660980225
-eval phase: img idx=23
-spend 85.68688225746155
-eval phase: img idx=24
-spend 85.65849018096924
-eval phase: img idx=25
-spend 85.83524489402771
-eval phase: img idx=26
-spend 85.48264861106873
-eval phase: img idx=27
-spend 85.66795492172241
-eval phase: img idx=28
-spend 85.72299790382385
-eval phase: img idx=29
-spend 85.87758946418762
-eval phase: img idx=30
-spend 85.517165184021
-eval phase: img idx=31
-spend 85.41059803962708
-eval phase: img idx=32
-spend 85.606760263443
-eval phase: img idx=33
-spend 85.77524828910828
-eval phase: img idx=34
-spend 85.58891868591309
-eval phase: img idx=35
-spend 85.82198667526245
-eval phase: img idx=36
-spend 85.63310623168945
-eval phase: img idx=37
-spend 85.62135648727417
-eval phase: img idx=38
-spend 85.7309627532959
-eval phase: img idx=39
-spend 85.64988923072815
-eval phase: img idx=40
-spend 85.58270692825317
-(41, 1024, 1024)
-EP=32 defect_img_idx=0
-EP=32 defect_img_idx=1
-EP=32 defect_img_idx=2
-EP=32 defect_img_idx=3
-EP=32 defect_img_idx=4
-EP=32 defect_img_idx=5
-EP=32 defect_img_idx=6
-EP=32 defect_img_idx=7
-EP=32 defect_img_idx=8
-EP=32 defect_img_idx=9
-EP=32 defect_img_idx=10
-EP=32 defect_img_idx=11
-EP=32 defect_img_idx=12
-EP=32 defect_img_idx=13
-EP=32 defect_img_idx=14
-EP=32 defect_img_idx=15
-EP=32 defect_img_idx=16
-EP=32 defect_img_idx=17
-EP=32 defect_img_idx=18
-EP=32 defect_img_idx=19
-EP=32 defect_img_idx=20
-EP=32 defect_img_idx=21
-EP=32 defect_img_idx=22
-EP=32 defect_img_idx=23
-EP=32 defect_img_idx=24
-EP=32 defect_img_idx=25
-EP=32 defect_img_idx=26
-EP=32 defect_img_idx=27
-EP=32 defect_img_idx=28
-EP=32 defect_img_idx=29
-EP=32 defect_img_idx=30
-EP=32 defect_img_idx=31
-EP=32 defect_img_idx=32
-EP=32 defect_img_idx=33
-EP=32 defect_img_idx=34
-EP=32 defect_img_idx=35
-EP=32 defect_img_idx=36
-EP=32 defect_img_idx=37
-EP=32 defect_img_idx=38
-EP=32 defect_img_idx=39
-EP=32 defect_img_idx=40
-EP=32 defect_img_idx=41
-EP=32 defect_img_idx=42
-EP=32 defect_img_idx=43
-EP=32 defect_img_idx=44
-EP=32 defect_img_idx=45
-EP=32 defect_img_idx=46
-EP=32 defect_img_idx=47
-EP=32 defect_img_idx=48
-EP=32 defect_img_idx=49
-EP=32 defect_img_idx=50
-EP=32 defect_img_idx=51
-EP=32 defect_img_idx=52
-EP=32 defect_img_idx=53
-EP=32 defect_img_idx=54
-EP=32 defect_img_idx=55
-EP=32 defect_img_idx=56
-EP=32 defect_img_idx=57
-EP=32 defect_img_idx=58
-EP=32 defect_img_idx=59
-EP=32 defect_img_idx=60
-EP=32 defect_img_idx=61
-EP=32 defect_img_idx=62
-EP=32 defect_img_idx=63
-EP=32 defect_img_idx=64
-EP=32 defect_img_idx=65
-EP=32 defect_img_idx=66
-EP=32 defect_img_idx=67
-EP=32 defect_img_idx=68
-EP=32 defect_img_idx=69
-EP=32 defect_img_idx=70
-EP=32 defect_img_idx=71
-EP=32 defect_img_idx=72
-EP=32 defect_img_idx=73
-EP=32 defect_img_idx=74
-EP=32 defect_img_idx=75
-EP=32 defect_img_idx=76
-EP=32 defect_img_idx=77
-EP=32 defect_img_idx=78
-EP=32 defect_img_idx=79
-EP=32 defect_img_idx=80
-EP=32 defect_img_idx=81
-EP=32 defect_img_idx=82
-EP=32 defect_img_idx=83
-EP=32 defect_img_idx=84
-EP=32 defect_img_idx=85
-EP=32 defect_img_idx=86
-EP=32 defect_img_idx=87
-EP=32 defect_img_idx=88
-EP=32 defect_img_idx=89
-EP=32 defect_img_idx=90
-EP=32 defect_img_idx=91
-EP=32 defect_img_idx=92
-EP=32 defect_img_idx=93
-EP=32 defect_img_idx=94
-EP=32 defect_img_idx=95
-EP=32 defect_img_idx=96
-EP=32 defect_img_idx=97
-EP=32 defect_img_idx=98
-EP=32 defect_img_idx=99
-EP=32 defect_img_idx=100
-EP=32 defect_img_idx=101
-EP=32 defect_img_idx=102
-EP=32 defect_img_idx=103
-EP=32 defect_img_idx=104
-EP=32 defect_img_idx=105
-EP=32 defect_img_idx=106
-EP=32 defect_img_idx=107
-EP=32 defect_img_idx=108
-EP=32 defect_img_idx=109
-EP=32 defect_img_idx=110
-EP=32 defect_img_idx=111
-EP=32 defect_img_idx=112
-EP=32 defect_img_idx=113
-EP=32 defect_img_idx=114
-EP=32 defect_img_idx=115
-EP=32 defect_img_idx=116
-EP=32 defect_img_idx=117
-EP=32 defect_img_idx=118
-EP=32 good_img_idx=0
-EP=32 good_img_idx=1
-EP=32 good_img_idx=2
-EP=32 good_img_idx=3
-EP=32 good_img_idx=4
-EP=32 good_img_idx=5
-EP=32 good_img_idx=6
-EP=32 good_img_idx=7
-EP=32 good_img_idx=8
-EP=32 good_img_idx=9
-EP=32 good_img_idx=10
-EP=32 good_img_idx=11
-EP=32 good_img_idx=12
-EP=32 good_img_idx=13
-EP=32 good_img_idx=14
-EP=32 good_img_idx=15
-EP=32 good_img_idx=16
-EP=32 good_img_idx=17
-EP=32 good_img_idx=18
-EP=32 good_img_idx=19
-EP=32 good_img_idx=20
-EP=32 good_img_idx=21
-EP=32 good_img_idx=22
-EP=32 good_img_idx=23
-EP=32 good_img_idx=24
-EP=32 good_img_idx=25
-EP=32 good_img_idx=26
-EP=32 good_img_idx=27
-EP=32 good_img_idx=28
-EP=32 good_img_idx=29
-EP=32 good_img_idx=30
-EP=32 good_img_idx=31
-EP=32 good_img_idx=32
-EP=32 good_img_idx=33
-EP=32 good_img_idx=34
-EP=32 good_img_idx=35
-EP=32 good_img_idx=36
-EP=32 good_img_idx=37
-EP=32 good_img_idx=38
-EP=32 good_img_idx=39
-EP=32 good_img_idx=40
-Multi Map AUC score for testing data screw: 0.9699637661414329
------ defect -----
-eval phase: img idx=0
-spend 92.07996439933777
-eval phase: img idx=1
-spend 86.64561581611633
-eval phase: img idx=2
-spend 86.78596806526184
-eval phase: img idx=3
-spend 86.76987147331238
-eval phase: img idx=4
-spend 86.78074979782104
-eval phase: img idx=5
-spend 86.70381450653076
-eval phase: img idx=6
-spend 86.76159429550171
-eval phase: img idx=7
-spend 86.91301250457764
-eval phase: img idx=8
-spend 86.7879490852356
-eval phase: img idx=9
-spend 87.0318500995636
-eval phase: img idx=10
-spend 86.85146427154541
-eval phase: img idx=11
-spend 86.74978590011597
-eval phase: img idx=12
-spend 87.03899574279785
-eval phase: img idx=13
-spend 87.0728964805603
-eval phase: img idx=14
-spend 86.92568397521973
-eval phase: img idx=15
-spend 86.78193044662476
-eval phase: img idx=16
-spend 86.9744884967804
-eval phase: img idx=17
-spend 86.85930395126343
-eval phase: img idx=18
-spend 87.02049231529236
-eval phase: img idx=19
-spend 86.97978377342224
-eval phase: img idx=20
-spend 86.98544526100159
-eval phase: img idx=21
-spend 86.95658755302429
-eval phase: img idx=22
-spend 87.03284692764282
-eval phase: img idx=23
-spend 87.5090856552124
-eval phase: img idx=24
-spend 86.99284958839417
-eval phase: img idx=25
-spend 87.12840628623962
-eval phase: img idx=26
-spend 87.04581546783447
-eval phase: img idx=27
-spend 87.0507538318634
-eval phase: img idx=28
-spend 87.03554964065552
-eval phase: img idx=29
-spend 87.15675282478333
-(30, 1024, 1024)
------ good -----
-eval phase: img idx=0
-spend 87.06898522377014
-eval phase: img idx=1
-spend 87.11179208755493
-eval phase: img idx=2
-spend 86.92259550094604
-eval phase: img idx=3
-spend 87.01673221588135
-eval phase: img idx=4
-spend 87.03624749183655
-eval phase: img idx=5
-spend 87.2197196483612
-eval phase: img idx=6
-spend 86.94282364845276
-eval phase: img idx=7
-spend 86.9996657371521
-eval phase: img idx=8
-spend 87.18787002563477
-eval phase: img idx=9
-spend 87.4196469783783
-eval phase: img idx=10
-spend 87.09237170219421
-eval phase: img idx=11
-spend 87.2476053237915
-(12, 1024, 1024)
-EP=29 defect_img_idx=0
-EP=29 defect_img_idx=1
-EP=29 defect_img_idx=2
-EP=29 defect_img_idx=3
-EP=29 defect_img_idx=4
-EP=29 defect_img_idx=5
-EP=29 defect_img_idx=6
-EP=29 defect_img_idx=7
-EP=29 defect_img_idx=8
-EP=29 defect_img_idx=9
-EP=29 defect_img_idx=10
-EP=29 defect_img_idx=11
-EP=29 defect_img_idx=12
-EP=29 defect_img_idx=13
-EP=29 defect_img_idx=14
-EP=29 defect_img_idx=15
-EP=29 defect_img_idx=16
-EP=29 defect_img_idx=17
-EP=29 defect_img_idx=18
-EP=29 defect_img_idx=19
-EP=29 defect_img_idx=20
-EP=29 defect_img_idx=21
-EP=29 defect_img_idx=22
-EP=29 defect_img_idx=23
-EP=29 defect_img_idx=24
-EP=29 defect_img_idx=25
-EP=29 defect_img_idx=26
-EP=29 defect_img_idx=27
-EP=29 defect_img_idx=28
-EP=29 defect_img_idx=29
-EP=29 good_img_idx=0
-EP=29 good_img_idx=1
-EP=29 good_img_idx=2
-EP=29 good_img_idx=3
-EP=29 good_img_idx=4
-EP=29 good_img_idx=5
-EP=29 good_img_idx=6
-EP=29 good_img_idx=7
-EP=29 good_img_idx=8
-EP=29 good_img_idx=9
-EP=29 good_img_idx=10
-EP=29 good_img_idx=11
-Multi Map AUC score for testing data toothbrush: 0.9220644286415011
------ defect -----
-eval phase: img idx=0
-spend 75.82751965522766
-eval phase: img idx=1
-spend 70.73730421066284
-eval phase: img idx=2
-spend 70.47178816795349
-eval phase: img idx=3
-spend 70.78999471664429
-eval phase: img idx=4
-spend 70.67976403236389
-eval phase: img idx=5
-spend 70.44425082206726
-eval phase: img idx=6
-spend 70.53495812416077
-eval phase: img idx=7
-spend 70.42411160469055
-eval phase: img idx=8
-spend 70.57944893836975
-eval phase: img idx=9
-spend 70.6665198802948
-eval phase: img idx=10
-spend 70.78515863418579
-eval phase: img idx=11
-spend 70.63972425460815
-eval phase: img idx=12
-spend 70.37944626808167
-eval phase: img idx=13
-spend 70.6443829536438
-eval phase: img idx=14
-spend 70.57360816001892
-eval phase: img idx=15
-spend 70.6398491859436
-eval phase: img idx=16
-spend 70.89546298980713
-eval phase: img idx=17
-spend 70.63655376434326
-eval phase: img idx=18
-spend 70.6838493347168
-eval phase: img idx=19
-spend 70.73988103866577
-eval phase: img idx=20
-spend 70.71224689483643
-eval phase: img idx=21
-spend 70.52877807617188
-eval phase: img idx=22
-spend 70.69625639915466
-eval phase: img idx=23
-spend 70.86249876022339
-eval phase: img idx=24
-spend 71.05339622497559
-eval phase: img idx=25
-spend 70.67210245132446
-eval phase: img idx=26
-spend 71.02110242843628
-eval phase: img idx=27
-spend 71.00138211250305
-eval phase: img idx=28
-spend 70.77949118614197
-eval phase: img idx=29
-spend 71.00104212760925
-eval phase: img idx=30
-spend 71.0902931690216
-eval phase: img idx=31
-spend 71.2211663722992
-eval phase: img idx=32
-spend 70.81137371063232
-eval phase: img idx=33
-spend 70.88111925125122
-eval phase: img idx=34
-spend 71.3093490600586
-eval phase: img idx=35
-spend 70.98143935203552
-eval phase: img idx=36
-spend 70.63665819168091
-eval phase: img idx=37
-spend 70.73145699501038
-eval phase: img idx=38
-spend 70.72174954414368
-eval phase: img idx=39
-spend 70.55377078056335
-eval phase: img idx=40
-spend 70.86427617073059
-eval phase: img idx=41
-spend 70.67817616462708
-eval phase: img idx=42
-spend 70.91602396965027
-eval phase: img idx=43
-spend 70.72203969955444
-eval phase: img idx=44
-spend 70.77404642105103
-eval phase: img idx=45
-spend 70.78791308403015
-eval phase: img idx=46
-spend 70.76732563972473
-eval phase: img idx=47
-spend 70.93877696990967
-eval phase: img idx=48
-spend 70.59104824066162
-eval phase: img idx=49
-spend 70.85817956924438
-eval phase: img idx=50
-spend 70.67925000190735
-eval phase: img idx=51
-spend 70.41518831253052
-eval phase: img idx=52
-spend 69.78483152389526
-eval phase: img idx=53
-spend 69.66293597221375
-eval phase: img idx=54
-spend 69.46624183654785
-eval phase: img idx=55
-spend 69.64338636398315
-eval phase: img idx=56
-spend 69.46017909049988
-eval phase: img idx=57
-spend 69.23408102989197
-eval phase: img idx=58
-spend 69.43241548538208
-eval phase: img idx=59
-spend 69.1522924900055
-eval phase: img idx=60
-spend 69.22230267524719
-eval phase: img idx=61
-spend 69.40990424156189
-eval phase: img idx=62
-spend 69.53969168663025
-eval phase: img idx=63
-spend 69.44191145896912
-eval phase: img idx=64
-spend 69.41453886032104
-eval phase: img idx=65
-spend 69.4114601612091
-eval phase: img idx=66
-spend 69.294837474823
-eval phase: img idx=67
-spend 69.46449160575867
-eval phase: img idx=68
-spend 69.55927848815918
-eval phase: img idx=69
-spend 69.42571330070496
-eval phase: img idx=70
-spend 69.49651312828064
-eval phase: img idx=71
-spend 69.59848070144653
-eval phase: img idx=72
-spend 69.51266598701477
-eval phase: img idx=73
-spend 69.44730997085571
-eval phase: img idx=74
-spend 69.3553352355957
-eval phase: img idx=75
-spend 69.50707030296326
-eval phase: img idx=76
-spend 69.3091344833374
-eval phase: img idx=77
-spend 69.45096015930176
-eval phase: img idx=78
-spend 69.36810564994812
-eval phase: img idx=79
-spend 69.32985973358154
-eval phase: img idx=80
-spend 69.46499609947205
-eval phase: img idx=81
-spend 69.63784050941467
-eval phase: img idx=82
-spend 69.45108819007874
-eval phase: img idx=83
-spend 69.42529249191284
+spend 70.32422971725464
 (84, 1024, 1024)
 ----- good -----
 eval phase: img idx=0
-spend 69.51115679740906
+spend 70.2936270236969
 eval phase: img idx=1
-spend 69.49020099639893
+spend 70.32208514213562
 eval phase: img idx=2
-spend 69.44908237457275
+spend 70.50342655181885
 eval phase: img idx=3
-spend 69.44798564910889
+spend 70.16584777832031
 eval phase: img idx=4
-spend 69.25654482841492
+spend 70.19594240188599
 eval phase: img idx=5
-spend 69.5216224193573
+spend 70.35407972335815
 eval phase: img idx=6
-spend 69.11010360717773
+spend 70.39708280563354
 eval phase: img idx=7
-spend 69.52713942527771
+spend 70.16308188438416
 eval phase: img idx=8
-spend 69.48129725456238
+spend 70.30007696151733
 eval phase: img idx=9
-spend 69.43584871292114
+spend 70.07782411575317
 eval phase: img idx=10
-spend 69.43862652778625
+spend 70.35977983474731
 eval phase: img idx=11
-spend 69.45501971244812
+spend 70.27818751335144
 eval phase: img idx=12
-spend 69.30737566947937
+spend 70.44021415710449
 eval phase: img idx=13
-spend 69.58169531822205
+spend 70.24208903312683
 eval phase: img idx=14
-spend 69.40446758270264
+spend 70.0287299156189
 eval phase: img idx=15
-spend 69.365318775177
+spend 70.17164850234985
 eval phase: img idx=16
-spend 69.44241166114807
+spend 70.4518494606018
 eval phase: img idx=17
-spend 69.44015455245972
+spend 70.37336993217468
 eval phase: img idx=18
-spend 69.26757073402405
+spend 70.2151083946228
 eval phase: img idx=19
-spend 69.17881536483765
+spend 70.14406514167786
 eval phase: img idx=20
-spend 69.40917301177979
+spend 70.3330180644989
 eval phase: img idx=21
-spend 69.41442251205444
+spend 70.19349122047424
 eval phase: img idx=22
-spend 69.41834163665771
+spend 70.19823336601257
 eval phase: img idx=23
-spend 69.50581383705139
+spend 70.32005429267883
 eval phase: img idx=24
-spend 69.41410183906555
+spend 70.35512852668762
 eval phase: img idx=25
-spend 69.35320472717285
+spend 70.22500395774841
 eval phase: img idx=26
-spend 69.48949861526489
+spend 70.2329273223877
 eval phase: img idx=27
-spend 69.33683490753174
+spend 70.13925218582153
 eval phase: img idx=28
-spend 69.48761248588562
+spend 70.14005923271179
 eval phase: img idx=29
-spend 69.45627856254578
+spend 70.27599215507507
 eval phase: img idx=30
-spend 69.4476089477539
+spend 70.14326643943787
 eval phase: img idx=31
-spend 69.30541372299194
+spend 70.34445071220398
 eval phase: img idx=32
-spend 69.24512028694153
+spend 70.47694540023804
 (33, 1024, 1024)
-EP=6 defect_img_idx=0
-EP=6 defect_img_idx=1
-EP=6 defect_img_idx=2
-EP=6 defect_img_idx=3
-EP=6 defect_img_idx=4
-EP=6 defect_img_idx=5
-EP=6 defect_img_idx=6
-EP=6 defect_img_idx=7
-EP=6 defect_img_idx=8
-EP=6 defect_img_idx=9
-EP=6 defect_img_idx=10
-EP=6 defect_img_idx=11
-EP=6 defect_img_idx=12
-EP=6 defect_img_idx=13
-EP=6 defect_img_idx=14
-EP=6 defect_img_idx=15
-EP=6 defect_img_idx=16
-EP=6 defect_img_idx=17
-EP=6 defect_img_idx=18
-EP=6 defect_img_idx=19
-EP=6 defect_img_idx=20
-EP=6 defect_img_idx=21
-EP=6 defect_img_idx=22
-EP=6 defect_img_idx=23
-EP=6 defect_img_idx=24
-EP=6 defect_img_idx=25
-EP=6 defect_img_idx=26
-EP=6 defect_img_idx=27
-EP=6 defect_img_idx=28
-EP=6 defect_img_idx=29
-EP=6 defect_img_idx=30
-EP=6 defect_img_idx=31
-EP=6 defect_img_idx=32
-EP=6 defect_img_idx=33
-EP=6 defect_img_idx=34
-EP=6 defect_img_idx=35
-EP=6 defect_img_idx=36
-EP=6 defect_img_idx=37
-EP=6 defect_img_idx=38
-EP=6 defect_img_idx=39
-EP=6 defect_img_idx=40
-EP=6 defect_img_idx=41
-EP=6 defect_img_idx=42
-EP=6 defect_img_idx=43
-EP=6 defect_img_idx=44
-EP=6 defect_img_idx=45
-EP=6 defect_img_idx=46
-EP=6 defect_img_idx=47
-EP=6 defect_img_idx=48
-EP=6 defect_img_idx=49
-EP=6 defect_img_idx=50
-EP=6 defect_img_idx=51
-EP=6 defect_img_idx=52
-EP=6 defect_img_idx=53
-EP=6 defect_img_idx=54
-EP=6 defect_img_idx=55
-EP=6 defect_img_idx=56
-EP=6 defect_img_idx=57
-EP=6 defect_img_idx=58
-EP=6 defect_img_idx=59
-EP=6 defect_img_idx=60
-EP=6 defect_img_idx=61
-EP=6 defect_img_idx=62
-EP=6 defect_img_idx=63
-EP=6 defect_img_idx=64
-EP=6 defect_img_idx=65
-EP=6 defect_img_idx=66
-EP=6 defect_img_idx=67
-EP=6 defect_img_idx=68
-EP=6 defect_img_idx=69
-EP=6 defect_img_idx=70
-EP=6 defect_img_idx=71
-EP=6 defect_img_idx=72
-EP=6 defect_img_idx=73
-EP=6 defect_img_idx=74
-EP=6 defect_img_idx=75
-EP=6 defect_img_idx=76
-EP=6 defect_img_idx=77
-EP=6 defect_img_idx=78
-EP=6 defect_img_idx=79
-EP=6 defect_img_idx=80
-EP=6 defect_img_idx=81
-EP=6 defect_img_idx=82
-EP=6 defect_img_idx=83
-EP=6 good_img_idx=0
-EP=6 good_img_idx=1
-EP=6 good_img_idx=2
-EP=6 good_img_idx=3
-EP=6 good_img_idx=4
-EP=6 good_img_idx=5
-EP=6 good_img_idx=6
-EP=6 good_img_idx=7
-EP=6 good_img_idx=8
-EP=6 good_img_idx=9
-EP=6 good_img_idx=10
-EP=6 good_img_idx=11
-EP=6 good_img_idx=12
-EP=6 good_img_idx=13
-EP=6 good_img_idx=14
-EP=6 good_img_idx=15
-EP=6 good_img_idx=16
-EP=6 good_img_idx=17
-EP=6 good_img_idx=18
-EP=6 good_img_idx=19
-EP=6 good_img_idx=20
-EP=6 good_img_idx=21
-EP=6 good_img_idx=22
-EP=6 good_img_idx=23
-EP=6 good_img_idx=24
-EP=6 good_img_idx=25
-EP=6 good_img_idx=26
-EP=6 good_img_idx=27
-EP=6 good_img_idx=28
-EP=6 good_img_idx=29
-EP=6 good_img_idx=30
-EP=6 good_img_idx=31
-EP=6 good_img_idx=32
-Multi Map AUC score for testing data tile: 0.8823193204307718
+EP=33 defect_img_idx=0
+EP=33 defect_img_idx=1
+EP=33 defect_img_idx=2
+EP=33 defect_img_idx=3
+EP=33 defect_img_idx=4
+EP=33 defect_img_idx=5
+EP=33 defect_img_idx=6
+EP=33 defect_img_idx=7
+EP=33 defect_img_idx=8
+EP=33 defect_img_idx=9
+EP=33 defect_img_idx=10
+EP=33 defect_img_idx=11
+EP=33 defect_img_idx=12
+EP=33 defect_img_idx=13
+EP=33 defect_img_idx=14
+EP=33 defect_img_idx=15
+EP=33 defect_img_idx=16
+EP=33 defect_img_idx=17
+EP=33 defect_img_idx=18
+EP=33 defect_img_idx=19
+EP=33 defect_img_idx=20
+EP=33 defect_img_idx=21
+EP=33 defect_img_idx=22
+EP=33 defect_img_idx=23
+EP=33 defect_img_idx=24
+EP=33 defect_img_idx=25
+EP=33 defect_img_idx=26
+EP=33 defect_img_idx=27
+EP=33 defect_img_idx=28
+EP=33 defect_img_idx=29
+EP=33 defect_img_idx=30
+EP=33 defect_img_idx=31
+EP=33 defect_img_idx=32
+EP=33 defect_img_idx=33
+EP=33 defect_img_idx=34
+EP=33 defect_img_idx=35
+EP=33 defect_img_idx=36
+EP=33 defect_img_idx=37
+EP=33 defect_img_idx=38
+EP=33 defect_img_idx=39
+EP=33 defect_img_idx=40
+EP=33 defect_img_idx=41
+EP=33 defect_img_idx=42
+EP=33 defect_img_idx=43
+EP=33 defect_img_idx=44
+EP=33 defect_img_idx=45
+EP=33 defect_img_idx=46
+EP=33 defect_img_idx=47
+EP=33 defect_img_idx=48
+EP=33 defect_img_idx=49
+EP=33 defect_img_idx=50
+EP=33 defect_img_idx=51
+EP=33 defect_img_idx=52
+EP=33 defect_img_idx=53
+EP=33 defect_img_idx=54
+EP=33 defect_img_idx=55
+EP=33 defect_img_idx=56
+EP=33 defect_img_idx=57
+EP=33 defect_img_idx=58
+EP=33 defect_img_idx=59
+EP=33 defect_img_idx=60
+EP=33 defect_img_idx=61
+EP=33 defect_img_idx=62
+EP=33 defect_img_idx=63
+EP=33 defect_img_idx=64
+EP=33 defect_img_idx=65
+EP=33 defect_img_idx=66
+EP=33 defect_img_idx=67
+EP=33 defect_img_idx=68
+EP=33 defect_img_idx=69
+EP=33 defect_img_idx=70
+EP=33 defect_img_idx=71
+EP=33 defect_img_idx=72
+EP=33 defect_img_idx=73
+EP=33 defect_img_idx=74
+EP=33 defect_img_idx=75
+EP=33 defect_img_idx=76
+EP=33 defect_img_idx=77
+EP=33 defect_img_idx=78
+EP=33 defect_img_idx=79
+EP=33 defect_img_idx=80
+EP=33 defect_img_idx=81
+EP=33 defect_img_idx=82
+EP=33 defect_img_idx=83
+EP=33 good_img_idx=0
+EP=33 good_img_idx=1
+EP=33 good_img_idx=2
+EP=33 good_img_idx=3
+EP=33 good_img_idx=4
+EP=33 good_img_idx=5
+EP=33 good_img_idx=6
+EP=33 good_img_idx=7
+EP=33 good_img_idx=8
+EP=33 good_img_idx=9
+EP=33 good_img_idx=10
+EP=33 good_img_idx=11
+EP=33 good_img_idx=12
+EP=33 good_img_idx=13
+EP=33 good_img_idx=14
+EP=33 good_img_idx=15
+EP=33 good_img_idx=16
+EP=33 good_img_idx=17
+EP=33 good_img_idx=18
+EP=33 good_img_idx=19
+EP=33 good_img_idx=20
+EP=33 good_img_idx=21
+EP=33 good_img_idx=22
+EP=33 good_img_idx=23
+EP=33 good_img_idx=24
+EP=33 good_img_idx=25
+EP=33 good_img_idx=26
+EP=33 good_img_idx=27
+EP=33 good_img_idx=28
+EP=33 good_img_idx=29
+EP=33 good_img_idx=30
+EP=33 good_img_idx=31
+EP=33 good_img_idx=32
+Multi Map AUC score for testing data tile: 0.8387286573170291
 ----- defect -----
 eval phase: img idx=0
-spend 92.07012629508972
+spend 93.88672399520874
 eval phase: img idx=1
-spend 86.98665046691895
+spend 88.14580059051514
 eval phase: img idx=2
-spend 87.18278622627258
+spend 88.24889183044434
 eval phase: img idx=3
-spend 87.22484827041626
+spend 88.07536315917969
 eval phase: img idx=4
-spend 87.1727545261383
+spend 87.90819144248962
 eval phase: img idx=5
-spend 87.09605598449707
+spend 87.9421455860138
 eval phase: img idx=6
-spend 87.05579566955566
+spend 87.90976548194885
 eval phase: img idx=7
-spend 87.20971274375916
+spend 88.1425199508667
 eval phase: img idx=8
-spend 86.97539281845093
+spend 87.90137267112732
 eval phase: img idx=9
-spend 87.21936798095703
+spend 87.83451223373413
 eval phase: img idx=10
-spend 87.55720353126526
+spend 87.18910717964172
 eval phase: img idx=11
-spend 87.35012292861938
+spend 87.30647444725037
 eval phase: img idx=12
-spend 87.21414279937744
+spend 87.30870723724365
 eval phase: img idx=13
-spend 87.16846537590027
+spend 87.20684909820557
 eval phase: img idx=14
-spend 87.11678838729858
+spend 87.40078639984131
 eval phase: img idx=15
-spend 87.76236891746521
+spend 87.22266912460327
 eval phase: img idx=16
-spend 87.22735404968262
+spend 87.16744470596313
 eval phase: img idx=17
-spend 86.89951419830322
+spend 87.19182920455933
 eval phase: img idx=18
-spend 87.16599202156067
+spend 87.3909764289856
 eval phase: img idx=19
-spend 87.17527675628662
+spend 87.37733936309814
 eval phase: img idx=20
-spend 87.60106205940247
+spend 87.3596818447113
 eval phase: img idx=21
-spend 87.30956888198853
+spend 87.42456245422363
 eval phase: img idx=22
-spend 87.34873485565186
+spend 87.2716932296753
 eval phase: img idx=23
-spend 87.25179171562195
+spend 87.16801190376282
 eval phase: img idx=24
-spend 87.0441198348999
+spend 87.204585313797
 eval phase: img idx=25
-spend 87.37495040893555
+spend 87.40530323982239
 eval phase: img idx=26
-spend 87.28370666503906
+spend 87.53358745574951
 eval phase: img idx=27
-spend 87.21627187728882
+spend 87.28667879104614
 eval phase: img idx=28
-spend 87.23700070381165
+spend 87.20492601394653
 eval phase: img idx=29
-spend 87.8798770904541
+spend 87.30515432357788
 eval phase: img idx=30
-spend 87.09885668754578
+spend 87.45832228660583
 eval phase: img idx=31
-spend 87.3440191745758
+spend 87.29897880554199
 eval phase: img idx=32
-spend 87.18484449386597
+spend 87.32005643844604
 eval phase: img idx=33
-spend 87.12669157981873
+spend 87.25069737434387
 eval phase: img idx=34
-spend 87.27813863754272
+spend 87.11602878570557
 eval phase: img idx=35
-spend 87.3115406036377
+spend 87.38394951820374
 eval phase: img idx=36
-spend 87.13031530380249
+spend 87.29154753684998
 eval phase: img idx=37
-spend 87.32510352134705
+spend 87.40476107597351
 eval phase: img idx=38
-spend 87.24918675422668
+spend 87.4037983417511
 eval phase: img idx=39
-spend 87.30714678764343
+spend 87.41005420684814
 eval phase: img idx=40
-spend 87.39892840385437
+spend 87.30194568634033
 eval phase: img idx=41
-spend 87.18705725669861
+spend 87.31078267097473
 eval phase: img idx=42
-spend 87.47736597061157
+spend 87.35940670967102
 eval phase: img idx=43
-spend 87.49078369140625
+spend 87.29018425941467
 eval phase: img idx=44
-spend 87.2051854133606
+spend 87.47632312774658
 eval phase: img idx=45
-spend 87.24614572525024
+spend 87.3812804222107
 eval phase: img idx=46
-spend 87.1388897895813
+spend 87.24755501747131
 eval phase: img idx=47
-spend 86.96489667892456
+spend 87.3684766292572
 eval phase: img idx=48
-spend 87.15825986862183
+spend 87.33607530593872
 eval phase: img idx=49
-spend 87.00860166549683
+spend 87.48228979110718
 eval phase: img idx=50
-spend 87.36239314079285
+spend 87.3469591140747
 eval phase: img idx=51
-spend 87.53461194038391
+spend 87.31568121910095
 eval phase: img idx=52
-spend 87.42215633392334
+spend 87.53887462615967
 eval phase: img idx=53
-spend 87.02463626861572
+spend 87.40600752830505
 eval phase: img idx=54
-spend 87.07595205307007
+spend 87.35636758804321
 eval phase: img idx=55
-spend 87.44068837165833
+spend 87.31212639808655
 eval phase: img idx=56
-spend 87.45872402191162
+spend 87.36412453651428
 eval phase: img idx=57
-spend 86.99461150169373
+spend 87.29267120361328
 eval phase: img idx=58
-spend 87.03421139717102
+spend 87.27611804008484
 eval phase: img idx=59
-spend 87.24018263816833
-(60, 1024, 1024)
------ good -----
-eval phase: img idx=0
-spend 87.42066168785095
-eval phase: img idx=1
-spend 87.06741166114807
-eval phase: img idx=2
-spend 87.34026980400085
-eval phase: img idx=3
-spend 87.10589003562927
-eval phase: img idx=4
-spend 87.21478915214539
-eval phase: img idx=5
-spend 87.19069361686707
-eval phase: img idx=6
-spend 87.08834934234619
-eval phase: img idx=7
-spend 86.9457037448883
-eval phase: img idx=8
-spend 87.24324870109558
-eval phase: img idx=9
-spend 87.26667022705078
-eval phase: img idx=10
-spend 87.08174324035645
-eval phase: img idx=11
-spend 87.31844568252563
-eval phase: img idx=12
-spend 87.12428021430969
-eval phase: img idx=13
-spend 86.97775650024414
-eval phase: img idx=14
-spend 87.521488904953
-eval phase: img idx=15
-spend 87.22744655609131
-eval phase: img idx=16
-spend 87.3235559463501
-eval phase: img idx=17
-spend 87.12787199020386
-eval phase: img idx=18
-spend 87.13789105415344
-(19, 1024, 1024)
-EP=13 defect_img_idx=0
-EP=13 defect_img_idx=1
-EP=13 defect_img_idx=2
-EP=13 defect_img_idx=3
-EP=13 defect_img_idx=4
-EP=13 defect_img_idx=5
-EP=13 defect_img_idx=6
-EP=13 defect_img_idx=7
-EP=13 defect_img_idx=8
-EP=13 defect_img_idx=9
-EP=13 defect_img_idx=10
-EP=13 defect_img_idx=11
-EP=13 defect_img_idx=12
-EP=13 defect_img_idx=13
-EP=13 defect_img_idx=14
-EP=13 defect_img_idx=15
-EP=13 defect_img_idx=16
-EP=13 defect_img_idx=17
-EP=13 defect_img_idx=18
-EP=13 defect_img_idx=19
-EP=13 defect_img_idx=20
-EP=13 defect_img_idx=21
-EP=13 defect_img_idx=22
-EP=13 defect_img_idx=23
-EP=13 defect_img_idx=24
-EP=13 defect_img_idx=25
-EP=13 defect_img_idx=26
-EP=13 defect_img_idx=27
-EP=13 defect_img_idx=28
-EP=13 defect_img_idx=29
-EP=13 defect_img_idx=30
-EP=13 defect_img_idx=31
-EP=13 defect_img_idx=32
-EP=13 defect_img_idx=33
-EP=13 defect_img_idx=34
-EP=13 defect_img_idx=35
-EP=13 defect_img_idx=36
-EP=13 defect_img_idx=37
-EP=13 defect_img_idx=38
-EP=13 defect_img_idx=39
-EP=13 defect_img_idx=40
-EP=13 defect_img_idx=41
-EP=13 defect_img_idx=42
-EP=13 defect_img_idx=43
-EP=13 defect_img_idx=44
-EP=13 defect_img_idx=45
-EP=13 defect_img_idx=46
-EP=13 defect_img_idx=47
-EP=13 defect_img_idx=48
-EP=13 defect_img_idx=49
-EP=13 defect_img_idx=50
-EP=13 defect_img_idx=51
-EP=13 defect_img_idx=52
-EP=13 defect_img_idx=53
-EP=13 defect_img_idx=54
-EP=13 defect_img_idx=55
-EP=13 defect_img_idx=56
-EP=13 defect_img_idx=57
-EP=13 defect_img_idx=58
-EP=13 defect_img_idx=59
-EP=13 good_img_idx=0
-EP=13 good_img_idx=1
-EP=13 good_img_idx=2
-EP=13 good_img_idx=3
-EP=13 good_img_idx=4
-EP=13 good_img_idx=5
-EP=13 good_img_idx=6
-EP=13 good_img_idx=7
-EP=13 good_img_idx=8
-EP=13 good_img_idx=9
-EP=13 good_img_idx=10
-EP=13 good_img_idx=11
-EP=13 good_img_idx=12
-EP=13 good_img_idx=13
-EP=13 good_img_idx=14
-EP=13 good_img_idx=15
-EP=13 good_img_idx=16
-EP=13 good_img_idx=17
-EP=13 good_img_idx=18
-Multi Map AUC score for testing data wood: 0.9484744536061737
------ defect -----
-eval phase: img idx=0
-spend 75.8120768070221
-eval phase: img idx=1
-spend 70.52497482299805
-eval phase: img idx=2
-spend 70.56961560249329
-eval phase: img idx=3
-spend 70.7192702293396
-eval phase: img idx=4
-spend 70.5298159122467
-eval phase: img idx=5
-spend 70.5506272315979
-eval phase: img idx=6
-spend 70.41057229042053
-eval phase: img idx=7
-spend 70.29126024246216
-eval phase: img idx=8
-spend 70.37050700187683
-eval phase: img idx=9
-spend 70.3530924320221
-eval phase: img idx=10
-spend 70.36073422431946
-eval phase: img idx=11
-spend 70.43646597862244
-eval phase: img idx=12
-spend 70.70592451095581
-eval phase: img idx=13
-spend 70.72929430007935
-eval phase: img idx=14
-spend 70.718101978302
-eval phase: img idx=15
-spend 70.69521903991699
-eval phase: img idx=16
-spend 70.89262294769287
-eval phase: img idx=17
-spend 70.33007073402405
-eval phase: img idx=18
-spend 70.79327487945557
-eval phase: img idx=19
-spend 70.73089480400085
-eval phase: img idx=20
-spend 70.73058366775513
-eval phase: img idx=21
-spend 70.73052501678467
-eval phase: img idx=22
-spend 70.93766570091248
-eval phase: img idx=23
-spend 70.74352788925171
-eval phase: img idx=24
-spend 70.6621994972229
-eval phase: img idx=25
-spend 70.66719508171082
-eval phase: img idx=26
-spend 70.64583659172058
-eval phase: img idx=27
-spend 70.91400599479675
-eval phase: img idx=28
-spend 70.70948123931885
-eval phase: img idx=29
-spend 70.7711250782013
-eval phase: img idx=30
-spend 70.70757937431335
-eval phase: img idx=31
-spend 70.56035566329956
-eval phase: img idx=32
-spend 70.49284768104553
-eval phase: img idx=33
-spend 70.67687821388245
-eval phase: img idx=34
-spend 70.48492741584778
-eval phase: img idx=35
-spend 70.39680004119873
-eval phase: img idx=36
-spend 70.6140341758728
-eval phase: img idx=37
-spend 70.63368368148804
-eval phase: img idx=38
-spend 71.03758215904236
-eval phase: img idx=39
-spend 70.73378920555115
-(40, 1024, 1024)
------ good -----
-eval phase: img idx=0
-spend 70.88929176330566
-eval phase: img idx=1
-spend 70.58796906471252
-eval phase: img idx=2
-spend 70.63456273078918
-eval phase: img idx=3
-spend 70.50880146026611
-eval phase: img idx=4
-spend 70.28939867019653
-eval phase: img idx=5
-spend 70.7487895488739
-eval phase: img idx=6
-spend 70.54221653938293
-eval phase: img idx=7
-spend 70.44309210777283
-eval phase: img idx=8
-spend 70.47284007072449
-eval phase: img idx=9
-spend 70.66624855995178
-eval phase: img idx=10
-spend 70.59731316566467
-eval phase: img idx=11
-spend 70.41638803482056
-eval phase: img idx=12
-spend 70.63158297538757
-eval phase: img idx=13
-spend 70.52325701713562
-eval phase: img idx=14
-spend 70.37787079811096
-eval phase: img idx=15
-spend 70.53687906265259
-eval phase: img idx=16
-spend 70.1728081703186
-eval phase: img idx=17
-spend 70.58837962150574
-eval phase: img idx=18
-spend 70.639901638031
-eval phase: img idx=19
-spend 70.46094799041748
-eval phase: img idx=20
-spend 70.2844569683075
-eval phase: img idx=21
-spend 70.57573652267456
-eval phase: img idx=22
-spend 70.60649371147156
-eval phase: img idx=23
-spend 70.51207113265991
-eval phase: img idx=24
-spend 70.5411901473999
-eval phase: img idx=25
-spend 70.49813795089722
-eval phase: img idx=26
-spend 70.46939015388489
-eval phase: img idx=27
-spend 70.62920951843262
-eval phase: img idx=28
-spend 70.5016393661499
-eval phase: img idx=29
-spend 70.4159083366394
-eval phase: img idx=30
-spend 70.61451482772827
-eval phase: img idx=31
-spend 70.48434209823608
-eval phase: img idx=32
-spend 70.56174397468567
-eval phase: img idx=33
-spend 70.45482969284058
-eval phase: img idx=34
-spend 70.54288792610168
-eval phase: img idx=35
-spend 70.53190517425537
-eval phase: img idx=36
-spend 70.3141577243805
-eval phase: img idx=37
-spend 70.7620804309845
-eval phase: img idx=38
-spend 70.61314988136292
-eval phase: img idx=39
-spend 70.87840938568115
-eval phase: img idx=40
-spend 70.43383598327637
-eval phase: img idx=41
-spend 70.60272002220154
-eval phase: img idx=42
-spend 70.80364847183228
-eval phase: img idx=43
-spend 70.60788130760193
-eval phase: img idx=44
-spend 70.37738680839539
-eval phase: img idx=45
-spend 70.67449164390564
-eval phase: img idx=46
-spend 70.83198857307434
-eval phase: img idx=47
-spend 70.43931698799133
-eval phase: img idx=48
-spend 70.43026447296143
-eval phase: img idx=49
-spend 70.51465916633606
-eval phase: img idx=50
-spend 70.52561354637146
-eval phase: img idx=51
-spend 70.57794451713562
-eval phase: img idx=52
-spend 70.68359279632568
-eval phase: img idx=53
-spend 70.65001940727234
-eval phase: img idx=54
-spend 70.73747444152832
-eval phase: img idx=55
-spend 70.41204571723938
-eval phase: img idx=56
-spend 70.3399965763092
-eval phase: img idx=57
-spend 70.55595111846924
-eval phase: img idx=58
-spend 69.49800539016724
-eval phase: img idx=59
-spend 69.26104950904846
-(60, 1024, 1024)
-EP=17 defect_img_idx=0
-EP=17 defect_img_idx=1
-EP=17 defect_img_idx=2
-EP=17 defect_img_idx=3
-EP=17 defect_img_idx=4
-EP=17 defect_img_idx=5
-EP=17 defect_img_idx=6
-EP=17 defect_img_idx=7
-EP=17 defect_img_idx=8
-EP=17 defect_img_idx=9
-EP=17 defect_img_idx=10
-EP=17 defect_img_idx=11
-EP=17 defect_img_idx=12
-EP=17 defect_img_idx=13
-EP=17 defect_img_idx=14
-EP=17 defect_img_idx=15
-EP=17 defect_img_idx=16
-EP=17 defect_img_idx=17
-EP=17 defect_img_idx=18
-EP=17 defect_img_idx=19
-EP=17 defect_img_idx=20
-EP=17 defect_img_idx=21
-EP=17 defect_img_idx=22
-EP=17 defect_img_idx=23
-EP=17 defect_img_idx=24
-EP=17 defect_img_idx=25
-EP=17 defect_img_idx=26
-EP=17 defect_img_idx=27
-EP=17 defect_img_idx=28
-EP=17 defect_img_idx=29
-EP=17 defect_img_idx=30
-EP=17 defect_img_idx=31
-EP=17 defect_img_idx=32
-EP=17 defect_img_idx=33
-EP=17 defect_img_idx=34
-EP=17 defect_img_idx=35
-EP=17 defect_img_idx=36
-EP=17 defect_img_idx=37
-EP=17 defect_img_idx=38
-EP=17 defect_img_idx=39
-EP=17 good_img_idx=0
-EP=17 good_img_idx=1
-EP=17 good_img_idx=2
-EP=17 good_img_idx=3
-EP=17 good_img_idx=4
-EP=17 good_img_idx=5
-EP=17 good_img_idx=6
-EP=17 good_img_idx=7
-EP=17 good_img_idx=8
-EP=17 good_img_idx=9
-EP=17 good_img_idx=10
-EP=17 good_img_idx=11
-EP=17 good_img_idx=12
-EP=17 good_img_idx=13
-EP=17 good_img_idx=14
-EP=17 good_img_idx=15
-EP=17 good_img_idx=16
-EP=17 good_img_idx=17
-EP=17 good_img_idx=18
-EP=17 good_img_idx=19
-EP=17 good_img_idx=20
-EP=17 good_img_idx=21
-EP=17 good_img_idx=22
-EP=17 good_img_idx=23
-EP=17 good_img_idx=24
-EP=17 good_img_idx=25
-EP=17 good_img_idx=26
-EP=17 good_img_idx=27
-EP=17 good_img_idx=28
-EP=17 good_img_idx=29
-EP=17 good_img_idx=30
-EP=17 good_img_idx=31
-EP=17 good_img_idx=32
-EP=17 good_img_idx=33
-EP=17 good_img_idx=34
-EP=17 good_img_idx=35
-EP=17 good_img_idx=36
-EP=17 good_img_idx=37
-EP=17 good_img_idx=38
-EP=17 good_img_idx=39
-EP=17 good_img_idx=40
-EP=17 good_img_idx=41
-EP=17 good_img_idx=42
-EP=17 good_img_idx=43
-EP=17 good_img_idx=44
-EP=17 good_img_idx=45
-EP=17 good_img_idx=46
-EP=17 good_img_idx=47
-EP=17 good_img_idx=48
-EP=17 good_img_idx=49
-EP=17 good_img_idx=50
-EP=17 good_img_idx=51
-EP=17 good_img_idx=52
-EP=17 good_img_idx=53
-EP=17 good_img_idx=54
-EP=17 good_img_idx=55
-EP=17 good_img_idx=56
-EP=17 good_img_idx=57
-EP=17 good_img_idx=58
-EP=17 good_img_idx=59
-Multi Map AUC score for testing data transistor: 0.7252547810243315
------ defect -----
-eval phase: img idx=0
-spend 91.01196789741516
-eval phase: img idx=1
-spend 86.25065660476685
-eval phase: img idx=2
-spend 86.03195023536682
-eval phase: img idx=3
-spend 86.01418709754944
-eval phase: img idx=4
-spend 86.07514572143555
-eval phase: img idx=5
-spend 86.02048325538635
-eval phase: img idx=6
-spend 85.82247614860535
-eval phase: img idx=7
-spend 85.94296050071716
-eval phase: img idx=8
-spend 85.92478585243225
-eval phase: img idx=9
-spend 85.83901286125183
-eval phase: img idx=10
-spend 85.97459816932678
-eval phase: img idx=11
-spend 85.90129494667053
-eval phase: img idx=12
-spend 85.97070240974426
-eval phase: img idx=13
-spend 85.99678373336792
-eval phase: img idx=14
-spend 85.98292875289917
-eval phase: img idx=15
-spend 85.16917109489441
-eval phase: img idx=16
-spend 85.6279649734497
-eval phase: img idx=17
-spend 85.86163520812988
-eval phase: img idx=18
-spend 85.64358925819397
-eval phase: img idx=19
-spend 85.78643584251404
-eval phase: img idx=20
-spend 85.89345860481262
-eval phase: img idx=21
-spend 85.86169743537903
-eval phase: img idx=22
-spend 85.83268070220947
-eval phase: img idx=23
-spend 85.7940239906311
-eval phase: img idx=24
-spend 85.63525009155273
-eval phase: img idx=25
-spend 85.66800546646118
-eval phase: img idx=26
-spend 85.23535323143005
-eval phase: img idx=27
-spend 85.51784420013428
-eval phase: img idx=28
-spend 85.62827205657959
-eval phase: img idx=29
-spend 84.96277141571045
-eval phase: img idx=30
-spend 85.94153714179993
-eval phase: img idx=31
-spend 85.98728203773499
-eval phase: img idx=32
-spend 85.56871294975281
-eval phase: img idx=33
-spend 86.04064011573792
-eval phase: img idx=34
-spend 85.92313265800476
-eval phase: img idx=35
-spend 85.95244884490967
-eval phase: img idx=36
-spend 85.99591279029846
-eval phase: img idx=37
-spend 85.95746803283691
-eval phase: img idx=38
-spend 85.6286973953247
-eval phase: img idx=39
-spend 85.58265089988708
-eval phase: img idx=40
-spend 85.83907675743103
-eval phase: img idx=41
-spend 85.13227343559265
-eval phase: img idx=42
-spend 85.05257320404053
-eval phase: img idx=43
-spend 85.89426684379578
-eval phase: img idx=44
-spend 85.80220532417297
-eval phase: img idx=45
-spend 85.8004584312439
-eval phase: img idx=46
-spend 86.01986932754517
-eval phase: img idx=47
-spend 85.97193312644958
-eval phase: img idx=48
-spend 85.68332862854004
-eval phase: img idx=49
-spend 84.82072305679321
-eval phase: img idx=50
-spend 85.84170484542847
-eval phase: img idx=51
-spend 85.90873789787292
-eval phase: img idx=52
-spend 85.52955389022827
-eval phase: img idx=53
-spend 85.97314691543579
-eval phase: img idx=54
-spend 85.69130539894104
-eval phase: img idx=55
-spend 85.20376920700073
-eval phase: img idx=56
-spend 86.02500867843628
-eval phase: img idx=57
-spend 85.92883658409119
-eval phase: img idx=58
-spend 85.67126274108887
-eval phase: img idx=59
-spend 85.63250041007996
+spend 87.418128490448
 eval phase: img idx=60
-spend 85.63719511032104
+spend 87.3166835308075
 eval phase: img idx=61
-spend 85.92181396484375
+spend 87.32019472122192
 eval phase: img idx=62
-spend 85.96399545669556
+spend 87.28324031829834
 eval phase: img idx=63
-spend 85.8314950466156
+spend 87.32796287536621
 eval phase: img idx=64
-spend 85.78477215766907
+spend 87.267254114151
 eval phase: img idx=65
-spend 85.90258622169495
+spend 87.2747585773468
 eval phase: img idx=66
-spend 85.87596201896667
+spend 87.542795419693
 eval phase: img idx=67
-spend 85.8822431564331
+spend 87.31956720352173
 eval phase: img idx=68
-spend 85.930016040802
+spend 87.13743782043457
 eval phase: img idx=69
-spend 85.73801803588867
+spend 87.40654349327087
 eval phase: img idx=70
-spend 85.9529926776886
+spend 87.24530839920044
 eval phase: img idx=71
-spend 85.74875283241272
+spend 87.30322790145874
 eval phase: img idx=72
-spend 85.77012038230896
+spend 87.30307841300964
 eval phase: img idx=73
-spend 85.59772968292236
+spend 87.29100131988525
 eval phase: img idx=74
-spend 85.85809111595154
+spend 87.4877781867981
 eval phase: img idx=75
-spend 85.75200843811035
+spend 87.22892165184021
 eval phase: img idx=76
-spend 85.8321042060852
+spend 87.27228379249573
 eval phase: img idx=77
-spend 85.68662333488464
+spend 87.18966150283813
 eval phase: img idx=78
-spend 85.49637579917908
+spend 87.345703125
 eval phase: img idx=79
-spend 85.47704219818115
+spend 87.30608248710632
 eval phase: img idx=80
-spend 85.95561695098877
+spend 87.30721855163574
 eval phase: img idx=81
-spend 85.90054225921631
+spend 87.30924081802368
 eval phase: img idx=82
-spend 85.78268122673035
+spend 87.1947603225708
 eval phase: img idx=83
-spend 85.60220527648926
+spend 87.29507899284363
 eval phase: img idx=84
-spend 85.62886452674866
+spend 87.47004055976868
 eval phase: img idx=85
-spend 86.04024338722229
+spend 87.19299387931824
 eval phase: img idx=86
-spend 85.66300368309021
+spend 87.29880475997925
 eval phase: img idx=87
-spend 85.94420671463013
+spend 87.36054611206055
 eval phase: img idx=88
-spend 85.85445785522461
+spend 87.41623497009277
 eval phase: img idx=89
-spend 85.82961511611938
+spend 87.31604146957397
 eval phase: img idx=90
-spend 85.89105987548828
+spend 87.24544072151184
 eval phase: img idx=91
-spend 85.98294496536255
+spend 87.45539426803589
 eval phase: img idx=92
-spend 86.00992560386658
+spend 87.36092901229858
 eval phase: img idx=93
-spend 85.90531396865845
+spend 87.28158378601074
 eval phase: img idx=94
-spend 85.8546085357666
+spend 87.03577280044556
 eval phase: img idx=95
-spend 85.83529424667358
+spend 86.36873698234558
 eval phase: img idx=96
-spend 85.93236517906189
+spend 85.95648074150085
 eval phase: img idx=97
-spend 85.75986218452454
+spend 85.80809116363525
 eval phase: img idx=98
-spend 85.98199200630188
+spend 86.42680215835571
 eval phase: img idx=99
-spend 85.9790985584259
+spend 86.18367767333984
 eval phase: img idx=100
-spend 85.91595911979675
+spend 86.07601594924927
 eval phase: img idx=101
-spend 85.41792964935303
+spend 86.42287182807922
 eval phase: img idx=102
-spend 85.90234231948853
+spend 86.3905930519104
 eval phase: img idx=103
-spend 85.34618330001831
+spend 85.94011402130127
 eval phase: img idx=104
-spend 84.91881847381592
+spend 86.21873259544373
 eval phase: img idx=105
-spend 85.72550320625305
+spend 85.80801010131836
 eval phase: img idx=106
-spend 86.02671909332275
+spend 85.70929503440857
 eval phase: img idx=107
-spend 85.70394706726074
+spend 86.40717673301697
 eval phase: img idx=108
-spend 85.96660304069519
+spend 86.37195038795471
 eval phase: img idx=109
-spend 85.17870235443115
+spend 86.32028126716614
 eval phase: img idx=110
-spend 85.80103850364685
+spend 86.30546498298645
 eval phase: img idx=111
-spend 85.5727653503418
+spend 86.19130206108093
 eval phase: img idx=112
-spend 85.95356559753418
+spend 86.41399598121643
 eval phase: img idx=113
-spend 84.94182181358337
+spend 86.25663542747498
 eval phase: img idx=114
-spend 85.30171489715576
+spend 86.28630089759827
 eval phase: img idx=115
-spend 85.48119783401489
+spend 86.37781047821045
 eval phase: img idx=116
-spend 85.858478307724
+spend 86.35247850418091
 eval phase: img idx=117
-spend 85.94725275039673
+spend 86.17168641090393
 eval phase: img idx=118
-spend 85.7964870929718
+spend 86.19641351699829
 (119, 1024, 1024)
 ----- good -----
 eval phase: img idx=0
-spend 85.76280450820923
+spend 86.32539463043213
 eval phase: img idx=1
-spend 85.79665565490723
+spend 86.40898561477661
 eval phase: img idx=2
-spend 85.58763360977173
+spend 85.93052077293396
 eval phase: img idx=3
-spend 85.7572877407074
+spend 86.16373181343079
 eval phase: img idx=4
-spend 86.02432203292847
+spend 86.45165538787842
 eval phase: img idx=5
-spend 85.99001836776733
+spend 86.481764793396
 eval phase: img idx=6
-spend 85.23161721229553
+spend 86.27209448814392
 eval phase: img idx=7
-spend 85.67567372322083
+spend 86.2385880947113
 eval phase: img idx=8
-spend 85.87631487846375
+spend 86.3745608329773
 eval phase: img idx=9
-spend 85.56419086456299
+spend 86.3163332939148
 eval phase: img idx=10
-spend 85.84202337265015
+spend 86.31470203399658
 eval phase: img idx=11
-spend 85.92605924606323
+spend 86.26169347763062
 eval phase: img idx=12
-spend 86.10762310028076
+spend 86.30781555175781
 eval phase: img idx=13
-spend 85.9742431640625
+spend 86.39226818084717
 eval phase: img idx=14
-spend 85.9770724773407
+spend 86.39134693145752
 eval phase: img idx=15
-spend 85.86374592781067
+spend 86.21528363227844
 eval phase: img idx=16
-spend 85.8786461353302
+spend 86.24663257598877
 eval phase: img idx=17
-spend 85.98165273666382
+spend 86.16079783439636
 eval phase: img idx=18
-spend 85.63679575920105
+spend 85.70455026626587
 eval phase: img idx=19
-spend 85.39394521713257
+spend 86.18290853500366
 eval phase: img idx=20
-spend 85.7683777809143
+spend 86.32674860954285
 eval phase: img idx=21
-spend 85.53293561935425
+spend 86.37087392807007
 eval phase: img idx=22
-spend 85.80506134033203
+spend 86.27283263206482
 eval phase: img idx=23
-spend 85.89166021347046
+spend 86.26439785957336
 eval phase: img idx=24
-spend 85.91955924034119
+spend 85.87248301506042
 eval phase: img idx=25
-spend 85.96873760223389
+spend 86.41398215293884
 eval phase: img idx=26
-spend 85.79483532905579
+spend 86.39672017097473
 eval phase: img idx=27
-spend 85.4273636341095
+spend 86.04553651809692
 eval phase: img idx=28
-spend 85.7602949142456
+spend 86.2605607509613
 eval phase: img idx=29
-spend 85.67889142036438
+spend 86.25909614562988
 eval phase: img idx=30
-spend 85.1093909740448
+spend 86.18629765510559
 eval phase: img idx=31
-spend 85.83221554756165
+spend 86.02363920211792
 (32, 1024, 1024)
-EP=2 defect_img_idx=0
-EP=2 defect_img_idx=1
-EP=2 defect_img_idx=2
-EP=2 defect_img_idx=3
-EP=2 defect_img_idx=4
-EP=2 defect_img_idx=5
-EP=2 defect_img_idx=6
-EP=2 defect_img_idx=7
-EP=2 defect_img_idx=8
-EP=2 defect_img_idx=9
-EP=2 defect_img_idx=10
-EP=2 defect_img_idx=11
-EP=2 defect_img_idx=12
-EP=2 defect_img_idx=13
-EP=2 defect_img_idx=14
-EP=2 defect_img_idx=15
-EP=2 defect_img_idx=16
-EP=2 defect_img_idx=17
-EP=2 defect_img_idx=18
-EP=2 defect_img_idx=19
-EP=2 defect_img_idx=20
-EP=2 defect_img_idx=21
-EP=2 defect_img_idx=22
-EP=2 defect_img_idx=23
-EP=2 defect_img_idx=24
-EP=2 defect_img_idx=25
-EP=2 defect_img_idx=26
-EP=2 defect_img_idx=27
-EP=2 defect_img_idx=28
-EP=2 defect_img_idx=29
-EP=2 defect_img_idx=30
-EP=2 defect_img_idx=31
-EP=2 defect_img_idx=32
-EP=2 defect_img_idx=33
-EP=2 defect_img_idx=34
-EP=2 defect_img_idx=35
-EP=2 defect_img_idx=36
-EP=2 defect_img_idx=37
-EP=2 defect_img_idx=38
-EP=2 defect_img_idx=39
-EP=2 defect_img_idx=40
-EP=2 defect_img_idx=41
-EP=2 defect_img_idx=42
-EP=2 defect_img_idx=43
-EP=2 defect_img_idx=44
-EP=2 defect_img_idx=45
-EP=2 defect_img_idx=46
-EP=2 defect_img_idx=47
-EP=2 defect_img_idx=48
-EP=2 defect_img_idx=49
-EP=2 defect_img_idx=50
-EP=2 defect_img_idx=51
-EP=2 defect_img_idx=52
-EP=2 defect_img_idx=53
-EP=2 defect_img_idx=54
-EP=2 defect_img_idx=55
-EP=2 defect_img_idx=56
-EP=2 defect_img_idx=57
-EP=2 defect_img_idx=58
-EP=2 defect_img_idx=59
-EP=2 defect_img_idx=60
-EP=2 defect_img_idx=61
-EP=2 defect_img_idx=62
-EP=2 defect_img_idx=63
-EP=2 defect_img_idx=64
-EP=2 defect_img_idx=65
-EP=2 defect_img_idx=66
-EP=2 defect_img_idx=67
-EP=2 defect_img_idx=68
-EP=2 defect_img_idx=69
-EP=2 defect_img_idx=70
-EP=2 defect_img_idx=71
-EP=2 defect_img_idx=72
-EP=2 defect_img_idx=73
-EP=2 defect_img_idx=74
-EP=2 defect_img_idx=75
-EP=2 defect_img_idx=76
-EP=2 defect_img_idx=77
-EP=2 defect_img_idx=78
-EP=2 defect_img_idx=79
-EP=2 defect_img_idx=80
-EP=2 defect_img_idx=81
-EP=2 defect_img_idx=82
-EP=2 defect_img_idx=83
-EP=2 defect_img_idx=84
-EP=2 defect_img_idx=85
-EP=2 defect_img_idx=86
-EP=2 defect_img_idx=87
-EP=2 defect_img_idx=88
-EP=2 defect_img_idx=89
-EP=2 defect_img_idx=90
-EP=2 defect_img_idx=91
-EP=2 defect_img_idx=92
-EP=2 defect_img_idx=93
-EP=2 defect_img_idx=94
-EP=2 defect_img_idx=95
-EP=2 defect_img_idx=96
-EP=2 defect_img_idx=97
-EP=2 defect_img_idx=98
-EP=2 defect_img_idx=99
-EP=2 defect_img_idx=100
-EP=2 defect_img_idx=101
-EP=2 defect_img_idx=102
-EP=2 defect_img_idx=103
-EP=2 defect_img_idx=104
-EP=2 defect_img_idx=105
-EP=2 defect_img_idx=106
-EP=2 defect_img_idx=107
-EP=2 defect_img_idx=108
-EP=2 defect_img_idx=109
-EP=2 defect_img_idx=110
-EP=2 defect_img_idx=111
-EP=2 defect_img_idx=112
-EP=2 defect_img_idx=113
-EP=2 defect_img_idx=114
-EP=2 defect_img_idx=115
-EP=2 defect_img_idx=116
-EP=2 defect_img_idx=117
-EP=2 defect_img_idx=118
-EP=2 good_img_idx=0
-EP=2 good_img_idx=1
-EP=2 good_img_idx=2
-EP=2 good_img_idx=3
-EP=2 good_img_idx=4
-EP=2 good_img_idx=5
-EP=2 good_img_idx=6
-EP=2 good_img_idx=7
-EP=2 good_img_idx=8
-EP=2 good_img_idx=9
-EP=2 good_img_idx=10
-EP=2 good_img_idx=11
-EP=2 good_img_idx=12
-EP=2 good_img_idx=13
-EP=2 good_img_idx=14
-EP=2 good_img_idx=15
-EP=2 good_img_idx=16
-EP=2 good_img_idx=17
-EP=2 good_img_idx=18
-EP=2 good_img_idx=19
-EP=2 good_img_idx=20
-EP=2 good_img_idx=21
-EP=2 good_img_idx=22
-EP=2 good_img_idx=23
-EP=2 good_img_idx=24
-EP=2 good_img_idx=25
-EP=2 good_img_idx=26
-EP=2 good_img_idx=27
-EP=2 good_img_idx=28
-EP=2 good_img_idx=29
-EP=2 good_img_idx=30
-EP=2 good_img_idx=31
-Multi Map AUC score for testing data zipper: 0.83888801108462
+EP=30 defect_img_idx=0
+EP=30 defect_img_idx=1
+EP=30 defect_img_idx=2
+EP=30 defect_img_idx=3
+EP=30 defect_img_idx=4
+EP=30 defect_img_idx=5
+EP=30 defect_img_idx=6
+EP=30 defect_img_idx=7
+EP=30 defect_img_idx=8
+EP=30 defect_img_idx=9
+EP=30 defect_img_idx=10
+EP=30 defect_img_idx=11
+EP=30 defect_img_idx=12
+EP=30 defect_img_idx=13
+EP=30 defect_img_idx=14
+EP=30 defect_img_idx=15
+EP=30 defect_img_idx=16
+EP=30 defect_img_idx=17
+EP=30 defect_img_idx=18
+EP=30 defect_img_idx=19
+EP=30 defect_img_idx=20
+EP=30 defect_img_idx=21
+EP=30 defect_img_idx=22
+EP=30 defect_img_idx=23
+EP=30 defect_img_idx=24
+EP=30 defect_img_idx=25
+EP=30 defect_img_idx=26
+EP=30 defect_img_idx=27
+EP=30 defect_img_idx=28
+EP=30 defect_img_idx=29
+EP=30 defect_img_idx=30
+EP=30 defect_img_idx=31
+EP=30 defect_img_idx=32
+EP=30 defect_img_idx=33
+EP=30 defect_img_idx=34
+EP=30 defect_img_idx=35
+EP=30 defect_img_idx=36
+EP=30 defect_img_idx=37
+EP=30 defect_img_idx=38
+EP=30 defect_img_idx=39
+EP=30 defect_img_idx=40
+EP=30 defect_img_idx=41
+EP=30 defect_img_idx=42
+EP=30 defect_img_idx=43
+EP=30 defect_img_idx=44
+EP=30 defect_img_idx=45
+EP=30 defect_img_idx=46
+EP=30 defect_img_idx=47
+EP=30 defect_img_idx=48
+EP=30 defect_img_idx=49
+EP=30 defect_img_idx=50
+EP=30 defect_img_idx=51
+EP=30 defect_img_idx=52
+EP=30 defect_img_idx=53
+EP=30 defect_img_idx=54
+EP=30 defect_img_idx=55
+EP=30 defect_img_idx=56
+EP=30 defect_img_idx=57
+EP=30 defect_img_idx=58
+EP=30 defect_img_idx=59
+EP=30 defect_img_idx=60
+EP=30 defect_img_idx=61
+EP=30 defect_img_idx=62
+EP=30 defect_img_idx=63
+EP=30 defect_img_idx=64
+EP=30 defect_img_idx=65
+EP=30 defect_img_idx=66
+EP=30 defect_img_idx=67
+EP=30 defect_img_idx=68
+EP=30 defect_img_idx=69
+EP=30 defect_img_idx=70
+EP=30 defect_img_idx=71
+EP=30 defect_img_idx=72
+EP=30 defect_img_idx=73
+EP=30 defect_img_idx=74
+EP=30 defect_img_idx=75
+EP=30 defect_img_idx=76
+EP=30 defect_img_idx=77
+EP=30 defect_img_idx=78
+EP=30 defect_img_idx=79
+EP=30 defect_img_idx=80
+EP=30 defect_img_idx=81
+EP=30 defect_img_idx=82
+EP=30 defect_img_idx=83
+EP=30 defect_img_idx=84
+EP=30 defect_img_idx=85
+EP=30 defect_img_idx=86
+EP=30 defect_img_idx=87
+EP=30 defect_img_idx=88
+EP=30 defect_img_idx=89
+EP=30 defect_img_idx=90
+EP=30 defect_img_idx=91
+EP=30 defect_img_idx=92
+EP=30 defect_img_idx=93
+EP=30 defect_img_idx=94
+EP=30 defect_img_idx=95
+EP=30 defect_img_idx=96
+EP=30 defect_img_idx=97
+EP=30 defect_img_idx=98
+EP=30 defect_img_idx=99
+EP=30 defect_img_idx=100
+EP=30 defect_img_idx=101
+EP=30 defect_img_idx=102
+EP=30 defect_img_idx=103
+EP=30 defect_img_idx=104
+EP=30 defect_img_idx=105
+EP=30 defect_img_idx=106
+EP=30 defect_img_idx=107
+EP=30 defect_img_idx=108
+EP=30 defect_img_idx=109
+EP=30 defect_img_idx=110
+EP=30 defect_img_idx=111
+EP=30 defect_img_idx=112
+EP=30 defect_img_idx=113
+EP=30 defect_img_idx=114
+EP=30 defect_img_idx=115
+EP=30 defect_img_idx=116
+EP=30 defect_img_idx=117
+EP=30 defect_img_idx=118
+EP=30 good_img_idx=0
+EP=30 good_img_idx=1
+EP=30 good_img_idx=2
+EP=30 good_img_idx=3
+EP=30 good_img_idx=4
+EP=30 good_img_idx=5
+EP=30 good_img_idx=6
+EP=30 good_img_idx=7
+EP=30 good_img_idx=8
+EP=30 good_img_idx=9
+EP=30 good_img_idx=10
+EP=30 good_img_idx=11
+EP=30 good_img_idx=12
+EP=30 good_img_idx=13
+EP=30 good_img_idx=14
+EP=30 good_img_idx=15
+EP=30 good_img_idx=16
+EP=30 good_img_idx=17
+EP=30 good_img_idx=18
+EP=30 good_img_idx=19
+EP=30 good_img_idx=20
+EP=30 good_img_idx=21
+EP=30 good_img_idx=22
+EP=30 good_img_idx=23
+EP=30 good_img_idx=24
+EP=30 good_img_idx=25
+EP=30 good_img_idx=26
+EP=30 good_img_idx=27
+EP=30 good_img_idx=28
+EP=30 good_img_idx=29
+EP=30 good_img_idx=30
+EP=30 good_img_idx=31
+Multi Map AUC score for testing data zipper: 0.8217536490645039
 ----- defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/screw/all/128_img_all_feature_32_Origin.pickle
+load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/tile/all/128_img_all_feature_33_Origin.pickle
 ----- good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/screw/good/128_img_good_feature_32_Origin.pickle
------ create folder for screw | type: all -----
-EP=32 defect_img_idx=0
-EP=32 defect_img_idx=1
-EP=32 defect_img_idx=2
-EP=32 defect_img_idx=3
-EP=32 defect_img_idx=4
-EP=32 defect_img_idx=5
-EP=32 defect_img_idx=6
-EP=32 defect_img_idx=7
-EP=32 defect_img_idx=8
-EP=32 defect_img_idx=9
-EP=32 defect_img_idx=10
-EP=32 defect_img_idx=11
-EP=32 defect_img_idx=12
-EP=32 defect_img_idx=13
-EP=32 defect_img_idx=14
-EP=32 defect_img_idx=15
-EP=32 defect_img_idx=16
-EP=32 defect_img_idx=17
-EP=32 defect_img_idx=18
-EP=32 defect_img_idx=19
-EP=32 defect_img_idx=20
-EP=32 defect_img_idx=21
-EP=32 defect_img_idx=22
-EP=32 defect_img_idx=23
-EP=32 defect_img_idx=24
-EP=32 defect_img_idx=25
-EP=32 defect_img_idx=26
-EP=32 defect_img_idx=27
-EP=32 defect_img_idx=28
-EP=32 defect_img_idx=29
-EP=32 defect_img_idx=30
-EP=32 defect_img_idx=31
-EP=32 defect_img_idx=32
-EP=32 defect_img_idx=33
-EP=32 defect_img_idx=34
-EP=32 defect_img_idx=35
-EP=32 defect_img_idx=36
-EP=32 defect_img_idx=37
-EP=32 defect_img_idx=38
-EP=32 defect_img_idx=39
-EP=32 defect_img_idx=40
-EP=32 defect_img_idx=41
-EP=32 defect_img_idx=42
-EP=32 defect_img_idx=43
-EP=32 defect_img_idx=44
-EP=32 defect_img_idx=45
-EP=32 defect_img_idx=46
-EP=32 defect_img_idx=47
-EP=32 defect_img_idx=48
-EP=32 defect_img_idx=49
-EP=32 defect_img_idx=50
-EP=32 defect_img_idx=51
-EP=32 defect_img_idx=52
-EP=32 defect_img_idx=53
-EP=32 defect_img_idx=54
-EP=32 defect_img_idx=55
-EP=32 defect_img_idx=56
-EP=32 defect_img_idx=57
-EP=32 defect_img_idx=58
-EP=32 defect_img_idx=59
-EP=32 defect_img_idx=60
-EP=32 defect_img_idx=61
-EP=32 defect_img_idx=62
-EP=32 defect_img_idx=63
-EP=32 defect_img_idx=64
-EP=32 defect_img_idx=65
-EP=32 defect_img_idx=66
-EP=32 defect_img_idx=67
-EP=32 defect_img_idx=68
-EP=32 defect_img_idx=69
-EP=32 defect_img_idx=70
-EP=32 defect_img_idx=71
-EP=32 defect_img_idx=72
-EP=32 defect_img_idx=73
-EP=32 defect_img_idx=74
-EP=32 defect_img_idx=75
-EP=32 defect_img_idx=76
-EP=32 defect_img_idx=77
-EP=32 defect_img_idx=78
-EP=32 defect_img_idx=79
-EP=32 defect_img_idx=80
-EP=32 defect_img_idx=81
-EP=32 defect_img_idx=82
-EP=32 defect_img_idx=83
-EP=32 defect_img_idx=84
-EP=32 defect_img_idx=85
-EP=32 defect_img_idx=86
-EP=32 defect_img_idx=87
-EP=32 defect_img_idx=88
-EP=32 defect_img_idx=89
-EP=32 defect_img_idx=90
-EP=32 defect_img_idx=91
-EP=32 defect_img_idx=92
-EP=32 defect_img_idx=93
-EP=32 defect_img_idx=94
-EP=32 defect_img_idx=95
-EP=32 defect_img_idx=96
-EP=32 defect_img_idx=97
-EP=32 defect_img_idx=98
-EP=32 defect_img_idx=99
-EP=32 defect_img_idx=100
-EP=32 defect_img_idx=101
-EP=32 defect_img_idx=102
-EP=32 defect_img_idx=103
-EP=32 defect_img_idx=104
-EP=32 defect_img_idx=105
-EP=32 defect_img_idx=106
-EP=32 defect_img_idx=107
-EP=32 defect_img_idx=108
-EP=32 defect_img_idx=109
-EP=32 defect_img_idx=110
-EP=32 defect_img_idx=111
-EP=32 defect_img_idx=112
-EP=32 defect_img_idx=113
-EP=32 defect_img_idx=114
-EP=32 defect_img_idx=115
-EP=32 defect_img_idx=116
-EP=32 defect_img_idx=117
-EP=32 defect_img_idx=118
------ create folder for screw | type: good -----
-EP=32 good_img_idx=0
-EP=32 good_img_idx=1
-EP=32 good_img_idx=2
-EP=32 good_img_idx=3
-EP=32 good_img_idx=4
-EP=32 good_img_idx=5
-EP=32 good_img_idx=6
-EP=32 good_img_idx=7
-EP=32 good_img_idx=8
-EP=32 good_img_idx=9
-EP=32 good_img_idx=10
-EP=32 good_img_idx=11
-EP=32 good_img_idx=12
-EP=32 good_img_idx=13
-EP=32 good_img_idx=14
-EP=32 good_img_idx=15
-EP=32 good_img_idx=16
-EP=32 good_img_idx=17
-EP=32 good_img_idx=18
-EP=32 good_img_idx=19
-EP=32 good_img_idx=20
-EP=32 good_img_idx=21
-EP=32 good_img_idx=22
-EP=32 good_img_idx=23
-EP=32 good_img_idx=24
-EP=32 good_img_idx=25
-EP=32 good_img_idx=26
-EP=32 good_img_idx=27
-EP=32 good_img_idx=28
-EP=32 good_img_idx=29
-EP=32 good_img_idx=30
-EP=32 good_img_idx=31
-EP=32 good_img_idx=32
-EP=32 good_img_idx=33
-EP=32 good_img_idx=34
-EP=32 good_img_idx=35
-EP=32 good_img_idx=36
-EP=32 good_img_idx=37
-EP=32 good_img_idx=38
-EP=32 good_img_idx=39
-EP=32 good_img_idx=40
-Multi Map AUC score during drawing for testing data screw: 0.9699637661414329
+load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/tile/good/128_img_good_feature_33_Origin.pickle
+EP=33 defect_img_idx=0
+EP=33 defect_img_idx=1
+EP=33 defect_img_idx=2
+EP=33 defect_img_idx=3
+EP=33 defect_img_idx=4
+EP=33 defect_img_idx=5
+EP=33 defect_img_idx=6
+EP=33 defect_img_idx=7
+EP=33 defect_img_idx=8
+EP=33 defect_img_idx=9
+EP=33 defect_img_idx=10
+EP=33 defect_img_idx=11
+EP=33 defect_img_idx=12
+EP=33 defect_img_idx=13
+EP=33 defect_img_idx=14
+EP=33 defect_img_idx=15
+EP=33 defect_img_idx=16
+EP=33 defect_img_idx=17
+EP=33 defect_img_idx=18
+EP=33 defect_img_idx=19
+EP=33 defect_img_idx=20
+EP=33 defect_img_idx=21
+EP=33 defect_img_idx=22
+EP=33 defect_img_idx=23
+EP=33 defect_img_idx=24
+EP=33 defect_img_idx=25
+EP=33 defect_img_idx=26
+EP=33 defect_img_idx=27
+EP=33 defect_img_idx=28
+EP=33 defect_img_idx=29
+EP=33 defect_img_idx=30
+EP=33 defect_img_idx=31
+EP=33 defect_img_idx=32
+EP=33 defect_img_idx=33
+EP=33 defect_img_idx=34
+EP=33 defect_img_idx=35
+EP=33 defect_img_idx=36
+EP=33 defect_img_idx=37
+EP=33 defect_img_idx=38
+EP=33 defect_img_idx=39
+EP=33 defect_img_idx=40
+EP=33 defect_img_idx=41
+EP=33 defect_img_idx=42
+EP=33 defect_img_idx=43
+EP=33 defect_img_idx=44
+EP=33 defect_img_idx=45
+EP=33 defect_img_idx=46
+EP=33 defect_img_idx=47
+EP=33 defect_img_idx=48
+EP=33 defect_img_idx=49
+EP=33 defect_img_idx=50
+EP=33 defect_img_idx=51
+EP=33 defect_img_idx=52
+EP=33 defect_img_idx=53
+EP=33 defect_img_idx=54
+EP=33 defect_img_idx=55
+EP=33 defect_img_idx=56
+EP=33 defect_img_idx=57
+EP=33 defect_img_idx=58
+EP=33 defect_img_idx=59
+EP=33 defect_img_idx=60
+EP=33 defect_img_idx=61
+EP=33 defect_img_idx=62
+EP=33 defect_img_idx=63
+EP=33 defect_img_idx=64
+EP=33 defect_img_idx=65
+EP=33 defect_img_idx=66
+EP=33 defect_img_idx=67
+EP=33 defect_img_idx=68
+EP=33 defect_img_idx=69
+EP=33 defect_img_idx=70
+EP=33 defect_img_idx=71
+EP=33 defect_img_idx=72
+EP=33 defect_img_idx=73
+EP=33 defect_img_idx=74
+EP=33 defect_img_idx=75
+EP=33 defect_img_idx=76
+EP=33 defect_img_idx=77
+EP=33 defect_img_idx=78
+EP=33 defect_img_idx=79
+EP=33 defect_img_idx=80
+EP=33 defect_img_idx=81
+EP=33 defect_img_idx=82
+EP=33 defect_img_idx=83
+EP=33 good_img_idx=0
+EP=33 good_img_idx=1
+EP=33 good_img_idx=2
+EP=33 good_img_idx=3
+EP=33 good_img_idx=4
+EP=33 good_img_idx=5
+EP=33 good_img_idx=6
+EP=33 good_img_idx=7
+EP=33 good_img_idx=8
+EP=33 good_img_idx=9
+EP=33 good_img_idx=10
+EP=33 good_img_idx=11
+EP=33 good_img_idx=12
+EP=33 good_img_idx=13
+EP=33 good_img_idx=14
+EP=33 good_img_idx=15
+EP=33 good_img_idx=16
+EP=33 good_img_idx=17
+EP=33 good_img_idx=18
+EP=33 good_img_idx=19
+EP=33 good_img_idx=20
+EP=33 good_img_idx=21
+EP=33 good_img_idx=22
+EP=33 good_img_idx=23
+EP=33 good_img_idx=24
+EP=33 good_img_idx=25
+EP=33 good_img_idx=26
+EP=33 good_img_idx=27
+EP=33 good_img_idx=28
+EP=33 good_img_idx=29
+EP=33 good_img_idx=30
+EP=33 good_img_idx=31
+EP=33 good_img_idx=32
+Multi Map AUC score during drawing for testing data tile: 0.8387286573170291
 ----- defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/pill/all/128_img_all_feature_38_Origin.pickle
+load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/zipper/all/128_img_all_feature_30_Origin.pickle
 ----- good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/pill/good/128_img_good_feature_38_Origin.pickle
------ create folder for pill | type: all -----
-EP=38 defect_img_idx=0
-EP=38 defect_img_idx=1
-EP=38 defect_img_idx=2
-EP=38 defect_img_idx=3
-EP=38 defect_img_idx=4
-EP=38 defect_img_idx=5
-EP=38 defect_img_idx=6
-EP=38 defect_img_idx=7
-EP=38 defect_img_idx=8
-EP=38 defect_img_idx=9
-EP=38 defect_img_idx=10
-EP=38 defect_img_idx=11
-EP=38 defect_img_idx=12
-EP=38 defect_img_idx=13
-EP=38 defect_img_idx=14
-EP=38 defect_img_idx=15
-EP=38 defect_img_idx=16
-EP=38 defect_img_idx=17
-EP=38 defect_img_idx=18
-EP=38 defect_img_idx=19
-EP=38 defect_img_idx=20
-EP=38 defect_img_idx=21
-EP=38 defect_img_idx=22
-EP=38 defect_img_idx=23
-EP=38 defect_img_idx=24
-EP=38 defect_img_idx=25
-EP=38 defect_img_idx=26
-EP=38 defect_img_idx=27
-EP=38 defect_img_idx=28
-EP=38 defect_img_idx=29
-EP=38 defect_img_idx=30
-EP=38 defect_img_idx=31
-EP=38 defect_img_idx=32
-EP=38 defect_img_idx=33
-EP=38 defect_img_idx=34
-EP=38 defect_img_idx=35
-EP=38 defect_img_idx=36
-EP=38 defect_img_idx=37
-EP=38 defect_img_idx=38
-EP=38 defect_img_idx=39
-EP=38 defect_img_idx=40
-EP=38 defect_img_idx=41
-EP=38 defect_img_idx=42
-EP=38 defect_img_idx=43
-EP=38 defect_img_idx=44
-EP=38 defect_img_idx=45
-EP=38 defect_img_idx=46
-EP=38 defect_img_idx=47
-EP=38 defect_img_idx=48
-EP=38 defect_img_idx=49
-EP=38 defect_img_idx=50
-EP=38 defect_img_idx=51
-EP=38 defect_img_idx=52
-EP=38 defect_img_idx=53
-EP=38 defect_img_idx=54
-EP=38 defect_img_idx=55
-EP=38 defect_img_idx=56
-EP=38 defect_img_idx=57
-EP=38 defect_img_idx=58
-EP=38 defect_img_idx=59
-EP=38 defect_img_idx=60
-EP=38 defect_img_idx=61
-EP=38 defect_img_idx=62
-EP=38 defect_img_idx=63
-EP=38 defect_img_idx=64
-EP=38 defect_img_idx=65
-EP=38 defect_img_idx=66
-EP=38 defect_img_idx=67
-EP=38 defect_img_idx=68
-EP=38 defect_img_idx=69
-EP=38 defect_img_idx=70
-EP=38 defect_img_idx=71
-EP=38 defect_img_idx=72
-EP=38 defect_img_idx=73
-EP=38 defect_img_idx=74
-EP=38 defect_img_idx=75
-EP=38 defect_img_idx=76
-EP=38 defect_img_idx=77
-EP=38 defect_img_idx=78
-EP=38 defect_img_idx=79
-EP=38 defect_img_idx=80
-EP=38 defect_img_idx=81
-EP=38 defect_img_idx=82
-EP=38 defect_img_idx=83
-EP=38 defect_img_idx=84
-EP=38 defect_img_idx=85
-EP=38 defect_img_idx=86
-EP=38 defect_img_idx=87
-EP=38 defect_img_idx=88
-EP=38 defect_img_idx=89
-EP=38 defect_img_idx=90
-EP=38 defect_img_idx=91
-EP=38 defect_img_idx=92
-EP=38 defect_img_idx=93
-EP=38 defect_img_idx=94
-EP=38 defect_img_idx=95
-EP=38 defect_img_idx=96
-EP=38 defect_img_idx=97
-EP=38 defect_img_idx=98
-EP=38 defect_img_idx=99
-EP=38 defect_img_idx=100
-EP=38 defect_img_idx=101
-EP=38 defect_img_idx=102
-EP=38 defect_img_idx=103
-EP=38 defect_img_idx=104
-EP=38 defect_img_idx=105
-EP=38 defect_img_idx=106
-EP=38 defect_img_idx=107
-EP=38 defect_img_idx=108
-EP=38 defect_img_idx=109
-EP=38 defect_img_idx=110
-EP=38 defect_img_idx=111
-EP=38 defect_img_idx=112
-EP=38 defect_img_idx=113
-EP=38 defect_img_idx=114
-EP=38 defect_img_idx=115
-EP=38 defect_img_idx=116
-EP=38 defect_img_idx=117
-EP=38 defect_img_idx=118
-EP=38 defect_img_idx=119
-EP=38 defect_img_idx=120
-EP=38 defect_img_idx=121
-EP=38 defect_img_idx=122
-EP=38 defect_img_idx=123
-EP=38 defect_img_idx=124
-EP=38 defect_img_idx=125
-EP=38 defect_img_idx=126
-EP=38 defect_img_idx=127
-EP=38 defect_img_idx=128
-EP=38 defect_img_idx=129
-EP=38 defect_img_idx=130
-EP=38 defect_img_idx=131
-EP=38 defect_img_idx=132
-EP=38 defect_img_idx=133
-EP=38 defect_img_idx=134
-EP=38 defect_img_idx=135
-EP=38 defect_img_idx=136
-EP=38 defect_img_idx=137
-EP=38 defect_img_idx=138
-EP=38 defect_img_idx=139
-EP=38 defect_img_idx=140
------ create folder for pill | type: good -----
-EP=38 good_img_idx=0
-EP=38 good_img_idx=1
-EP=38 good_img_idx=2
-EP=38 good_img_idx=3
-EP=38 good_img_idx=4
-EP=38 good_img_idx=5
-EP=38 good_img_idx=6
-EP=38 good_img_idx=7
-EP=38 good_img_idx=8
-EP=38 good_img_idx=9
-EP=38 good_img_idx=10
-EP=38 good_img_idx=11
-EP=38 good_img_idx=12
-EP=38 good_img_idx=13
-EP=38 good_img_idx=14
-EP=38 good_img_idx=15
-EP=38 good_img_idx=16
-EP=38 good_img_idx=17
-EP=38 good_img_idx=18
-EP=38 good_img_idx=19
-EP=38 good_img_idx=20
-EP=38 good_img_idx=21
-EP=38 good_img_idx=22
-EP=38 good_img_idx=23
-EP=38 good_img_idx=24
-EP=38 good_img_idx=25
-Multi Map AUC score during drawing for testing data pill: 0.8499907893160372
------ defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/toothbrush/all/128_img_all_feature_29_Origin.pickle
------ good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/toothbrush/good/128_img_good_feature_29_Origin.pickle
------ create folder for toothbrush | type: all -----
-EP=29 defect_img_idx=0
-EP=29 defect_img_idx=1
-EP=29 defect_img_idx=2
-EP=29 defect_img_idx=3
-EP=29 defect_img_idx=4
-EP=29 defect_img_idx=5
-EP=29 defect_img_idx=6
-EP=29 defect_img_idx=7
-EP=29 defect_img_idx=8
-EP=29 defect_img_idx=9
-EP=29 defect_img_idx=10
-EP=29 defect_img_idx=11
-EP=29 defect_img_idx=12
-EP=29 defect_img_idx=13
-EP=29 defect_img_idx=14
-EP=29 defect_img_idx=15
-EP=29 defect_img_idx=16
-EP=29 defect_img_idx=17
-EP=29 defect_img_idx=18
-EP=29 defect_img_idx=19
-EP=29 defect_img_idx=20
-EP=29 defect_img_idx=21
-EP=29 defect_img_idx=22
-EP=29 defect_img_idx=23
-EP=29 defect_img_idx=24
-EP=29 defect_img_idx=25
-EP=29 defect_img_idx=26
-EP=29 defect_img_idx=27
-EP=29 defect_img_idx=28
-EP=29 defect_img_idx=29
------ create folder for toothbrush | type: good -----
-EP=29 good_img_idx=0
-EP=29 good_img_idx=1
-EP=29 good_img_idx=2
-EP=29 good_img_idx=3
-EP=29 good_img_idx=4
-EP=29 good_img_idx=5
-EP=29 good_img_idx=6
-EP=29 good_img_idx=7
-EP=29 good_img_idx=8
-EP=29 good_img_idx=9
-EP=29 good_img_idx=10
-EP=29 good_img_idx=11
-Multi Map AUC score during drawing for testing data toothbrush: 0.9220644286415011
------ defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/tile/all/128_img_all_feature_6_Origin.pickle
------ good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/tile/good/128_img_good_feature_6_Origin.pickle
------ create folder for tile | type: all -----
-EP=6 defect_img_idx=0
-EP=6 defect_img_idx=1
-EP=6 defect_img_idx=2
-EP=6 defect_img_idx=3
-EP=6 defect_img_idx=4
-EP=6 defect_img_idx=5
-EP=6 defect_img_idx=6
-EP=6 defect_img_idx=7
-EP=6 defect_img_idx=8
-EP=6 defect_img_idx=9
-EP=6 defect_img_idx=10
-EP=6 defect_img_idx=11
-EP=6 defect_img_idx=12
-EP=6 defect_img_idx=13
-EP=6 defect_img_idx=14
-EP=6 defect_img_idx=15
-EP=6 defect_img_idx=16
-EP=6 defect_img_idx=17
-EP=6 defect_img_idx=18
-EP=6 defect_img_idx=19
-EP=6 defect_img_idx=20
-EP=6 defect_img_idx=21
-EP=6 defect_img_idx=22
-EP=6 defect_img_idx=23
-EP=6 defect_img_idx=24
-EP=6 defect_img_idx=25
-EP=6 defect_img_idx=26
-EP=6 defect_img_idx=27
-EP=6 defect_img_idx=28
-EP=6 defect_img_idx=29
-EP=6 defect_img_idx=30
-EP=6 defect_img_idx=31
-EP=6 defect_img_idx=32
-EP=6 defect_img_idx=33
-EP=6 defect_img_idx=34
-EP=6 defect_img_idx=35
-EP=6 defect_img_idx=36
-EP=6 defect_img_idx=37
-EP=6 defect_img_idx=38
-EP=6 defect_img_idx=39
-EP=6 defect_img_idx=40
-EP=6 defect_img_idx=41
-EP=6 defect_img_idx=42
-EP=6 defect_img_idx=43
-EP=6 defect_img_idx=44
-EP=6 defect_img_idx=45
-EP=6 defect_img_idx=46
-EP=6 defect_img_idx=47
-EP=6 defect_img_idx=48
-EP=6 defect_img_idx=49
-EP=6 defect_img_idx=50
-EP=6 defect_img_idx=51
-EP=6 defect_img_idx=52
-EP=6 defect_img_idx=53
-EP=6 defect_img_idx=54
-EP=6 defect_img_idx=55
-EP=6 defect_img_idx=56
-EP=6 defect_img_idx=57
-EP=6 defect_img_idx=58
-EP=6 defect_img_idx=59
-EP=6 defect_img_idx=60
-EP=6 defect_img_idx=61
-EP=6 defect_img_idx=62
-EP=6 defect_img_idx=63
-EP=6 defect_img_idx=64
-EP=6 defect_img_idx=65
-EP=6 defect_img_idx=66
-EP=6 defect_img_idx=67
-EP=6 defect_img_idx=68
-EP=6 defect_img_idx=69
-EP=6 defect_img_idx=70
-EP=6 defect_img_idx=71
-EP=6 defect_img_idx=72
-EP=6 defect_img_idx=73
-EP=6 defect_img_idx=74
-EP=6 defect_img_idx=75
-EP=6 defect_img_idx=76
-EP=6 defect_img_idx=77
-EP=6 defect_img_idx=78
-EP=6 defect_img_idx=79
-EP=6 defect_img_idx=80
-EP=6 defect_img_idx=81
-EP=6 defect_img_idx=82
-EP=6 defect_img_idx=83
------ create folder for tile | type: good -----
-EP=6 good_img_idx=0
-EP=6 good_img_idx=1
-EP=6 good_img_idx=2
-EP=6 good_img_idx=3
-EP=6 good_img_idx=4
-EP=6 good_img_idx=5
-EP=6 good_img_idx=6
-EP=6 good_img_idx=7
-EP=6 good_img_idx=8
-EP=6 good_img_idx=9
-EP=6 good_img_idx=10
-EP=6 good_img_idx=11
-EP=6 good_img_idx=12
-EP=6 good_img_idx=13
-EP=6 good_img_idx=14
-EP=6 good_img_idx=15
-EP=6 good_img_idx=16
-EP=6 good_img_idx=17
-EP=6 good_img_idx=18
-EP=6 good_img_idx=19
-EP=6 good_img_idx=20
-EP=6 good_img_idx=21
-EP=6 good_img_idx=22
-EP=6 good_img_idx=23
-EP=6 good_img_idx=24
-EP=6 good_img_idx=25
-EP=6 good_img_idx=26
-EP=6 good_img_idx=27
-EP=6 good_img_idx=28
-EP=6 good_img_idx=29
-EP=6 good_img_idx=30
-EP=6 good_img_idx=31
-EP=6 good_img_idx=32
-Multi Map AUC score during drawing for testing data tile: 0.8823193204307718
------ defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/wood/all/128_img_all_feature_13_Origin.pickle
------ good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/wood/good/128_img_good_feature_13_Origin.pickle
------ create folder for wood | type: all -----
-EP=13 defect_img_idx=0
-EP=13 defect_img_idx=1
-EP=13 defect_img_idx=2
-EP=13 defect_img_idx=3
-EP=13 defect_img_idx=4
-EP=13 defect_img_idx=5
-EP=13 defect_img_idx=6
-EP=13 defect_img_idx=7
-EP=13 defect_img_idx=8
-EP=13 defect_img_idx=9
-EP=13 defect_img_idx=10
-EP=13 defect_img_idx=11
-EP=13 defect_img_idx=12
-EP=13 defect_img_idx=13
-EP=13 defect_img_idx=14
-EP=13 defect_img_idx=15
-EP=13 defect_img_idx=16
-EP=13 defect_img_idx=17
-EP=13 defect_img_idx=18
-EP=13 defect_img_idx=19
-EP=13 defect_img_idx=20
-EP=13 defect_img_idx=21
-EP=13 defect_img_idx=22
-EP=13 defect_img_idx=23
-EP=13 defect_img_idx=24
-EP=13 defect_img_idx=25
-EP=13 defect_img_idx=26
-EP=13 defect_img_idx=27
-EP=13 defect_img_idx=28
-EP=13 defect_img_idx=29
-EP=13 defect_img_idx=30
-EP=13 defect_img_idx=31
-EP=13 defect_img_idx=32
-EP=13 defect_img_idx=33
-EP=13 defect_img_idx=34
-EP=13 defect_img_idx=35
-EP=13 defect_img_idx=36
-EP=13 defect_img_idx=37
-EP=13 defect_img_idx=38
-EP=13 defect_img_idx=39
-EP=13 defect_img_idx=40
-EP=13 defect_img_idx=41
-EP=13 defect_img_idx=42
-EP=13 defect_img_idx=43
-EP=13 defect_img_idx=44
-EP=13 defect_img_idx=45
-EP=13 defect_img_idx=46
-EP=13 defect_img_idx=47
-EP=13 defect_img_idx=48
-EP=13 defect_img_idx=49
-EP=13 defect_img_idx=50
-EP=13 defect_img_idx=51
-EP=13 defect_img_idx=52
-EP=13 defect_img_idx=53
-EP=13 defect_img_idx=54
-EP=13 defect_img_idx=55
-EP=13 defect_img_idx=56
-EP=13 defect_img_idx=57
-EP=13 defect_img_idx=58
-EP=13 defect_img_idx=59
------ create folder for wood | type: good -----
-EP=13 good_img_idx=0
-EP=13 good_img_idx=1
-EP=13 good_img_idx=2
-EP=13 good_img_idx=3
-EP=13 good_img_idx=4
-EP=13 good_img_idx=5
-EP=13 good_img_idx=6
-EP=13 good_img_idx=7
-EP=13 good_img_idx=8
-EP=13 good_img_idx=9
-EP=13 good_img_idx=10
-EP=13 good_img_idx=11
-EP=13 good_img_idx=12
-EP=13 good_img_idx=13
-EP=13 good_img_idx=14
-EP=13 good_img_idx=15
-EP=13 good_img_idx=16
-EP=13 good_img_idx=17
-EP=13 good_img_idx=18
-Multi Map AUC score during drawing for testing data wood: 0.9484744536061737
------ defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/transistor/all/128_img_all_feature_17_Origin.pickle
------ good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/transistor/good/128_img_good_feature_17_Origin.pickle
------ create folder for transistor | type: all -----
-EP=17 defect_img_idx=0
-EP=17 defect_img_idx=1
-EP=17 defect_img_idx=2
-EP=17 defect_img_idx=3
-EP=17 defect_img_idx=4
-EP=17 defect_img_idx=5
-EP=17 defect_img_idx=6
-EP=17 defect_img_idx=7
-EP=17 defect_img_idx=8
-EP=17 defect_img_idx=9
-EP=17 defect_img_idx=10
-EP=17 defect_img_idx=11
-EP=17 defect_img_idx=12
-EP=17 defect_img_idx=13
-EP=17 defect_img_idx=14
-EP=17 defect_img_idx=15
-EP=17 defect_img_idx=16
-EP=17 defect_img_idx=17
-EP=17 defect_img_idx=18
-EP=17 defect_img_idx=19
-EP=17 defect_img_idx=20
-EP=17 defect_img_idx=21
-EP=17 defect_img_idx=22
-EP=17 defect_img_idx=23
-EP=17 defect_img_idx=24
-EP=17 defect_img_idx=25
-EP=17 defect_img_idx=26
-EP=17 defect_img_idx=27
-EP=17 defect_img_idx=28
-EP=17 defect_img_idx=29
-EP=17 defect_img_idx=30
-EP=17 defect_img_idx=31
-EP=17 defect_img_idx=32
-EP=17 defect_img_idx=33
-EP=17 defect_img_idx=34
-EP=17 defect_img_idx=35
-EP=17 defect_img_idx=36
-EP=17 defect_img_idx=37
-EP=17 defect_img_idx=38
-EP=17 defect_img_idx=39
------ create folder for transistor | type: good -----
-EP=17 good_img_idx=0
-EP=17 good_img_idx=1
-EP=17 good_img_idx=2
-EP=17 good_img_idx=3
-EP=17 good_img_idx=4
-EP=17 good_img_idx=5
-EP=17 good_img_idx=6
-EP=17 good_img_idx=7
-EP=17 good_img_idx=8
-EP=17 good_img_idx=9
-EP=17 good_img_idx=10
-EP=17 good_img_idx=11
-EP=17 good_img_idx=12
-EP=17 good_img_idx=13
-EP=17 good_img_idx=14
-EP=17 good_img_idx=15
-EP=17 good_img_idx=16
-EP=17 good_img_idx=17
-EP=17 good_img_idx=18
-EP=17 good_img_idx=19
-EP=17 good_img_idx=20
-EP=17 good_img_idx=21
-EP=17 good_img_idx=22
-EP=17 good_img_idx=23
-EP=17 good_img_idx=24
-EP=17 good_img_idx=25
-EP=17 good_img_idx=26
-EP=17 good_img_idx=27
-EP=17 good_img_idx=28
-EP=17 good_img_idx=29
-EP=17 good_img_idx=30
-EP=17 good_img_idx=31
-EP=17 good_img_idx=32
-EP=17 good_img_idx=33
-EP=17 good_img_idx=34
-EP=17 good_img_idx=35
-EP=17 good_img_idx=36
-EP=17 good_img_idx=37
-EP=17 good_img_idx=38
-EP=17 good_img_idx=39
-EP=17 good_img_idx=40
-EP=17 good_img_idx=41
-EP=17 good_img_idx=42
-EP=17 good_img_idx=43
-EP=17 good_img_idx=44
-EP=17 good_img_idx=45
-EP=17 good_img_idx=46
-EP=17 good_img_idx=47
-EP=17 good_img_idx=48
-EP=17 good_img_idx=49
-EP=17 good_img_idx=50
-EP=17 good_img_idx=51
-EP=17 good_img_idx=52
-EP=17 good_img_idx=53
-EP=17 good_img_idx=54
-EP=17 good_img_idx=55
-EP=17 good_img_idx=56
-EP=17 good_img_idx=57
-EP=17 good_img_idx=58
-EP=17 good_img_idx=59
-Multi Map AUC score during drawing for testing data transistor: 0.7252547810243315
------ defect -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/RoNet/zipper/all/128_img_all_feature_2_Origin.pickle
------ good -----
-load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/zipper/good/128_img_good_feature_2_Origin.pickle
------ create folder for zipper | type: all -----
-EP=2 defect_img_idx=0
-EP=2 defect_img_idx=1
-EP=2 defect_img_idx=2
-EP=2 defect_img_idx=3
-EP=2 defect_img_idx=4
-EP=2 defect_img_idx=5
-EP=2 defect_img_idx=6
-EP=2 defect_img_idx=7
-EP=2 defect_img_idx=8
-EP=2 defect_img_idx=9
-EP=2 defect_img_idx=10
-EP=2 defect_img_idx=11
-EP=2 defect_img_idx=12
-EP=2 defect_img_idx=13
-EP=2 defect_img_idx=14
-EP=2 defect_img_idx=15
-EP=2 defect_img_idx=16
-EP=2 defect_img_idx=17
-EP=2 defect_img_idx=18
-EP=2 defect_img_idx=19
-EP=2 defect_img_idx=20
-EP=2 defect_img_idx=21
-EP=2 defect_img_idx=22
-EP=2 defect_img_idx=23
-EP=2 defect_img_idx=24
-EP=2 defect_img_idx=25
-EP=2 defect_img_idx=26
-EP=2 defect_img_idx=27
-EP=2 defect_img_idx=28
-EP=2 defect_img_idx=29
-EP=2 defect_img_idx=30
-EP=2 defect_img_idx=31
-EP=2 defect_img_idx=32
-EP=2 defect_img_idx=33
-EP=2 defect_img_idx=34
-EP=2 defect_img_idx=35
-EP=2 defect_img_idx=36
-EP=2 defect_img_idx=37
-EP=2 defect_img_idx=38
-EP=2 defect_img_idx=39
-EP=2 defect_img_idx=40
-EP=2 defect_img_idx=41
-EP=2 defect_img_idx=42
-EP=2 defect_img_idx=43
-EP=2 defect_img_idx=44
-EP=2 defect_img_idx=45
-EP=2 defect_img_idx=46
-EP=2 defect_img_idx=47
-EP=2 defect_img_idx=48
-EP=2 defect_img_idx=49
-EP=2 defect_img_idx=50
-EP=2 defect_img_idx=51
-EP=2 defect_img_idx=52
-EP=2 defect_img_idx=53
-EP=2 defect_img_idx=54
-EP=2 defect_img_idx=55
-EP=2 defect_img_idx=56
-EP=2 defect_img_idx=57
-EP=2 defect_img_idx=58
-EP=2 defect_img_idx=59
-EP=2 defect_img_idx=60
-EP=2 defect_img_idx=61
-EP=2 defect_img_idx=62
-EP=2 defect_img_idx=63
-EP=2 defect_img_idx=64
-EP=2 defect_img_idx=65
-EP=2 defect_img_idx=66
-EP=2 defect_img_idx=67
-EP=2 defect_img_idx=68
-EP=2 defect_img_idx=69
-EP=2 defect_img_idx=70
-EP=2 defect_img_idx=71
-EP=2 defect_img_idx=72
-EP=2 defect_img_idx=73
-EP=2 defect_img_idx=74
-EP=2 defect_img_idx=75
-EP=2 defect_img_idx=76
-EP=2 defect_img_idx=77
-EP=2 defect_img_idx=78
-EP=2 defect_img_idx=79
-EP=2 defect_img_idx=80
-EP=2 defect_img_idx=81
-EP=2 defect_img_idx=82
-EP=2 defect_img_idx=83
-EP=2 defect_img_idx=84
-EP=2 defect_img_idx=85
-EP=2 defect_img_idx=86
-EP=2 defect_img_idx=87
-EP=2 defect_img_idx=88
-EP=2 defect_img_idx=89
-EP=2 defect_img_idx=90
-EP=2 defect_img_idx=91
-EP=2 defect_img_idx=92
-EP=2 defect_img_idx=93
-EP=2 defect_img_idx=94
-EP=2 defect_img_idx=95
-EP=2 defect_img_idx=96
-EP=2 defect_img_idx=97
-EP=2 defect_img_idx=98
-EP=2 defect_img_idx=99
-EP=2 defect_img_idx=100
-EP=2 defect_img_idx=101
-EP=2 defect_img_idx=102
-EP=2 defect_img_idx=103
-EP=2 defect_img_idx=104
-EP=2 defect_img_idx=105
-EP=2 defect_img_idx=106
-EP=2 defect_img_idx=107
-EP=2 defect_img_idx=108
-EP=2 defect_img_idx=109
-EP=2 defect_img_idx=110
-EP=2 defect_img_idx=111
-EP=2 defect_img_idx=112
-EP=2 defect_img_idx=113
-EP=2 defect_img_idx=114
-EP=2 defect_img_idx=115
-EP=2 defect_img_idx=116
-EP=2 defect_img_idx=117
-EP=2 defect_img_idx=118
------ create folder for zipper | type: good -----
-EP=2 good_img_idx=0
-EP=2 good_img_idx=1
-EP=2 good_img_idx=2
-EP=2 good_img_idx=3
-EP=2 good_img_idx=4
-EP=2 good_img_idx=5
-EP=2 good_img_idx=6
-EP=2 good_img_idx=7
-EP=2 good_img_idx=8
-EP=2 good_img_idx=9
-EP=2 good_img_idx=10
-EP=2 good_img_idx=11
-EP=2 good_img_idx=12
-EP=2 good_img_idx=13
-EP=2 good_img_idx=14
-EP=2 good_img_idx=15
-EP=2 good_img_idx=16
-EP=2 good_img_idx=17
-EP=2 good_img_idx=18
-EP=2 good_img_idx=19
-EP=2 good_img_idx=20
-EP=2 good_img_idx=21
-EP=2 good_img_idx=22
-EP=2 good_img_idx=23
-EP=2 good_img_idx=24
-EP=2 good_img_idx=25
-EP=2 good_img_idx=26
-EP=2 good_img_idx=27
-EP=2 good_img_idx=28
-EP=2 good_img_idx=29
-EP=2 good_img_idx=30
-EP=2 good_img_idx=31
-Multi Map AUC score during drawing for testing data zipper: 0.83888801108462
+load from /train-data2/corn/bag_of_words/Results/testing_multiMap/Ronet/zipper/good/128_img_good_feature_30_Origin.pickle
+EP=30 defect_img_idx=0
+EP=30 defect_img_idx=1
+EP=30 defect_img_idx=2
+EP=30 defect_img_idx=3
+EP=30 defect_img_idx=4
+EP=30 defect_img_idx=5
+EP=30 defect_img_idx=6
+EP=30 defect_img_idx=7
+EP=30 defect_img_idx=8
+EP=30 defect_img_idx=9
+EP=30 defect_img_idx=10
+EP=30 defect_img_idx=11
+EP=30 defect_img_idx=12
+EP=30 defect_img_idx=13
+EP=30 defect_img_idx=14
+EP=30 defect_img_idx=15
+EP=30 defect_img_idx=16
+EP=30 defect_img_idx=17
+EP=30 defect_img_idx=18
+EP=30 defect_img_idx=19
+EP=30 defect_img_idx=20
+EP=30 defect_img_idx=21
+EP=30 defect_img_idx=22
+EP=30 defect_img_idx=23
+EP=30 defect_img_idx=24
+EP=30 defect_img_idx=25
+EP=30 defect_img_idx=26
+EP=30 defect_img_idx=27
+EP=30 defect_img_idx=28
+EP=30 defect_img_idx=29
+EP=30 defect_img_idx=30
+EP=30 defect_img_idx=31
+EP=30 defect_img_idx=32
+EP=30 defect_img_idx=33
+EP=30 defect_img_idx=34
+EP=30 defect_img_idx=35
+EP=30 defect_img_idx=36
+EP=30 defect_img_idx=37
+EP=30 defect_img_idx=38
+EP=30 defect_img_idx=39
+EP=30 defect_img_idx=40
+EP=30 defect_img_idx=41
+EP=30 defect_img_idx=42
+EP=30 defect_img_idx=43
+EP=30 defect_img_idx=44
+EP=30 defect_img_idx=45
+EP=30 defect_img_idx=46
+EP=30 defect_img_idx=47
+EP=30 defect_img_idx=48
+EP=30 defect_img_idx=49
+EP=30 defect_img_idx=50
+EP=30 defect_img_idx=51
+EP=30 defect_img_idx=52
+EP=30 defect_img_idx=53
+EP=30 defect_img_idx=54
+EP=30 defect_img_idx=55
+EP=30 defect_img_idx=56
+EP=30 defect_img_idx=57
+EP=30 defect_img_idx=58
+EP=30 defect_img_idx=59
+EP=30 defect_img_idx=60
+EP=30 defect_img_idx=61
+EP=30 defect_img_idx=62
+EP=30 defect_img_idx=63
+EP=30 defect_img_idx=64
+EP=30 defect_img_idx=65
+EP=30 defect_img_idx=66
+EP=30 defect_img_idx=67
+EP=30 defect_img_idx=68
+EP=30 defect_img_idx=69
+EP=30 defect_img_idx=70
+EP=30 defect_img_idx=71
+EP=30 defect_img_idx=72
+EP=30 defect_img_idx=73
+EP=30 defect_img_idx=74
+EP=30 defect_img_idx=75
+EP=30 defect_img_idx=76
+EP=30 defect_img_idx=77
+EP=30 defect_img_idx=78
+EP=30 defect_img_idx=79
+EP=30 defect_img_idx=80
+EP=30 defect_img_idx=81
+EP=30 defect_img_idx=82
+EP=30 defect_img_idx=83
+EP=30 defect_img_idx=84
+EP=30 defect_img_idx=85
+EP=30 defect_img_idx=86
+EP=30 defect_img_idx=87
+EP=30 defect_img_idx=88
+EP=30 defect_img_idx=89
+EP=30 defect_img_idx=90
+EP=30 defect_img_idx=91
+EP=30 defect_img_idx=92
+EP=30 defect_img_idx=93
+EP=30 defect_img_idx=94
+EP=30 defect_img_idx=95
+EP=30 defect_img_idx=96
+EP=30 defect_img_idx=97
+EP=30 defect_img_idx=98
+EP=30 defect_img_idx=99
+EP=30 defect_img_idx=100
+EP=30 defect_img_idx=101
+EP=30 defect_img_idx=102
+EP=30 defect_img_idx=103
+EP=30 defect_img_idx=104
+EP=30 defect_img_idx=105
+EP=30 defect_img_idx=106
+EP=30 defect_img_idx=107
+EP=30 defect_img_idx=108
+EP=30 defect_img_idx=109
+EP=30 defect_img_idx=110
+EP=30 defect_img_idx=111
+EP=30 defect_img_idx=112
+EP=30 defect_img_idx=113
+EP=30 defect_img_idx=114
+EP=30 defect_img_idx=115
+EP=30 defect_img_idx=116
+EP=30 defect_img_idx=117
+EP=30 defect_img_idx=118
+EP=30 good_img_idx=0
+EP=30 good_img_idx=1
+EP=30 good_img_idx=2
+EP=30 good_img_idx=3
+EP=30 good_img_idx=4
+EP=30 good_img_idx=5
+EP=30 good_img_idx=6
+EP=30 good_img_idx=7
+EP=30 good_img_idx=8
+EP=30 good_img_idx=9
+EP=30 good_img_idx=10
+EP=30 good_img_idx=11
+EP=30 good_img_idx=12
+EP=30 good_img_idx=13
+EP=30 good_img_idx=14
+EP=30 good_img_idx=15
+EP=30 good_img_idx=16
+EP=30 good_img_idx=17
+EP=30 good_img_idx=18
+EP=30 good_img_idx=19
+EP=30 good_img_idx=20
+EP=30 good_img_idx=21
+EP=30 good_img_idx=22
+EP=30 good_img_idx=23
+EP=30 good_img_idx=24
+EP=30 good_img_idx=25
+EP=30 good_img_idx=26
+EP=30 good_img_idx=27
+EP=30 good_img_idx=28
+EP=30 good_img_idx=29
+EP=30 good_img_idx=30
+EP=30 good_img_idx=31
+Multi Map AUC score during drawing for testing data zipper: 0.8217536490645039
