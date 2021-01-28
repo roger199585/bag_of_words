@@ -17,7 +17,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
 import networks.resnet as resnet
-import networks.AlexNet as AlexNet
+from preprocess_Artificial.artificial_feature import to_int, to_hist
 import dataloaders
 from config import ROOT
 
@@ -49,11 +49,6 @@ mask_path    = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/all/"
 mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader  = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
-## Models
-pretrain_model = AlexNet.AlexNet({'num_classes': 4})
-pretrain_model.load_state_dict(torch.load(f"{ ROOT }/models/artificial/model_net_epoch50")['network'])
-pretrain_model = pretrain_model.cuda() # nn.DataParallel(pretrain_model).to(device)
-
 ## Clusters
 kmeans_path = f"{ ROOT }/preprocessData/kmeans/artificial/{ args.data }/artificial_{ args.kmeans }.pickle"
 kmeans      = pickle.load(open(kmeans_path, "rb"))
@@ -75,11 +70,9 @@ def norm(features):
         return features / features.max()
 
 def eval_feature(epoch, model, test_loader, test_label):
-    global pretrain_model
     global kmeans
 
     model.eval()
-    pretrain_model.eval()
 
     with torch.no_grad():
         img_feature = []
@@ -141,7 +134,7 @@ def eval_feature(epoch, model, test_loader, test_label):
                         output_center = torch.squeeze(output_center)
 
                         isWrongLabel = int(y_[k] != y[k].item())
-                        diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[k])
+                        diff = isWrongLabel * nn.MSELoss()(output_center.squeeze(), crop_list[k])
                         value_feature.append(diff.item())
                     crop_list.clear()
                     

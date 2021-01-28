@@ -100,7 +100,7 @@ def eval_OriginFeature(model, test_loader, kmeans, test_data, global_index, good
                     output_feature = torch.from_numpy(output_feature).cuda()
 
                     isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
+                    diff = isWrongLabel * nn.MSELoss()(output_feature.squeeze(), crop_list[n])
                     
                     each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
                     each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
