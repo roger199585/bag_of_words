@@ -1,4 +1,5 @@
 import os
+import sys
 from tqdm import tqdm
 from PIL import Image
 
@@ -26,12 +27,12 @@ class ImageConverter():
                 import glob
 
                 images = glob.glob(os.path.join(currentRoot, '*.png'))
-
                 if not os.path.isdir(resizeDataPath + name):
                     os.makedirs(resizeDataPath + name)
 
                 for imageName in tqdm(images):
                     if imageName.endswith('.png'):
+                        imageName = imageName.split('/')[-1]
                         im = Image.open(currentRoot + '/' + imageName)
                         im = im.resize(self.SIZE)
                         im.save(resizeDataPath + name + '/' +imageName)
