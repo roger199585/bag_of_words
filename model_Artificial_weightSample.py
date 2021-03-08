@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 # customize
 import dataloaders
 import networks.resnet as resnet
-from preprocess_Artificial.artificial_feature import to_int, to_hist
+from preprocess_Artificial.artificial_feature import to_256_colr
 from config import ROOT, RESULT_PATH
 
 # evaluations
@@ -131,7 +131,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             for i in range(chunk_num):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
-                    out = to_hist(crop_img)
+                    out = to_256_colr(crop_img)
                     out_ = out.reshape(1, -1).to(device)
                     """ flatten the dimension of H and W """
                     origin_feature_list.append(out_)
@@ -319,5 +319,5 @@ if __name__ == "__main__":
         if not os.path.isdir(f"{ ROOT }/models/artificial/{ args.data }"):
             os.makedirs(f"{ ROOT }/models/artificial/{ args.data }")
         
-        path = f"{ ROOT }/models/artificial/{ args.data }/exp_{ args.kmeans }_{ str(epoch+1+epoch_num) }.ckpt"
+        path = f"{ ROOT }/models/artificial/{ args.data }/exp_{ args.with_mask }_{ args.kmeans }_{ str(epoch+1+epoch_num) }.ckpt"
         torch.save(scratch_model.state_dict(), path)

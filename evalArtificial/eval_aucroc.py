@@ -17,7 +17,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
 import networks.resnet as resnet
-from preprocess_Artificial.artificial_feature import to_int, to_hist
+from preprocess_Artificial.artificial_feature import to_256_colr
 import dataloaders
 from config import ROOT
 
@@ -101,7 +101,7 @@ def eval_feature(epoch, model, test_loader, test_label):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].cuda()
                     """ flatten the dimension of H and W """
-                    out = to_hist(crop_img)
+                    out = to_256_colr(crop_img)
                     out = out.reshape(1, -1).cuda()
                     crop_list.append(out)
 
@@ -155,7 +155,7 @@ def eval_feature(epoch, model, test_loader, test_label):
 start = time.time()
 """ load model """
 global_index = args.index
-scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/artificial/{ args.data }/exp_{ args.kmeans }_{ args.index }.ckpt"))
+scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/artificial/{ args.data }/exp_True_{ args.kmeans }_{ args.index }.ckpt"))
 
 print("------- For defect type -------")
 value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)

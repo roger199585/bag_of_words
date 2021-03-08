@@ -34,7 +34,6 @@ if __name__ == "__main__":
     parser.add_argument('--resume', type=bool, default=True)
     parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--patch_size', type=int, default=64)
-    parser.add_argument('--resolution', type=int, default=4)
     args = parser.parse_args()
 
     global_index = args.index

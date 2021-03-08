@@ -24,7 +24,7 @@ from torch.utils.data import DataLoader
 """ Custom Library """
 import dataloaders
 from config import ROOT
-from artificial_feature import to_int, to_hist
+from artificial_feature import to_256_colr
 
 def save_img(img, save_name):
     if not os.path.isdir( f'{ ROOT }/preprocessData/kmeans_img/artificial/{ args.data }/{ str(args.kmeans) }/'):
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                     patch = img[ :, :, i*args.patch_size+left_i[index]:i*args.patch_size+args.patch_size+left_i[index], j*args.patch_size+left_j[index]:j*args.patch_size+args.patch_size+left_j[index] ]
                 else:
                     patch = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size]
-                out = to_hist(patch)
+                out = to_256_colr(patch)
 
                 """ flatten the dimension of H and W """
                 out = out.detach().cpu().numpy()
