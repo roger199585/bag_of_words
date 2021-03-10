@@ -34,22 +34,14 @@ from config import ROOT
 from ei import patch
 patch(select=True)
 
-def to_int(rgb_tensor):
+def to_256_colr(rgb_tensor):
+    rgb_tensor = rgb_tensor * 255
     rgb_tensor = rgb_tensor.squeeze()
-    
-    for i in range(rgb_tensor.shape[1]):
-        for j in range(rgb_tensor.shape[2]):
-            color_hex = matplotlib.colors.to_hex([rgb_tensor[0, i, j].item(), rgb_tensor[1, i, j].item(), rgb_tensor[2, i, j].item()])
 
-            rgb_tensor[0, i, j] = int(color_hex.replace('#', '0x'), 16) / int('0xffffff', 16)
-            
+    new_tensor = torch.round((0.299 * rgb_tensor[0, :, :] + 0.587 * rgb_tensor[1, :, :] + 0.114 * rgb_tensor[2, :, :])) / 255
     
-    return rgb_tensor[0, :, :].flatten()
+    return torch.histc(new_tensor, bins=256, min=0, max=1)
 
-def to_hist(rgb_tensor):
-    rgb_tensor = rgb_tensor.flatten()
-    
-    return torch.histc(rgb_tensor, bins=256, min=0, max=1)
 
 """ Save chunks of training datas to fit the corresponding kmeans """
 if __name__ == "__main__":
@@ -88,7 +80,7 @@ if __name__ == "__main__":
 
                 patch = img[:, :, i * args.patch_size+noise_i:i*args.patch_size+noise_i+args.patch_size, j*args.patch_size+noise_j:j*args.patch_size+noise_j+args.patch_size]
                 # hex_patch = to_int(patch)
-                hex_patch = to_hist(patch)
+                hex_patch = to_256_colr(patch)
                 patch_list.append(hex_patch.detach().cpu().numpy())
 
     save_chunk = f"{ ROOT }/preprocessData/chunks/artificial/{ args.data }"
