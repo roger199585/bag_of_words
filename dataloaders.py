@@ -187,18 +187,18 @@ class NoisePatchDataloader2(Dataset):
         return len(self.label_list)
 
     def __getitem__(self, index):
-        img_idx = index // 49
+        img_idx = index // 256
         img = self.img_path + "/" + self.img_list[img_idx]
         img = cached_load_image(img)
         img = transform(img)
         
         """ for mask position """
-        mask = torch.ones(1, 224, 224)
-        mask_idx = index % 49
+        mask = torch.ones(1, 1024, 1024)
+        mask_idx = index % 256
 
-        i = mask_idx // 7 
-        j = mask_idx % 7
-        mask[:, i*32:i*32+32, j*32:j*32+32] = 0
+        i = mask_idx // 16
+        j = mask_idx % 16
+        mask[:, i*64:i*64+64, j*64:j*64+64] = 0
 
         label = self.label_list[index]
 
@@ -208,6 +208,7 @@ class NoisePatchDataloader2(Dataset):
 def fullPatchLabel(label_path, model, data, kmeans, batch):
 
     index_label = torch.load(label_path)
+    print(len(index_label[0]))
     label_list = []
     
     saveLabelPath = "{}/preprocessData/label/fullPatch/{}/{}/".format(

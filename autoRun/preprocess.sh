@@ -4,21 +4,21 @@ cd $PWD
 
 # 進行圖片大小的轉換
 # echo "Preparing images, covert all image in dataset into 1024x1024"
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types bottle  &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types cable &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types capsule &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types carpet &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types grid &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types hazelnut &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types leather &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types metal_nut &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types pill &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types screw &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types tile &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types toothbrush &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types transistor &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types wood &
-# python preprocess/preprocess.py --root /train-data2/corn/bag_of_words -s 224 --types zipper &
+python preprocess/preprocess.py --root $PWD -s 224 --types bottle  &
+python preprocess/preprocess.py --root $PWD -s 224 --types cable &
+python preprocess/preprocess.py --root $PWD -s 224 --types capsule &
+python preprocess/preprocess.py --root $PWD -s 224 --types carpet &
+python preprocess/preprocess.py --root $PWD -s 224 --types grid &
+python preprocess/preprocess.py --root $PWD -s 224 --types hazelnut &
+python preprocess/preprocess.py --root $PWD -s 224 --types leather &
+python preprocess/preprocess.py --root $PWD -s 224 --types metal_nut &
+python preprocess/preprocess.py --root $PWD -s 224 --types pill &
+python preprocess/preprocess.py --root $PWD -s 224 --types screw &
+python preprocess/preprocess.py --root $PWD -s 224 --types tile &
+python preprocess/preprocess.py --root $PWD -s 224 --types toothbrush &
+python preprocess/preprocess.py --root $PWD -s 224 --types transistor &
+python preprocess/preprocess.py --root $PWD -s 224 --types wood &
+python preprocess/preprocess.py --root $PWD -s 224 --types zipper &
 # wait
 
 # 建立 chunks and coordinates (切 chunk 以及讓他有位移)

@@ -50,6 +50,8 @@ if __name__ == "__main__":
     parser.add_argument('--type', type=str, default='train')
     parser.add_argument('--kmeans', type=int, default=16, help='number of kmeans clusters')
     parser.add_argument('--batch', type=int, default=100)
+    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--dim', type=int, default=16)
     parser.add_argument('--model', type=str, default='vgg19')
     parser.add_argument('--dim_reduction', type=str, default='PCA')
@@ -58,14 +60,11 @@ if __name__ == "__main__":
     """ Load preprocess datas """
     dim_reduction_path = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
     kmeans_path        = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
-    # left_i_path        = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.dim_reduction }/{ args.data }/left_i.pickle"
-    # left_j_path        = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.dim_reduction }/{ args.data }/left_j.pickle"
 
     dim_reduction      = pickle.load(open(dim_reduction_path, "rb"))
     kmeans             = pickle.load(open(kmeans_path, "rb"))
-    # left_i             = pickle.load(open(left_i_path, "rb"))
-    # left_j             = pickle.load(open(left_j_path, "rb"))
 
+    chunk_num = (int)(args.image_size / args.patch_size)
     """ Check folder if not exists auto create"""
     if args.type == 'train':
         path      = f"{ ROOT }/dataset/{ args.data }/train_resize/good/"
@@ -107,33 +106,13 @@ if __name__ == "__main__":
         idx = idx[0].item()
 
         patch_index_list = []
-
-        # chunk_num = int(args.image_size / args.patch_size)
-        
         patch_list = []
 
         feature_map = model(img)
-        for i in range(7):
-            for j in range(7):
+        for i in range(chunk_num):
+            for j in range(chunk_num):
                 patch_list.append(feature_map[0, :, i, j].detach().cpu().numpy())
         image_list.append(patch_list)
-
-        # for i in range(chunk_num):
-        #     for j in range(chunk_num):
-        #         """ Crop the image """
-        #         if (args.type == 'train'):
-        #             index = idx*chunk_num*chunk_num+i*chunk_num+j
-        #             patch = img[ :, :, i*args.patch_size+left_i[index]:i*args.patch_size+args.patch_size+left_i[index], j*args.patch_size+left_j[index]:j*args.patch_size+args.patch_size+left_j[index] ].to(device)
-        #         else:
-        #             patch = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
-
-        #         output = model.forward( patch )
-
-        #         """ flatten the dimension of H and W """
-        #         out = output.flatten(1,2).flatten(1,2)
-
-        #         patch_list.append(out.detach().cpu().numpy())
-        # image_list.append(patch_list)
     
     # 處理降維  
     image_list = np.array(image_list)
@@ -153,25 +132,27 @@ if __name__ == "__main__":
                 print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
                 os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
 
-            img_idx = int(i / 49)
-            x = int((i % 49) / 7)
-            y = int((i % 49) % 7)
+            img_idx = int(i / (chunk_num * chunk_num) )
+            x = int((i % (chunk_num * chunk_num)) / chunk_num)
+            y = int((i % (chunk_num * chunk_num)) % chunk_num)
+
             image = Image.open(f"{ ROOT }/dataset/{ args.data }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
             image = np.array(image)
 
-            patch = image[x*32:x*32+32, y*32:y*32+32, :]
+            # patch = image[x*chunk_num:x*chunk_num+chunk_num, y*chunk_num:y*chunk_num+chunk_num, :]
+            patch = image[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size, :]
             save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
             
 
-        if len(patch_index_list) == 49:
+        if len(patch_index_list) == (chunk_num*chunk_num):
             img_index_list.append(patch_index_list)
             patch_index_list = []
         
-        if (args.type == 'train'):
-            if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/"):
-                print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
-                os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")           
-            save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
+        # if (args.type == 'train'):
+        #     if not os.path.isdir(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/"):
+        #         print('create', f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")
+        #         os.makedirs(f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/")           
+        #     save_img(patch, f"{ ROOT }/preprocessData/kmeans_img/{ args.dim_reduction }/{ args.data }/{ str(args.kmeans) }/idx_{ str(patch_idx.item()) }.png")
 
     torch.save(img_index_list, save_path)
     print(len(img_index_list), len(img_index_list[0]))

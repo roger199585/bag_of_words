@@ -15,7 +15,7 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
-
+from scipy.ndimage import gaussian_filter
 
 
 import dataloaders
@@ -205,14 +205,12 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     error_map = np.zeros((224, 224))
     for index, scalar in enumerate(value_feature[idx]):
         mask = np.zeros((224, 224))
-        # mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-        # mask = np.invert(mask)
-        # mask[mask==255]=1
         x = index // 7
         y = index % 7
         mask[x*32:x*32+32, y*32:y*32+32] = 1
         
         error_map += mask * scalar
+    error_map = gaussian_filter(error_map, sigma=1)
 
     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
     defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
@@ -261,13 +259,11 @@ for (idx, img) in test_good_loader:
     error_map = np.zeros((224, 224))
     for index, scalar in enumerate(value_good_feature[idx]):
         mask = np.zeros((224, 224))
-        # mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-        # mask = np.invert(mask)
-        # mask[mask==255]=1
         x = index // 7
         y = index % 7
         mask[x*32:x*32+32, y*32:y*32+32] = 1
         error_map += mask * scalar
+    error_map = gaussian_filter(error_map, sigma=1)
 
     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
     ironman_grid = plt.GridSpec(1, 2)

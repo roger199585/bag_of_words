@@ -5,6 +5,9 @@ import argparse
 import numpy as np
 import os
 
+from ei import patch
+patch(select=True)
+
 from config import ROOT
 """ set parameters """
 parser = argparse.ArgumentParser()

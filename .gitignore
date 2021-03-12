@@ -4,6 +4,7 @@ preprocessData/**
 fullVGGPreprocessData
 **/*.pth
 models/**
+models.backup/**
 __pycache__
 **/*.tar
 **/*.pyc

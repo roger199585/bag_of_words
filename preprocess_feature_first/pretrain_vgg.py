@@ -38,10 +38,11 @@ class VGG(nn.Module):
     def __init__(self, features, num_classes=1000):
         super(VGG, self).__init__()
         self.features = features
+        self.avgpool = nn.AvgPool2d(2, stride=2)
 
     def forward(self, x):
-        print(x.shape)
         x = self.features(x)
+        x = self.avgpool(x)
         return x
 
 def make_layers(cfg, batch_norm=False):
@@ -86,7 +87,11 @@ if __name__ == "__main__":
     """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
+    parser.add_argument('--image_size', type=str, default=1024)
+    parser.add_argument('--patch_size', type=str, default=64)
     args = parser.parse_args()
+
+    chunk_num = (int)(args.image_size / args.patch_size)
 
     print('data: ', args.data)
 
@@ -108,8 +113,8 @@ if __name__ == "__main__":
         img = img.to(device)
         feature = model(img)
         
-        for i in range(7):
-            for j in range(7):
+        for i in range(chunk_num):
+            for j in range(chunk_num):
                 patch_list.append(feature[0, :, i, j].detach().cpu().numpy())
     
 

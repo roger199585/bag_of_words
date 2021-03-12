@@ -51,19 +51,17 @@ parser.add_argument('--model', type=str, default='vgg19')
 parser.add_argument('--train_batch', type=int, default=16)
 parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--with_mask', type=str, default='True')
-parser.add_argument('--patch_size', type=int, default=32)
-parser.add_argument('--image_size', type=int, default=224)
+parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
 ALLAUC = []
 
+chunk_num = (int)(args.image_size / args.patch_size)
 kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ args.kmeans }_{ args.batch }_{ args.dim }.pickle"
 pca_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
-
-# left_i_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_i.pickle".format(ROOT, args.dim_reduction, args.data)
-# left_j_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_j.pickle".format(ROOT, args.dim_reduction, args.data)
 
 pca = pickle.load(open(pca_path, "rb"))
 kmeans = pickle.load(open(kmeans_path, "rb"))
@@ -154,17 +152,16 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
             patches = []
 
-            chunk_num = int(args.image_size / args.patch_size)
+            crop_output = pretrain_model(img)
+
             for i in range(chunk_num):
                 for j in range(chunk_num):
-                    crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
+                    out_ = crop_output[0, :, i, j]
                     patches.append(out_.detach().cpu().numpy())
                     origin_feature_list.append(out_)
 
-                    mask = torch.ones(1, 1, 224, 224)
+                    mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask if args.with_mask == 'True' else img
@@ -217,7 +214,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
                         isWrongLabel = int(y_[k] != y[k].item())
                         
-                        origin_feature_diff = isWrongLabel * nn.MSELoss()(output_feature, origin_feature_list[k])
+                        origin_feature_diff = isWrongLabel * nn.MSELoss()(output_feature.squeeze(), origin_feature_list[k])
                     
 
                         if isGood:
@@ -237,14 +234,6 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
     return img_feature
 
-def weights_init(m):
-    if isinstance(m, nn.Conv2d):
-        torch.nn.init.zeros_(m.weight.data)
-        if m.bias is not None:
-            torch.nn.init.zeros_(m.bias)
-        # xavier(m.weight.data)
-        # xavier(m.bias.data)
-
 if __name__ == "__main__":
 
     """ Summary Writer """
@@ -254,7 +243,7 @@ if __name__ == "__main__":
     train_dataset = dataloaders.NoisePatchDataloader2(train_path, label_name)
     samples_weights = torch.from_numpy(train_dataset.samples_weights)
     sampler = WeightedRandomSampler(samples_weights.type('torch.DoubleTensor'), len(samples_weights))
-    train_loader = DataLoader(train_dataset, batch_size=args.train_batch, num_workers=1, sampler=sampler)
+    train_loader = DataLoader(train_dataset, batch_size=args.train_batch, num_workers=0, sampler=sampler)
 
     # testing set (normal data)
     test_dataset = dataloaders.MvtecLoader(test_path)
@@ -271,8 +260,6 @@ if __name__ == "__main__":
 
     scratch_model = nn.DataParallel(scratch_model).to(device)
     epoch_num = 0
-
-    # scratch_model.apply(weights_init)
 
     """ training config """ 
     # criterion = nn.MSELoss()
@@ -296,16 +283,12 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((224, 224))
+            error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_feature[idx]):
-                # mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-                # mask = np.invert(mask)
-
-                mask = np.zeros((224, 224))
-                x = index // 7
-                y = index % 7
-                mask[x*7:x*7+32, y*7:y*7+32] = 1
-                # mask[mask==255]=1
+                mask = np.zeros((1024, 1024))
+                x = index // chunk_num
+                y = index % chunk_num
+                mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
                 
                 error_map += mask * scalar
 
@@ -322,18 +305,15 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((224, 224))
+            error_map = np.zeros((1024, 1024))
             for index, scalar in enumerate(value_good_feature[idx]):
-                # mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-                # mask = np.invert(mask)
-                # mask[mask==255]=1
-                mask = np.zeros((224, 224))
-                x = index // 7
-                y = index % 7
-                mask[x*7:x*7+32, y*7:y*7+32] = 1
+                mask = np.zeros((1024, 1024))
+                x = index // chunk_num
+                y = index % chunk_num
+                mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
                 error_map += mask * scalar
 
-            defect_gt = np.zeros((224, 224, 3))
+            defect_gt = np.zeros((1024, 1024, 3))
             true_mask = defect_gt[:, :, 0].astype('int32')
             label_pred.append(error_map)
             label_gt.append(true_mask)    
