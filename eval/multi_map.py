@@ -247,7 +247,7 @@ if __name__ == "__main__":
         resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).cuda()
-    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
+    scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
 
     ### DataSet for all defect type

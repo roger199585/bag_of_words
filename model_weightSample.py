@@ -246,7 +246,7 @@ def weights_init(m):
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/fullvgggeature_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/quantization_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)

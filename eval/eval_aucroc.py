@@ -189,7 +189,7 @@ def eval_feature(epoch, model, test_loader, test_label):
 start = time.time()
 """ load model """
 global_index = args.index
-scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}_smooth.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
+scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
 print("------- For defect type -------")
 value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)

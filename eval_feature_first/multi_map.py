@@ -35,6 +35,9 @@ import preprocess_feature_first.pretrain_vgg as pretrain_vgg
 import dataloaders
 from config import ROOT
 
+from ei import patch
+patch(select=True)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
 
@@ -59,8 +62,8 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
         chunk_num = int(args.image_size / args.patch_size)
         for (idx, img) in test_loader:
             sss = time.time()
-            each_pixel_err_sum = np.zeros([224, 224])
-            each_pixel_err_count = np.zeros([224, 224])
+            each_pixel_err_sum = np.zeros([1024, 1024])
+            each_pixel_err_count = np.zeros([1024, 1024])
 
             img = img.to(device)
             idx = idx[0].item()
@@ -68,11 +71,11 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             print(f'eval phase: img idx={idx}')
 
             """ slide window = 16 """
-            map_num = int((args.image_size - args.patch_size) / 4 + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / 16 + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
-            batch_size = 7
+            batch_size = 32
 
             label_idx = []
             label_gt = []
@@ -88,16 +91,51 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 patches = []
 
                 crop_output = pretrain_model(img)
-                print(batch_idxs)
                 for i, j in batch_idxs:
                     # crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     # crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
-                    out = crop_output[0, :, i, j]
+                    if i % 4 == 0:
+                        if j % 4 == 0:
+                            out = crop_output[0, :, i // 4, j // 4]
+                        else:
+                            j1 = j // 4
+                            j2 = j1 + 1
+
+                            out1 = crop_output[0, :, i // 4, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i // 4, j2] * ((j % 4) / 4)
+
+                            out = out1 + out2
+                    else:
+                        if j % 4 == 0:
+                            i1 = i // 4
+                            i2 = i1 + 1
+
+                            out1 = crop_output[0, :, i1, j // 4] * (1 - ((i % 4) / 4))
+                            out2 = crop_output[0, :, i2, j // 4] * ((i % 4) / 4)
+                        else:
+                            i1 = i // 4
+                            i2 = i1 + 1
+                            
+                            j1 = j // 4
+                            j2 = j1 + 1
+
+                            out1 = crop_output[0, :, i1, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i1, j2] * ((j % 4) / 4)
+                            out_1 = out1 + out2
+
+                            out1 = crop_output[0, :, i2, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i2, j2] * ((j % 4) / 4)
+                            out_2 = out1 + out2
+
+                            out = out_1 * (1 - ((i % 4) / 4)) + out_2 * ((i % 4) / 4)
+
+
+                    # out = crop_output[0, :, i, j]
                     patches.append(out.detach().cpu().numpy())
                     crop_list.append(out)
 
-                    mask = torch.ones(1, 1, 224, 224)
+                    mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask
@@ -117,13 +155,14 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 x = torch.cat(xs, 0)
                 y = torch.stack(ys).squeeze().to(device)                        
                 output = model(x)
+                print(aaaaaa)
                 y_ = output.argmax(-1).detach().cpu().numpy()
                 for n, (i, j) in enumerate(batch_idxs):
                     output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
                     output_feature = torch.from_numpy(output_feature).cuda()
 
                     isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
+                    diff = isWrongLabel * nn.MSELoss()(output_feature.squeeze(), crop_list[n])
                     
                     each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
                     each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
@@ -144,8 +183,8 @@ if __name__ == "__main__":
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--index', type=int, default=30)
     parser.add_argument('--resume', type=bool, default=False)
-    parser.add_argument('--image_size', type=int, default=224)
-    parser.add_argument('--patch_size', type=int, default=32)
+    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
 
@@ -176,10 +215,10 @@ if __name__ == "__main__":
     pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
     ## Clusters
-    kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_100.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+    kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    pca_path = "{}/preprocessData/{}/{}/vgg19_{}_100_100.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+    pca_path = "{}/preprocessData/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
     pca = pickle.load(open(pca_path, "rb"))
 
     ## Cluster Center Features
