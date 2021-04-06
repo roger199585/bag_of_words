@@ -167,10 +167,48 @@ class NoisePatchDataloader(Dataset):
 
         return index, img, left_i, left_j, label, mask
 
+# 這是給先抽取 feature 在去切 patch 用的
+class NoisePatchDataloader2(Dataset):
+    def __init__(self, img, label):
+        self.img_path = img
+        self.img_list = os.listdir(self.img_path)
+        self.img_list = [ x for x in self.img_list if x.endswith('.png') ]
+        self.img_list.sort(key=lambda x: int(x[:-4]))
+
+        self.label_list = torch.load(label)
+
+        """ weight sampling """
+        label_count = torch.tensor(self.label_list)
+        self.class_sample_count = np.array([len(np.where(label_count==t)[0]) for t in np.unique(label_count)])
+        self.weight = 1. / self.class_sample_count
+        self.samples_weights = np.array([self.weight[t] for t in label_count])
+
+    def __len__(self):
+        return len(self.label_list)
+
+    def __getitem__(self, index):
+        img_idx = index // 256
+        img = self.img_path + "/" + self.img_list[img_idx]
+        img = cached_load_image(img)
+        img = transform(img)
+        
+        """ for mask position """
+        mask = torch.ones(1, 1024, 1024)
+        mask_idx = index % 256
+
+        i = mask_idx // 16
+        j = mask_idx % 16
+        mask[:, i*64:i*64+64, j*64:j*64+64] = 0
+
+        label = self.label_list[index]
+
+        return index, img, label, mask
+
 
 def fullPatchLabel(label_path, model, data, kmeans, batch):
 
     index_label = torch.load(label_path)
+    print(len(index_label[0]))
     label_list = []
     
     saveLabelPath = "{}/preprocessData/label/fullPatch/{}/{}/".format(

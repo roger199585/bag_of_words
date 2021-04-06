@@ -1,12 +1,8 @@
 """
-    Author: Yong Yu Chen
-    Collaborator: Corn
+    Author: Corn
 
-    Update: 2020/12/3
+    Update: 2021/3/7
     History: 
-        2020/12/2 -> code refactor
-        2020/12/3 -> code refactor and add description
-        2020/12/23 -> 新增其他的降維方式
         2021/3/7 -> 使用先取 feature 再切 patch 的 feature 去分類
 
     Description: 透過 PCA 降維之後再用 kmeans 去進行分群

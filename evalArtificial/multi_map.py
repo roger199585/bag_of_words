@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader
 
 import dataloaders
 import networks.resnet as resnet
-from preprocess_Artificial.artificial_feature import to_int, to_hist
+from preprocess_Artificial.artificial_feature import to_256_colr
 
 from sklearn.metrics import roc_auc_score
 from config import ROOT
@@ -74,7 +74,7 @@ def eval_OriginFeature(model, test_loader, kmeans, test_data, global_index, good
                 for i, j in batch_idxs:
                     crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
                     """ flatten the dimension of H and W """
-                    out = to_hist(crop_img)
+                    out = to_256_colr(crop_img)
                     out_ = out.reshape(1, -1).detach().cpu().numpy()
                     # out = latent_code[7].flatten(1,2).flatten(1,2)
                     # out_ = out.detach().cpu().numpy()
@@ -133,7 +133,7 @@ if __name__ == "__main__":
         resnet.resnet50(pretrained=False, num_classes=args.kmeans)
     )
     scratch_model = nn.DataParallel(scratch_model).to(device)
-    scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/artificial/{ args.data }/exp_{ args.kmeans }_{ args.index }.ckpt"))
+    scratch_model.load_state_dict(torch.load(f"{ ROOT }/models/artificial/{ args.data }/exp_True_{ args.kmeans }_{ args.index }.ckpt"))
 
 
     ### DataSet for all defect type

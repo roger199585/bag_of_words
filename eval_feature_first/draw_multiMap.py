@@ -1,28 +1,38 @@
 import os
+import cv2
 import sys
 import time
+import random
 import pickle
 import argparse
 import itertools
 import numpy as np
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 import torch
 import torchvision
 import torch.nn as nn
 from torchvision import transforms
-from torch.utils.data import DataLoader
-
-import dataloaders
-from config import ROOT
+import torchvision.models as models
+from torch.utils.data import Dataset, DataLoader
 
 from sklearn.metrics import roc_auc_score
+
+from config import ROOT
+
+import dataloaders
+import networks.resnet as resnet
+import preprocess.pretrain_vgg as pretrain_vgg
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
 
 def norm(feature):
-    return feature / feature.max()
+    if feature.max() == 0:
+        return feature
+    else:
+        return feature / feature.max()
 
 if __name__ == "__main__":
 
@@ -40,30 +50,30 @@ if __name__ == "__main__":
     test_data = args.data
 
     ### DataSet for all defect type
-    test_all_path     = f"{ ROOT }/dataset/{ args.data }/test_resize/all/"
-    test_all_dataset  = dataloaders.MvtecLoader(test_all_path)
-    test_all_loader   = DataLoader(test_all_dataset, batch_size=1, shuffle=False)
+    test_all_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data)
+    test_all_dataset = dataloaders.MvtecLoader(test_all_path)
+    test_all_loader = DataLoader(test_all_dataset, batch_size=1, shuffle=False)
 
-    test_good_path    = f"{ ROOT }/dataset/{ args.data }/test_resize/good/"
+    test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data)
     test_good_dataset = dataloaders.MvtecLoader(test_good_path)
-    test_good_loader  = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
+    test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
 
-    mask_path         = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/all/"
-    mask_dataset      = dataloaders.MaskLoader(mask_path)
-    mask_loader       = DataLoader(mask_dataset, batch_size=1, shuffle=False)
+    mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
+    mask_dataset = dataloaders.MaskLoader(mask_path)
+    mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
     
     print("----- defect -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/artificial/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle")
-        img_all_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/all/128_img_all_feature_{ args.index }_Origin.pickle", 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle".format(ROOT, args.data, args.index))
+        img_all_feature = pickle.load(open('{}/Results/testing_multiMap/{}/all/128_img_all_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_all_feature = eval_feature(pretrain_model, scratch_model, test_all_loader, kmeans, pca, args.data, global_index, good=False)
 
     print("----- good -----")
-    if args.resume and os.path.isfile(f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle"):
-        print(f"load from { ROOT }/Results/testing_multiMap/artificial/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle")
-        img_good_feature = pickle.load(open(f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/good/128_img_good_feature_{ args.index }_Origin.pickle", 'rb'))
+    if args.resume and os.path.isfile('{}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index)):
+        print("load from {}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle".format(ROOT, args.data, args.index))
+        img_good_feature = pickle.load(open('{}/Results/testing_multiMap/{}/good/128_img_good_feature_{}_Origin.pickle'.format(ROOT, args.data, args.index), 'rb'))
     else:
         img_good_feature = eval_feature(pretrain_model, scratch_model, test_good_loader, kmeans, pca, args.data, global_index, good=True)
     
@@ -94,12 +104,15 @@ if __name__ == "__main__":
         im3 = ax3.imshow(defect_gt)
 
 
-        errorMapPath = f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/all/{ args.kmeans }/map/"
+        errorMapPath = "{}/Results/testing_multiMap/{}/all/{}/map/".format(ROOT, test_data, args.kmeans)
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
-            print(f"----- create folder for { args.data } | type: all -----")
+            print("----- create folder for {} | type: all -----".format(test_data))
         
-        errorMapName = f"{ str(idx) }_{ str(global_index) }.png"
+        errorMapName = "{}_{}.png".format(
+            str(idx),
+            str(global_index)
+        )
 
         plt.savefig(errorMapPath+errorMapName, dpi=100)
         plt.close(fig)
@@ -109,7 +122,7 @@ if __name__ == "__main__":
         true_mask = defect_gt[:, :, 0].astype('int32')
         label_pred.append(errorMap)
         label_true.append(true_mask)    
-        print(f'EP={ global_index } defect_img_idx={ idx }')
+        print(f'EP={global_index} defect_img_idx={idx}')
 
         
 
@@ -131,12 +144,15 @@ if __name__ == "__main__":
         ax2.set_axis_off()
         im2 = ax2.imshow(img_)
         
-        errorMapPath = f"{ ROOT }/Results/testing_multiMap/artificial/{ args.data }/good/{ args.kmeans }/map/"
+        errorMapPath = "{}/Results/testing_multiMap/{}/good/{}/map/".format(ROOT, test_data, args.kmeans)
         if not os.path.isdir(errorMapPath):
             os.makedirs(errorMapPath)
-            print(f"----- create folder for { args.data} | type: good -----")
+            print("----- create folder for {} | type: good -----".format(test_data))
 
-        errorMapName = f"{ str(idx) }_{ str(global_index) }.png"
+        errorMapName = "{}_{}.png".format(
+            str(idx),
+            str(global_index)
+        )
 
         plt.axis('off')
         plt.savefig(errorMapPath+errorMapName, dpi=100)
@@ -147,9 +163,9 @@ if __name__ == "__main__":
         true_mask = defect_gt[:, :, 0].astype('int32')
         label_pred.append(errorMap)
         label_true.append(true_mask)    
-        print(f'EP={ global_index } good_img_idx={ idx }')
+        print(f'EP={global_index} good_img_idx={idx}')
 
     label_pred = norm(np.array(label_pred))
     auc = roc_auc_score(np.array(label_true).flatten(), label_pred.flatten())
-    print("Multi Map AUC score during drawing for testing data {}: {}".format(args.data, auc))
+    print("AUC score for testing data {}: {}".format(args.data, auc))
 

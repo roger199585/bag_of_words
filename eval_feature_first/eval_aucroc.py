@@ -15,13 +15,16 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
-
+from scipy.ndimage import gaussian_filter
 
 
 import dataloaders
 import networks.resnet as resnet
-import preprocess.pretrain_vgg as pretrain_vgg
+import preprocess_feature_first.pretrain_vgg as pretrain_vgg
 from config import ROOT
+
+from ei import patch
+patch(select=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data', type=str, default="bottle")
@@ -115,18 +118,13 @@ def eval_feature(epoch, model, test_loader, test_label):
             
             patches = []
 
+            crop_output = pretrain_model(img)
             chunk_num = int(args.image_size / args.patch_size)
+
             for i in range(chunk_num):
                 for j in range(chunk_num):
-                    crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].cuda()
-                    crop_output = pretrain_model(crop_img)
-                    """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
+                    out_ = crop_output[0, :, i, j]
                     patches.append(out_.detach().cpu().numpy())
-                    
-                    # out = pca.transform(out_.detach().cpu().numpy())
-                    # out = pil_to_tensor(out).squeeze().cuda()
-                    # crop_list.append(out)
 
                     mask = torch.ones(1, 1, 1024, 1024)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
@@ -175,8 +173,6 @@ def eval_feature(epoch, model, test_loader, test_label):
             total_gt.append(label_gt)
             total_idx.append(label_idx)
             img_feature.append(value_feature)
-
-        
         print("total running time: ", time.time() - start)
 
     img_feature = np.array(img_feature).reshape((len(test_loader), -1))
@@ -208,11 +204,13 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
 
     error_map = np.zeros((1024, 1024))
     for index, scalar in enumerate(value_feature[idx]):
-        mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-        mask = np.invert(mask)
-        mask[mask==255]=1
+        mask = np.zeros((1024, 1024))
+        x = index // chunk_num
+        y = index % chunk_num
+        mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
         
         error_map += mask * scalar
+    error_map = gaussian_filter(error_map, sigma=1)
 
     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
     defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
@@ -237,7 +235,7 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    
-    print(f'EP={global_index} defect_img_idx={idx}')
+    # print(f'EP={global_index} defect_img_idx={idx}')
 
     errorMapPath = "./testing/{}/all/{}/".format(test_data, args.kmeans)
     if not os.path.isdir(errorMapPath):
@@ -260,10 +258,12 @@ for (idx, img) in test_good_loader:
 
     error_map = np.zeros((1024, 1024))
     for index, scalar in enumerate(value_good_feature[idx]):
-        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
-        mask = np.invert(mask)
-        mask[mask==255]=1
+        mask = np.zeros((1024, 1024))
+        x = index // chunk_num
+        y = index % chunk_num
+        mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
         error_map += mask * scalar
+    error_map = gaussian_filter(error_map, sigma=1)
 
     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
     ironman_grid = plt.GridSpec(1, 2)
@@ -283,7 +283,7 @@ for (idx, img) in test_good_loader:
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    
-    print(f'EP={global_index} good_img_idx={idx}')
+    # print(f'EP={global_index} good_img_idx={idx}')
 
     errorMapPath = "./testing/{}/good/{}/".format(test_data, args.kmeans)
     if not os.path.isdir(errorMapPath):
@@ -298,14 +298,9 @@ for (idx, img) in test_good_loader:
     plt.savefig(errorMapPath+errorMapName, dpi=100)
     plt.close(fig)
 
-# mu, sigma = 0.5, 1 # mean and standard deviation
-# label_pred = np.random.normal(mu, sigma, np.array(label_gt).size )
-
 label_pred = norm(np.array(label_pred))
 print('spend w/o auroc: ', time.time() - start)
 auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
 
 print("Single Map AUC score for testing data {}: {}".format(args.data, auc))
 print('spend with auroc: ', time.time() - start)
-# np.save("out", label_pred)
-# print(label_pred)

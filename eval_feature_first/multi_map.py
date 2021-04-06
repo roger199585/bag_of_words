@@ -30,111 +30,22 @@ from sklearn.metrics import roc_auc_score
 
 """ Custom Library """
 import networks.resnet as resnet
-import preprocess.pretrain_vgg as pretrain_vgg
+import preprocess_feature_first.pretrain_vgg as pretrain_vgg
 
 import dataloaders
 from config import ROOT
+
+from ei import patch
+patch(select=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pil_to_tensor = transforms.ToTensor()
 
 def norm(feature):
-    return feature / feature.max()
-
-def eval_feature(pretrain_model, model, test_loader, kmeans, pca, test_data, global_index, good=False):
-    global label_pred
-    global label_true
-
-    model.eval()
-    pretrain_model.eval()
-
-    with torch.no_grad():
-
-        img_feature = []
-        
-        start = time.time()
-        chunk_num = int(args.image_size / args.patch_size)
-        for (idx, img) in test_loader:
-            each_pixel_err_sum = np.zeros([1024, 1024])
-            each_pixel_err_count = np.zeros([1024, 1024])
-
-            img = img.to(device)
-            idx = idx[0].item()
-            
-            print(f'eval phase: img idx={idx}')
-
-            """ slide window = 16 """
-            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
-            indices = list(itertools.product(range(map_num), range(map_num)))
-            
-            """ batch """
-            batch_size = 16
-
-            label_idx = []
-            label_gt = []
-            
-            patches = []
-
-            for batch_start_idx in range(0, len(indices), batch_size):
-                xs = []
-                ys = []
-                crop_list = []
-
-                batch_idxs = indices[batch_start_idx:batch_start_idx+batch_size]
-
-                for i, j in batch_idxs:
-                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
-                    """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
-                    patches.append(out_.detach().cpu().numpy())
-
-                    mask = torch.ones(1, 1, 1024, 1024)
-                    mask[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] = 0
-                    mask = mask.to(device)
-                    x = img * mask
-                    x = torch.cat((x, mask), 1)
-
-                    xs.append(x)
-
-                patches = np.array(patches)
-                patches = patches.reshape(-1, patches.shape[-1])
-                
-                new_outs = pca.transform(patches)
-                for i in range(new_outs.shape[0]):
-                    out_label = kmeans.predict(new_outs[i].reshape(1, -1))
-                    out_label = torch.from_numpy(out_label).to(device)
-                    out = pil_to_tensor(new_outs[i].reshape(1, -1)).squeeze().to(device)
-
-                    crop_list.append(out)
-                    ys.append(out_label)
-
-                x = torch.cat(xs, 0)
-                y = torch.stack(ys).squeeze().to(device)                        
-                output = model(x)
-                y_ = output.argmax(-1).detach().cpu().numpy()
-
-                for n, (i, j) in enumerate(batch_idxs):
-                    output_center = kmeans.cluster_centers_[y_[n]]
-                    output_center = np.reshape(output_center, (1, -1))
-                    output_center = pil_to_tensor(output_center).to(device)
-                    output_center = torch.squeeze(output_center)
-
-                    isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_center, crop_list[n])
-                    
-                    each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
-                    each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1
-
-            
-            pixel_feature = each_pixel_err_sum / each_pixel_err_count
-
-            
-            img_feature.append(pixel_feature)
-
-    print(np.array(img_feature).shape)
-    img_feature = np.array(img_feature).reshape((len(test_loader), -1))
-    return img_feature
+    if feature.max() == 0:
+        return feature
+    else:
+        return feature / feature.max()
 
 def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_data, global_index, good=False):
     global label_pred
@@ -144,7 +55,6 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
     pretrain_model.eval()
 
     with torch.no_grad():
-
         img_feature = []
         
         start = time.time()
@@ -161,7 +71,7 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
             print(f'eval phase: img idx={idx}')
 
             """ slide window = 16 """
-            map_num = int((args.image_size - args.patch_size) / chunk_num + 1)   ## = 61
+            map_num = int((args.image_size - args.patch_size) / 16 + 1)   ## = 61
             indices = list(itertools.product(range(map_num), range(map_num)))
             
             """ batch """
@@ -180,11 +90,48 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
 
                 patches = []
 
+                crop_output = pretrain_model(img)
                 for i, j in batch_idxs:
-                    crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
+                    # crop_img = img[:, :, i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size].to(device)
+                    # crop_output = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
-                    out = crop_output.flatten(1,2).flatten(1,2)
+                    if i % 4 == 0:
+                        if j % 4 == 0:
+                            out = crop_output[0, :, i // 4, j // 4]
+                        else:
+                            j1 = j // 4
+                            j2 = j1 + 1
+
+                            out1 = crop_output[0, :, i // 4, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i // 4, j2] * ((j % 4) / 4)
+
+                            out = out1 + out2
+                    else:
+                        if j % 4 == 0:
+                            i1 = i // 4
+                            i2 = i1 + 1
+
+                            out1 = crop_output[0, :, i1, j // 4] * (1 - ((i % 4) / 4))
+                            out2 = crop_output[0, :, i2, j // 4] * ((i % 4) / 4)
+                        else:
+                            i1 = i // 4
+                            i2 = i1 + 1
+                            
+                            j1 = j // 4
+                            j2 = j1 + 1
+
+                            out1 = crop_output[0, :, i1, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i1, j2] * ((j % 4) / 4)
+                            out_1 = out1 + out2
+
+                            out1 = crop_output[0, :, i2, j1] * (1 - ((j % 4) / 4))
+                            out2 = crop_output[0, :, i2, j2] * ((j % 4) / 4)
+                            out_2 = out1 + out2
+
+                            out = out_1 * (1 - ((i % 4) / 4)) + out_2 * ((i % 4) / 4)
+
+
+                    # out = crop_output[0, :, i, j]
                     patches.append(out.detach().cpu().numpy())
                     crop_list.append(out)
 
@@ -208,13 +155,14 @@ def eval_OriginFeature(pretrain_model, model, test_loader, kmeans, pca, test_dat
                 x = torch.cat(xs, 0)
                 y = torch.stack(ys).squeeze().to(device)                        
                 output = model(x)
+                print(aaaaaa)
                 y_ = output.argmax(-1).detach().cpu().numpy()
                 for n, (i, j) in enumerate(batch_idxs):
                     output_feature = np.expand_dims(cluster_features[y_[n]], axis=0)
                     output_feature = torch.from_numpy(output_feature).cuda()
 
                     isWrongLabel = int(y_[n] != y[n].item())
-                    diff = isWrongLabel * nn.MSELoss()(output_feature, crop_list[n])
+                    diff = isWrongLabel * nn.MSELoss()(output_feature.squeeze(), crop_list[n])
                     
                     each_pixel_err_sum[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += diff.item()
                     each_pixel_err_count[i*chunk_num:i*chunk_num+args.patch_size, j*chunk_num:j*chunk_num+args.patch_size] += 1

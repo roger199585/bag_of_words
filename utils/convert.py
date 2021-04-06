@@ -1,19 +1,24 @@
 import os
+import sys
 from tqdm import tqdm
-from PIL import Image
+from PIL import Image, ImageFilter
 
 class ImageConverter():
     def __init__(
         self,
         ROOT='/home/dinosaur/bag_of_words', 
         TYPES=['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper'],
-        SIZE=1024
+        SIZE=1024,
+        quantization='',
+        blur=''
     ):
         self.ROOT = ROOT + '/dataset'
         self.TYPES = TYPES
         self.SIZE = (SIZE, SIZE)
-        
-    def resizeImage(self, category, whichSet):
+        self.quantization = True if quantization == "True" else False
+        self.blur = True if blur == "True" else False
+         
+    def resizeImage(self, category, whichSet, quantize=False, blur=False):
         dataPath = '{}/{}/{}/'.format(self.ROOT, category, whichSet)
         resizeDataPath = '{}/{}/{}_resize/'.format(self.ROOT, category, whichSet)
 
@@ -26,14 +31,16 @@ class ImageConverter():
                 import glob
 
                 images = glob.glob(os.path.join(currentRoot, '*.png'))
-
                 if not os.path.isdir(resizeDataPath + name):
                     os.makedirs(resizeDataPath + name)
 
                 for imageName in tqdm(images):
                     if imageName.endswith('.png'):
+                        imageName = imageName.split('/')[-1]
                         im = Image.open(currentRoot + '/' + imageName)
                         im = im.resize(self.SIZE)
+                        im = im.quantize(colors=256) if quantize else im
+                        im = im.filter(ImageFilter.GaussianBlur(radius=5)) if blur else im
                         im.save(resizeDataPath + name + '/' +imageName)
                     else:
                         print(imageName, "is not a picture")
@@ -55,6 +62,8 @@ class ImageConverter():
                         if imageName.endswith('.png'):
                             im = Image.open(currentRoot + '/' + imageName)
                             im = im.resize(self.SIZE)
+                            im = im.quantize(colors=256) if quantize else im
+                            im = im.filter(ImageFilter.GaussianBlur(radius=5)) if blur else im
                             im.save(resizeDataPath + name + '/' +imageName)
                         else:
                             print(imageName, "is not a picture")
@@ -64,28 +73,27 @@ class ImageConverter():
                         if imageName.endswith('.png'):
                             im = Image.open(currentRoot + '/' + imageName)
                             im = im.resize(self.SIZE)
+                            im = im.quantize(colors=256) if quantize else im
+                            im = im.filter(ImageFilter.GaussianBlur(radius=5)) if blur else im
                             im.save(resizeDataPath + name + '/' +imageName)
                             im.save(resizeDataPath + 'all/{}.png'.format(str(allTestingSetImageIndex).zfill(3)))
                             
                             allTestingSetImageIndex += 1
                         else:
                             print(imageName, "is not a picture")
-                    
-                
-                
     
     def start(self):
         print("Start converting...\n")
         for _type in self.TYPES:
             print(_type + ':')
 
-            print('Training set')
-            self.resizeImage(_type, 'train')
+            print('Training set', self.blur)
+            self.resizeImage(_type, 'train', quantize=self.quantization, blur=self.blur)
 
-            print('Testing set')
-            self.resizeImage(_type, 'test')
+            print('Testing set', self.blur)
+            self.resizeImage(_type, 'test', quantize=self.quantization, blur=self.blur)
 
             print('Ground truth')
-            self.resizeImage(_type, 'ground_truth')
+            self.resizeImage(_type, 'ground_truth', quantize=False, blur=False)
     
     
