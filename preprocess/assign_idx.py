@@ -57,7 +57,7 @@ if __name__ == "__main__":
     parser.add_argument('--dim', type=int, default=16)
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
-    parser.add_argument('--fine_tune_epoch', type=int, default=10)
+    parser.add_argument('--fine_tune_epoch', type=int, default=0)
     parser.add_argument('--model', type=str, default='vgg19')
     parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
@@ -75,21 +75,21 @@ if __name__ == "__main__":
 
     """ Check folder if not exists auto create"""
     if args.type == 'train':
-        path      = f"{ ROOT }/dataset/{ args.data }/train_resize/good/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/{ str(args.kmeans) }_{ str(args.batch) }.pth"
 
         if not os.path.isdir( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/" ):
             os.makedirs( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/" )
 
     elif args.type == 'test':
-        path      = f"{ ROOT }/dataset/{ args.data }/test_resize/good/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/good/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/good_{ str(args.kmeans) }_{ str(args.batch) }.pth"
         
         if not os.path.isdir( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/"):
             os.makedirs( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/")
             
     elif args.type == 'all':
-        path      = f"{ ROOT }/dataset/{ args.data }/test_resize/all/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/all/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/all_{ str(args.kmeans) }_{ str(args.batch) }.pth"
         
         if not os.path.isdir(f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/"):
@@ -158,7 +158,7 @@ if __name__ == "__main__":
             img_idx = int(i / (chunk_num * chunk_num))
             x = int((i % 256) / 16)
             y = int((i % 256) % 16)
-            image = Image.open(f"{ ROOT }/dataset/{ args.data }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
+            image = Image.open(f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
             patch = img[:, :, x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size]
 
             

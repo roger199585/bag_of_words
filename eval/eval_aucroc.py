@@ -31,6 +31,7 @@ parser.add_argument('--index', type=int, default=30)
 parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
+parser.add_argument('--fine_tune_epoch', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -53,7 +54,12 @@ mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
 ## Models
-pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
+pretrain_model = pretrain_vgg.model
+if args.fine_tune_epoch != 0:
+    pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+pretrain_model = nn.DataParallel(pretrain_model).cuda()
+
+# pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
 
 ## Clusters
 kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)

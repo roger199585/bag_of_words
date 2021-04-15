@@ -305,7 +305,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     out = args.kmeans
 
-    train_path = "{}/dataset/{}/train_resize".format(ROOT, args.data)
+    train_path = "{}/dataset/{}/train_resize".format(ROOT, args.data.split('_')[0])
     label_path = "{}/preprocessData/label/{}/{}/{}/train/{}_{}.pth".format(
         ROOT,
         args.model,
