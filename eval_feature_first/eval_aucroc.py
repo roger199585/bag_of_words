@@ -34,7 +34,7 @@ parser.add_argument('--index', type=int, default=30)
 parser.add_argument('--image_size', type=int, default=224)
 parser.add_argument('--patch_size', type=int, default=32)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
-parser.add_argument('--fine_tune_epoch', type=int, default=100)
+parser.add_argument('--fine_tune_epoch', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -44,22 +44,22 @@ scratch_model = nn.Sequential(
 scratch_model = nn.DataParallel(scratch_model).cuda()
 
 ### DataSet for all defect type
-test_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data)
+test_path = "{}/dataset/{}/test_resize/all/".format(ROOT, args.data.split('_')[0])
 test_dataset = dataloaders.MvtecLoader(test_path)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data)
+test_good_path = "{}/dataset/{}/test_resize/good/".format(ROOT, args.data.split('_')[0])
 test_good_dataset = dataloaders.MvtecLoader(test_good_path)
 test_good_loader = DataLoader(test_good_dataset, batch_size=1, shuffle=False)
 
-mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
+mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data.split('_')[0])
 mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
 ## Models
 pretrain_model = pretrain_vgg.model
 if args.fine_tune_epoch != 0:
-    pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+    pretrain_model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch}.ckpt"))
 pretrain_model = nn.DataParallel(pretrain_model).cuda()
 
 ## Clusters

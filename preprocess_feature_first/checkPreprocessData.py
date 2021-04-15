@@ -6,7 +6,7 @@ import numpy as np
 from config import ROOT
 
 allTypes = os.listdir(f'{ROOT}/preprocessData/label/fullPatch/vgg19')
-_kmeans = 64
+_kmeans = 128
 for _type in allTypes:
 # for _type in ['toothbrush']:
     # try:

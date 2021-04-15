@@ -68,21 +68,21 @@ if __name__ == "__main__":
     chunk_num = (int)(args.image_size / args.patch_size)
     """ Check folder if not exists auto create"""
     if args.type == 'train':
-        path      = f"{ ROOT }/dataset/{ args.data }/train_resize/good/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/{ str(args.kmeans) }_{ str(args.batch) }.pth"
 
         if not os.path.isdir( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/" ):
             os.makedirs( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/train/" )
 
     elif args.type == 'test':
-        path      = f"{ ROOT }/dataset/{ args.data }/test_resize/good/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/good/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/good_{ str(args.kmeans) }_{ str(args.batch) }.pth"
         
         if not os.path.isdir( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/"):
             os.makedirs( f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/")
             
     elif args.type == 'all':
-        path      = f"{ ROOT }/dataset/{ args.data }/test_resize/all/"
+        path      = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/all/"
         save_path = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/all_{ str(args.kmeans) }_{ str(args.batch) }.pth"
         
         if not os.path.isdir(f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/"):
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     model = pretrain_vgg.model if args.model == 'vgg19' else pretrain_resnet.model if args.model == 'resnet34' else None
     model = model.to(device)
     if args.fine_tune_epoch != 0:
-        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch }.ckpt"))
+        model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
     model.eval()
 
     train_dataset = dataloaders.MvtecLoader(path)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
             x = int((i % (chunk_num * chunk_num)) / chunk_num)
             y = int((i % (chunk_num * chunk_num)) % chunk_num)
 
-            image = Image.open(f"{ ROOT }/dataset/{ args.data }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
+            image = Image.open(f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/{ str( img_idx ).zfill(3) }.png").convert('RGB')
             image = np.array(image)
 
             # patch = image[x*chunk_num:x*chunk_num+chunk_num, y*chunk_num:y*chunk_num+chunk_num, :]

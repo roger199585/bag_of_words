@@ -80,14 +80,14 @@ scratch_model = nn.Sequential(
 )
 
 """ training """
-train_path = f"{ ROOT }/dataset/{ args.data }/train_resize/good"
+train_path = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good"
 label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.data }/kmeans_{ args.kmeans }_{ args.batch }.pth"
 mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 
 if args.model == 'vgg19':
     pretrain_model = pretrain_vgg.model
     if args.fine_tune_epoch != 0:
-        pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+        pretrain_model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch}.ckpt"))
     pretrain_model = nn.DataParallel(pretrain_model).to(device)
 
 if args.model == 'resnet34':
@@ -98,13 +98,13 @@ print('training label: ', label_name)
 
 """ testing """
 if (args.type == 'good'):
-    test_path           = f"{ ROOT }/dataset/{ args.data }/test_resize/good"
+    test_path           = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/good"
     test_label_name     = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/good_{ str(args.kmeans) }_{ str(args.batch) }.pth"
     all_test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/all_{ str(args.kmeans) }_{ str(args.batch) }.pth"
 else:
-    test_path       = f"{ ROOT }/dataset/{ args.data }/test_resize/{ args.type }"
+    test_path       = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/{ args.type }"
     test_label_name = f"{ ROOT }/preprocessData/label/{ args.model }/{ args.dim_reduction }/{ args.data }/test/{ args.type }_{ str(args.kmeans) }_{ str(args.batch) }.pth"
-    defect_gt_path  = f"{ ROOT }/dataset/{ args.data }/ground_truth_resize/{ args.type }/"
+    defect_gt_path  = f"{ ROOT }/dataset/{ args.data.split('_')[0] }/ground_truth_resize/{ args.type }/"
 
 
 test_label = torch.tensor(torch.load(test_label_name))
@@ -113,8 +113,8 @@ all_test_label = torch.tensor(torch.load(all_test_label_name))
 print(all_test_label.shape)
 
 """ eval """
-eval_path = "{}/dataset/{}/test_resize/all".format(ROOT, args.data)
-eval_mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data)
+eval_path = "{}/dataset/{}/test_resize/all".format(ROOT, args.data.split('_')[0])
+eval_mask_path = "{}/dataset/{}/ground_truth_resize/all/".format(ROOT, args.data.split('_')[0])
 
 print('testing data: ', test_path)
 print('testing label: ', test_label_name)

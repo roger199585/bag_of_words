@@ -161,11 +161,11 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=25,
             writer.add_scalar(phase, epoch_loss, epoch)
         print()
 
-        if not os.path.isdir(f"/mnt/train-data1/fine-tune-models/{ args.data }"):
+        if not os.path.isdir(f"/train-data2/corn/fine-tune-models/{ args.data }"):
             print(f"create {args.data}")
-            os.makedirs(f"/mnt/train-data1/fine-tune-models/{ args.data }")
+            os.makedirs(f"/train-data2/corn/fine-tune-models/{ args.data }")
 
-        torch.save(model.state_dict(), f"/mnt/train-data1/fine-tune-models/{ args.data }/{ epoch }.ckpt")
+        torch.save(model.state_dict(), f"/train-data2/corn/fine-tune-models/{ args.data }/{ epoch }.ckpt")
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))

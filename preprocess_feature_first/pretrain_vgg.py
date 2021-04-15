@@ -103,13 +103,13 @@ if __name__ == "__main__":
 
     model = model.to(device)
     if args.fine_tune_epoch != 0:
-        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch }.ckpt"))
+        model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
 
     """ Load dataset """
-    train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )
+    train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
 
-    test_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/test_resize/all/" )
+    test_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/all/" )
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     for idx, img in tqdm(train_loader):
