@@ -50,9 +50,10 @@ if __name__ == "__main__":
     parser.add_argument('--type', type=str, default='train')
     parser.add_argument('--kmeans', type=int, default=16, help='number of kmeans clusters')
     parser.add_argument('--batch', type=int, default=100)
-    parser.add_argument('--image_size', type=int, default=1024)
-    parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--image_size', type=int, default=224)
+    parser.add_argument('--patch_size', type=int, default=32)
     parser.add_argument('--dim', type=int, default=16)
+    parser.add_argument('--fine_tune_epoch', type=int, default=100)
     parser.add_argument('--model', type=str, default='vgg19')
     parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
@@ -91,6 +92,8 @@ if __name__ == "__main__":
 
     model = pretrain_vgg.model if args.model == 'vgg19' else pretrain_resnet.model if args.model == 'resnet34' else None
     model = model.to(device)
+    if args.fine_tune_epoch != 0:
+        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch }.ckpt"))
     model.eval()
 
     train_dataset = dataloaders.MvtecLoader(path)

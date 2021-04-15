@@ -97,3 +97,65 @@ class ImageConverter():
             self.resizeImage(_type, 'ground_truth', quantize=False, blur=False)
     
     
+
+# import os
+# import sys
+# from tqdm import tqdm
+# from PIL import Image, ImageFilter
+
+# train_image_count = 0
+# val_image_count = 0
+# test_image_count = 0
+# trainResizeDataPath = '/home/corn/Project/bag_of_words/dataset/fine-tune/train'
+# valResizeDataPath = '/home/corn/Project/bag_of_words/dataset/fine-tune/val'
+# testResizeDataPath = '/home/corn/Project/bag_of_words/dataset/fine-tune/test'
+
+# for _type in ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut', 'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']:
+#     dataPath = '/home/corn/Project/bag_of_words/dataset/{}/train/'.format(_type)
+#     subFolders = os.listdir(dataPath)
+
+#     for name in subFolders:
+#         currentRoot = dataPath + name
+#         images = os.listdir(currentRoot)
+#         import glob
+
+#         images = glob.glob(os.path.join(currentRoot, '*.png'))
+
+#         for imageName in tqdm(images):
+#             if imageName.endswith('.png'):
+#                 imageName = imageName.split('/')[-1]
+#                 im = Image.open(currentRoot + '/' + imageName)
+#                 im = im.resize((224, 224))
+#                 im.save(trainResizeDataPath + '/' + _type + '-' + str(train_image_count) + '.png' )
+#                 train_image_count += 1
+#             else:
+#                 print(imageName, "is not a picture")
+    
+#     dataPath = '/home/corn/Project/bag_of_words/dataset/{}/test/'.format(_type)
+#     subFolders = os.listdir(dataPath)
+#     for name in subFolders:
+#         currentRoot = dataPath + name
+#         images = os.listdir(currentRoot)
+#         images = sorted(images, key=lambda a: a[:-4])
+            
+#         if name == 'good':
+#             for imageName in tqdm(images):
+#                 if imageName.endswith('.png'):
+#                     im = Image.open(currentRoot + '/' + imageName)
+#                     im = im.resize((224, 224))
+#                     im.save(valResizeDataPath + '/' + _type + '-' + str(val_image_count) + '.png' )
+#                     im.save(testResizeDataPath + '/' + _type + '-' + str(test_image_count) + '.png' )
+#                     val_image_count += 1
+#                     test_image_count += 1
+#                 else:
+#                     print(imageName, "is not a picture")
+#         else:
+#             # testing image                     
+#             for imageName in tqdm(images):
+#                 if imageName.endswith('.png'):
+#                     im = Image.open(currentRoot + '/' + imageName)
+#                     im = im.resize((224, 224))
+#                     im.save(testResizeDataPath + '/' + _type + '-' + str(test_image_count) + '.png')
+#                     test_image_count += 1
+#                 else:
+#                     print(imageName, "is not a picture")

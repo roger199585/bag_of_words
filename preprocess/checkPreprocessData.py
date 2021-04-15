@@ -16,6 +16,7 @@ for _type in allTypes:
     class_sample_count = np.array([len(np.where(label_list==t)[0]) for t in np.unique(label_list)])
 
     if class_sample_count.shape[0] != 128:
+        print(class_sample_count.shape[0])
         print(f'{_type} 分群失敗')
         # print(0)
     else:

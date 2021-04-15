@@ -54,6 +54,7 @@ parser.add_argument('--with_mask', type=str, default='True')
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
+parser.add_argument('--fine_tune_epoch', type=int, default=100)
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
@@ -86,7 +87,10 @@ label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.dat
 mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 
 if args.model == 'vgg19':
-    pretrain_model = nn.DataParallel(pretrain_vgg.model).to(device)
+    pretrain_model = pretrain_vgg.model
+    if args.fine_tune_epoch != 0:
+        pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+    pretrain_model = nn.DataParallel(pretrain_model).to(device)
 
 if args.model == 'resnet34':
     pretrain_model = nn.DataParallel(pretrain_resnet.model).to(device)

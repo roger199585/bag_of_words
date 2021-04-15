@@ -97,6 +97,7 @@ if __name__ == "__main__":
     parser.add_argument('--patch_size', type=int, default=64)
     parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--dim_reduction', type=str, default='PCA')
+    parser.add_argument('--fine_tune_epoch', type=int, default=10)
     args = parser.parse_args()
 
     print('data: ', args.data)
@@ -109,6 +110,9 @@ if __name__ == "__main__":
     patch_j = []
 
     model = model.to(device)
+    if args.fine_tune_epoch != 0:
+        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch }.ckpt"))
+        
     """ Load dataset """
     train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)

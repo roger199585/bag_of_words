@@ -54,6 +54,7 @@ parser.add_argument('--with_mask', type=str, default='True')
 parser.add_argument('--patch_size', type=int, default=64)
 parser.add_argument('--image_size', type=int, default=1024)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
+parser.add_argument('--fine_tune_epoch', type=int, default=100)
 args = parser.parse_args()
 
 MAXAUCEPOCH = 0
@@ -84,7 +85,10 @@ label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.dat
 mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 
 if args.model == 'vgg19':
-    pretrain_model = nn.DataParallel(pretrain_vgg.model).to(device)
+    pretrain_model = pretrain_vgg.model
+    if args.fine_tune_epoch != 0:
+        pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+    pretrain_model = nn.DataParallel(pretrain_model).to(device)
 
 if args.model == 'resnet34':
     pretrain_model = nn.DataParallel(pretrain_resnet.model).to(device)
@@ -161,7 +165,7 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
                     patches.append(out_.detach().cpu().numpy())
                     origin_feature_list.append(out_)
 
-                    mask = torch.ones(1, 1, 1024, 1024)
+                    mask = torch.ones(1, 1, args.image_size, args.image_size)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask if args.with_mask == 'True' else img
@@ -262,7 +266,6 @@ if __name__ == "__main__":
     epoch_num = 0
 
     """ training config """ 
-    # criterion = nn.MSELoss()
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(scratch_model.parameters(), lr = args.lr)
     
@@ -283,9 +286,9 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
+            error_map = np.zeros((args.image_size, args.image_size))
             for index, scalar in enumerate(value_feature[idx]):
-                mask = np.zeros((1024, 1024))
+                mask = np.zeros((args.image_size, args.image_size))
                 x = index // chunk_num
                 y = index % chunk_num
                 mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
@@ -305,15 +308,15 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
+            error_map = np.zeros((args.image_size, args.image_size))
             for index, scalar in enumerate(value_good_feature[idx]):
-                mask = np.zeros((1024, 1024))
+                mask = np.zeros((args.image_size, args.image_size))
                 x = index // chunk_num
                 y = index % chunk_num
                 mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
                 error_map += mask * scalar
 
-            defect_gt = np.zeros((1024, 1024, 3))
+            defect_gt = np.zeros((args.image_size, args.image_size, 3))
             true_mask = defect_gt[:, :, 0].astype('int32')
             label_pred.append(error_map)
             label_gt.append(true_mask)    

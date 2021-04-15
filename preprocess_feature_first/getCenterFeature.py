@@ -68,8 +68,9 @@ else:
             count[train_label[i][j][0]] += 1
 
     for i in range(args.kmeans):
-        print("cluster center {}'s feature is".format(i))
-        print( center_features[i] / count[i] )
+        # print("cluster center {}'s feature is".format(i))
+        # print( center_features[i] / count[i] )
+        # print(count[i])
         center_features[i] = center_features[i] / count[i]
 
     print(center_features.shape)

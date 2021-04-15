@@ -9,6 +9,6 @@ cd $PWD
 # CUDA_VISIBLE_DEVICES=0,1 python evalRoNet/PRO.py --kmeans 128 --data zipper --index 2 &
 
 # draw Multi Map
-CUDA_VISIBLE_DEVICES=0,1 python evalRoNet/PRO.py --kmeans 128 --data capsule --index 33 &
-CUDA_VISIBLE_DEVICES=2,3 python evalRoNet/PRO.py --kmeans 128 --data hazelnut --index 23 &
+CUDA_VISIBLE_DEVICES=0,1 python eval/PRO.py --kmeans 128 --data capsule --index 50 &
+CUDA_VISIBLE_DEVICES=2,3 python eval/PRO.py --kmeans 128 --data wood --index 27 &
 wait

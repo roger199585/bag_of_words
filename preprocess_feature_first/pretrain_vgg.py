@@ -42,7 +42,7 @@ class VGG(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = self.avgpool(x)
+        # x = self.avgpool(x)
         return x
 
 def make_layers(cfg, batch_norm=False):
@@ -87,8 +87,9 @@ if __name__ == "__main__":
     """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
-    parser.add_argument('--image_size', type=str, default=1024)
-    parser.add_argument('--patch_size', type=str, default=64)
+    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=64)
+    parser.add_argument('--fine_tune_epoch', type=int, default=100)
     args = parser.parse_args()
 
     chunk_num = (int)(args.image_size / args.patch_size)
@@ -101,6 +102,9 @@ if __name__ == "__main__":
     patch_j = []
 
     model = model.to(device)
+    if args.fine_tune_epoch != 0:
+        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch }.ckpt"))
+
     """ Load dataset """
     train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
@@ -112,7 +116,6 @@ if __name__ == "__main__":
         model.eval()
         img = img.to(device)
         feature = model(img)
-        
         for i in range(chunk_num):
             for j in range(chunk_num):
                 patch_list.append(feature[0, :, i, j].detach().cpu().numpy())

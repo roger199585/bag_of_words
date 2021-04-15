@@ -31,9 +31,10 @@ parser.add_argument('--data', type=str, default="bottle")
 parser.add_argument('--kmeans', type=int, default=128)
 parser.add_argument('--type', type=str, default="all")
 parser.add_argument('--index', type=int, default=30)
-parser.add_argument('--image_size', type=int, default=1024)
-parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--image_size', type=int, default=224)
+parser.add_argument('--patch_size', type=int, default=32)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
+parser.add_argument('--fine_tune_epoch', type=int, default=100)
 args = parser.parse_args()
 
 
@@ -56,7 +57,10 @@ mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
 ## Models
-pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
+pretrain_model = pretrain_vgg.model
+if args.fine_tune_epoch != 0:
+    pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+pretrain_model = nn.DataParallel(pretrain_model).cuda()
 
 ## Clusters
 kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
@@ -126,7 +130,7 @@ def eval_feature(epoch, model, test_loader, test_label):
                     out_ = crop_output[0, :, i, j]
                     patches.append(out_.detach().cpu().numpy())
 
-                    mask = torch.ones(1, 1, 1024, 1024)
+                    mask = torch.ones(1, 1, 224, 224)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.cuda()
                     x = img * mask
@@ -202,9 +206,9 @@ for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     idx = idx[0].item()
 
 
-    error_map = np.zeros((1024, 1024))
+    error_map = np.zeros((224, 224))
     for index, scalar in enumerate(value_feature[idx]):
-        mask = np.zeros((1024, 1024))
+        mask = np.zeros((224, 224))
         x = index // chunk_num
         y = index % chunk_num
         mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
@@ -256,9 +260,9 @@ for (idx, img) in test_good_loader:
     img = img.cuda()
     idx = idx[0].item()
 
-    error_map = np.zeros((1024, 1024))
+    error_map = np.zeros((224, 224))
     for index, scalar in enumerate(value_good_feature[idx]):
-        mask = np.zeros((1024, 1024))
+        mask = np.zeros((224, 224))
         x = index // chunk_num
         y = index % chunk_num
         mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
@@ -279,7 +283,7 @@ for (idx, img) in test_good_loader:
             ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
             ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
 
-    defect_gt = np.zeros((1024, 1024, 3))
+    defect_gt = np.zeros((224, 224, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    

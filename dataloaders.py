@@ -19,9 +19,32 @@ from config import ROOT
 import scipy.ndimage as ndimage
 import sys
 
-transform = transforms.Compose([
-    transforms.ToTensor(),
-])
+from ei import patch
+patch(select=True)
+
+transform_set = [ 
+    transforms.RandomPerspective(distortion_scale=0.5, p=0.5, interpolation=2),
+    transforms.RandomGrayscale(p=0.5),
+    transforms.GaussianBlur(7, 3),
+]
+
+data_transforms = {
+    'ft-train': transforms.Compose([
+        transforms.Resize(1024),
+        transforms.ToTensor()
+    ]),
+    'ft-val': transforms.Compose([
+        transforms.Resize(1024),
+        transforms.ToTensor()
+    ]),
+    'aug': transforms.Compose([
+        transforms.RandomChoice(transform_set),
+        transforms.ToTensor(),
+    ]),
+    'train': transforms.Compose([
+        transforms.ToTensor(),
+    ])
+}
 
 @functools.lru_cache(300)
 def cached_load_image(path):
@@ -53,20 +76,50 @@ def get_partial(img, i, j):
     return img
 
 class MvtecLoader(Dataset):
-    def __init__(self, dir):  
+    def __init__(self, dir, transforms_type='train'):  
         self.dir = dir
         self.list = os.listdir(self.dir)
-        self.list.sort(key= lambda x: int(x[:-4]))
+        self.list.sort(key= lambda x: int(x[:-4])) # 移除 .png 的檔案名稱
+        self.trans = transforms_type
 
     def __len__(self):
         return len(self.list)
 
     def __getitem__(self, index):
         img_path = self.dir + '/' + self.list[index]
-        # img = Image.open(img_path).convert('RGB')
         img = cached_load_image(img_path)
-        img = transform(img)
+        img = data_transforms[self.trans](img)
         return index, img
+
+class MvtecLoaderForFineTune(Dataset):
+    def __init__(self, dir, transforms_type='train'):  
+        self.dir = dir
+        self.list = os.listdir(self.dir)
+        self.list.sort(key= lambda x: int(x[:-4].split('-')[-1])) # 移除 .png 的檔案名稱
+        self.trans = transforms_type
+
+    def __len__(self):
+        return len(self.list)
+
+    def __getitem__(self, index):
+        index2 = random.randint(0, self.__len__() - 1)
+
+        img1_path = self.dir + '/' + self.list[index]
+        img2_path = self.dir + '/' + self.list[index2]
+
+        img1 = cached_load_image(img1_path)
+        img2 = cached_load_image(img2_path)
+
+        img1 = data_transforms[self.trans](img1)
+        img2 = data_transforms[self.trans](img2)
+
+        pos_i = random.randint(0, 15)
+        pos_j = random.randint(0, 15)
+        
+        patch1 = img1[:, pos_i*64:pos_i*64+64, pos_j*64:pos_j*64+64]
+        patch2 = img2[:, pos_i*64:pos_i*64+64, pos_j*64:pos_j*64+64]
+
+        return patch1, patch2
 
 
 class MaskLoader(Dataset):
@@ -82,7 +135,7 @@ class MaskLoader(Dataset):
         img_path = self.dir + '/' + self.list[index]
         img = cached_load_image(img_path)
         # img = Image.open(img_path).convert('RGB')
-        img = transform(img)
+        img = data_transforms['train'](img)
         return index, img
         
 
@@ -117,8 +170,8 @@ class FullPatchLoader(Dataset):
         mask__ = Image.open(mask_)
         label = self.label_list[index]
 
-        img = transform(img__)
-        mask = transform(mask__)
+        img = data_transforms['train'](img__)
+        mask = data_transforms['train'](mask__)
 
         return index, img, mask, label
 
@@ -147,7 +200,7 @@ class NoisePatchDataloader(Dataset):
         img_idx = index // 256
         img = self.img_path + "/" + self.img_list[img_idx]
         img = cached_load_image(img)
-        img = transform(img)
+        img = data_transforms['train'](img)
         
         """ for mask position """
         left_i = self.left_i_list[index]
@@ -187,18 +240,18 @@ class NoisePatchDataloader2(Dataset):
         return len(self.label_list)
 
     def __getitem__(self, index):
-        img_idx = index // 256
+        img_idx = index // 49
         img = self.img_path + "/" + self.img_list[img_idx]
         img = cached_load_image(img)
-        img = transform(img)
+        img = data_transforms['train'](img)
         
         """ for mask position """
-        mask = torch.ones(1, 1024, 1024)
-        mask_idx = index % 256
+        mask = torch.ones(1, 224, 224)
+        mask_idx = index % 49
 
-        i = mask_idx // 16
-        j = mask_idx % 16
-        mask[:, i*64:i*64+64, j*64:j*64+64] = 0
+        i = mask_idx // 7
+        j = mask_idx % 7
+        mask[:, i*32:i*32+32, j*32:j*32+32] = 0
 
         label = self.label_list[index]
 
