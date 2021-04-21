@@ -89,7 +89,7 @@ mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 if args.model == 'vgg19':
     pretrain_model = pretrain_vgg.model
     if args.fine_tune_epoch != 0:
-        pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
+        pretrain_model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch}.ckpt"))
     pretrain_model = nn.DataParallel(pretrain_model).to(device)
 
 if args.model == 'resnet34':

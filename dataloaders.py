@@ -23,9 +23,9 @@ from ei import patch
 patch(select=True)
 
 transform_set = [ 
-    transforms.RandomPerspective(distortion_scale=0.5, p=0.5, interpolation=2),
+#    transforms.RandomPerspective(distortion_scale=0.5, p=0.5, interpolation=2),
     transforms.RandomGrayscale(p=0.5),
-    transforms.GaussianBlur(7, 3),
+#    transforms.GaussianBlur(7, 3),
 ]
 
 data_transforms = {
@@ -115,9 +115,12 @@ class MvtecLoaderForFineTune(Dataset):
 
         pos_i = random.randint(0, 15)
         pos_j = random.randint(0, 15)
+
+        pos_i_2 = random.randint(0, 15)
+        pos_j_2 = random.randint(0, 15)        
         
         patch1 = img1[:, pos_i*64:pos_i*64+64, pos_j*64:pos_j*64+64]
-        patch2 = img2[:, pos_i*64:pos_i*64+64, pos_j*64:pos_j*64+64]
+        patch2 = img2[:, pos_i_2*64:pos_i_2*64+64, pos_j_2*64:pos_j_2*64+64]
 
         return patch1, patch2
 

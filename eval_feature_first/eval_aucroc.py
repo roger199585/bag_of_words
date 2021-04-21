@@ -267,7 +267,8 @@ for (idx, img) in test_good_loader:
         y = index % chunk_num
         mask[x*args.patch_size:x*args.patch_size+args.patch_size, y*args.patch_size:y*args.patch_size+args.patch_size] = 1
         error_map += mask * scalar
-    error_map = gaussian_filter(error_map, sigma=1)
+        print(idx, x, y, scalar)
+    # error_map = gaussian_filter(error_map, sigma=1)
 
     img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
     ironman_grid = plt.GridSpec(1, 2)
@@ -280,8 +281,8 @@ for (idx, img) in test_good_loader:
     
     for i in range(chunk_num):
         for j in range(chunk_num):
-            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
-            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_idx[idx][i*chunk_num+j], fontsize=10)
+            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_gt[idx][i*chunk_num+j], fontsize=10)
 
     defect_gt = np.zeros((224, 224, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
@@ -294,7 +295,7 @@ for (idx, img) in test_good_loader:
         os.makedirs(errorMapPath)
         print("----- create folder for type:{} -----".format(test_type))
     
-    errorMapName = "{}_{}.png".format(
+    errorMapName = "{}_{}_test.png".format(
         str(idx),
         str(global_index)
     )

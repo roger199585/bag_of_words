@@ -395,12 +395,13 @@ def kmeans_visualization():
     但是因為 mds 本身計算量很大，並沒有辦法把我們所有資料都放進去，因此我只有放第一張圖片去作降維做視覺化當參考依據
     至於 tsne 的化調整了 perplexity 的參數
     """
+    dbName = "bottle_5"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    kmeans_path = f"{ ROOT }/preprocessData/kmeans/AE/bottle/4/AE_128.pickle"
+    kmeans_path = f"{ ROOT }/preprocessData/kmeans/PCA/{ dbName }/vgg19_128_100_128.pickle"
     kmeans = pickle.load(open(kmeans_path, "rb"))
 
-    feature_path = f"{ ROOT }/preprocessData/chunks/AE/bottle/4/chunks_bottle_train.pickle"
+    feature_path = f"{ ROOT }/preprocessData/chunks/vgg19/PCA/{ dbName }_128_100_128.pickle"
     feature = pickle.load(open(feature_path, "rb"))
     
 
@@ -411,13 +412,14 @@ def kmeans_visualization():
     print(feature.shape)
 
     plt.scatter(feature[:, 0], feature[:, 1], c=y, s=5, cmap=plt.cm.get_cmap('Spectral', 128))
+    plt.colorbar()
     center =  kmeans.cluster_centers_
     center = pca.transform(center)
     print(center.shape)
     plt.scatter(center[:, 0], center[:, 1], c='black', s=10, alpha=0.5)
     # plt.colorbar()
 
-    plt.savefig('./vis_bottle_ae_pca.png')
+    plt.savefig('./vis_bottle_tune_0_patch_base.png')
 
 kmeans_visualization()
 

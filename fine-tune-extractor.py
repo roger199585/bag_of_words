@@ -119,53 +119,56 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=25,
                 model.eval()   # Set model to evaluate mode
 
             running_loss = 0.0
-
+            count = 0
             # Iterate over data.
             for aug1, aug2 in dataloaders[phase]:
                 aug1 = aug1.to(device)
                 aug2 = aug2.to(device)
 
-                # zero the parameter gradients
-                optimizer.zero_grad()
+                for idx in range(aug1.size(0)):
+                    # zero the parameter gradients
+                    optimizer.zero_grad()
 
-                # forward
-                # track history if only in train
-                with torch.set_grad_enabled(phase == 'train'):
-                    # Get model outputs and calculate loss
-                    # Special case for inception because in training it has an auxiliary output. In train
-                    #   mode we calculate the loss by summing the final output and the auxiliary output
-                    #   but in testing we only consider the final output.
-                    if is_inception and phase == 'train':
-                        # From https://discuss.pytorch.org/t/how-to-optimize-inception-model-with-auxiliary-classifiers/7958
-                        featue1 = model(aug1)
-                        featue2 = model(aug2)
-                        loss = criterion(feature1, feature2)
-                    else:
-                        feature1 = model(aug1)
-                        feature2 = model(aug2)
-                        loss = criterion(feature1, feature2)
-                        loss = loss.mean()
+                    # forward
+                    # track history if only in train
+                    with torch.set_grad_enabled(phase == 'train'):
+                        # Get model outputs and calculate loss
+                        # Special case for inception because in training it has an auxiliary output. In train
+                        #   mode we calculate the loss by summing the final output and the auxiliary output
+                        #   but in testing we only consider the final output.
+                        diff = (aug1[idx, :, :, :] - aug2[idx, :, :, :]).abs()
+                        if is_inception and phase == 'train':
+                            # From https://discuss.pytorch.org/t/how-to-optimize-inception-model-with-auxiliary-classifiers/7958
+                            featue1 = model(aug1[idx, :, :, :].unsqueeze(0))
+                            featue2 = model(aug2[idx, :, :, :].unsqueeze(0))
+                            loss = criterion(feature1, feature2)
+                        else:
+                            feature1 = model(aug1[idx, :, :, :].unsqueeze(0))
+                            feature2 = model(aug2[idx, :, :, :].unsqueeze(0))
+                            loss = criterion(feature1, feature2)
+                            loss = loss.mean()
 
 
-                    # backward + optimize only if in training phase
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
+                        # backward + optimize only if in training phase
+                        if phase == 'train' and (diff.max() > diff.mean() * 1.5 or diff.mean() < 0.05):
+                            loss.backward()
+                            optimizer.step()
 
-                # statistics
-                running_loss += loss.item() * aug1.size(0)
+                            # statistics
+                            running_loss += loss.item()
+                            count += 1
 
-            epoch_loss = running_loss / len(dataloaders[phase].dataset)
+            epoch_loss = 0 if count == 0 else running_loss / count
 
-            print('{} Loss: {:.4f}'.format(phase, epoch_loss))
+            print('{} Loss: {:.4f}, Update {} time'.format(phase, epoch_loss, count))
             writer.add_scalar(phase, epoch_loss, epoch)
         print()
 
-        if not os.path.isdir(f"/train-data2/corn/fine-tune-models/{ args.data }"):
+        if not os.path.isdir(f"/train-data2/corn/fine-tune-models2/{ args.data }"):
             print(f"create {args.data}")
-            os.makedirs(f"/train-data2/corn/fine-tune-models/{ args.data }")
+            os.makedirs(f"/train-data2/corn/fine-tune-models2/{ args.data }")
 
-        torch.save(model.state_dict(), f"/train-data2/corn/fine-tune-models/{ args.data }/{ epoch }.ckpt")
+        torch.save(model.state_dict(), f"/train-data2/corn/fine-tune-models2/{ args.data }/{ epoch }.ckpt")
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))

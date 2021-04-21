@@ -66,6 +66,7 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
 
 def vgg19(pretrained=False, progress=True, **kwargs):
     return _vgg('vgg19', 'E', False, pretrained, progress, **kwargs)
+    # return _vgg('vgg19', 'E', True, pretrained, progress, **kwargs)
 
 """ Load part of pretrained model """
 pre_model = models.vgg19(pretrained=True)
