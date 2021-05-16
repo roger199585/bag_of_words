@@ -16,11 +16,9 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import confusion_matrix
 
-
-
 import dataloaders
 import networks.resnet as resnet
-import preprocess.pretrain_vgg as pretrain_vgg
+from preprocess_SSL.SSL import model as ssl_model
 from config import ROOT
 
 parser = argparse.ArgumentParser()
@@ -28,10 +26,9 @@ parser.add_argument('--data', type=str, default="bottle")
 parser.add_argument('--kmeans', type=int, default=128)
 parser.add_argument('--type', type=str, default="all")
 parser.add_argument('--index', type=int, default=30)
-parser.add_argument('--image_size', type=int, default=1024)
-parser.add_argument('--patch_size', type=int, default=64)
+parser.add_argument('--image_size', type=int, default=256)
+parser.add_argument('--patch_size', type=int, default=16)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
-parser.add_argument('--fine_tune_epoch', type=int, default=0)
 args = parser.parse_args()
 
 
@@ -57,28 +54,31 @@ mask_dataset = dataloaders.MaskLoader(mask_path)
 mask_loader = DataLoader(mask_dataset, batch_size=1, shuffle=False)
 
 ## Models
-pretrain_model = pretrain_vgg.model
-if args.fine_tune_epoch != 0:
-    pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data }/{ args.fine_tune_epoch}.ckpt"))
-pretrain_model = nn.DataParallel(pretrain_model).cuda()
+model_path = f"{ ROOT }/preprocess_SSL/SSL/KNN/exp3/{ args.data }/2048_2000.pth"
 
-# pretrain_model = nn.DataParallel(pretrain_vgg.model).cuda()
+torch.manual_seed(0)
+np.random.seed(0)
+
+pretrain_model = ssl_model.Model()
+pretrain_model = nn.DataParallel(pretrain_model).cuda()
+pretrain_model.load_state_dict(torch.load(model_path))
+pretrain_model.eval()
 
 ## Clusters
-kmeans_path = "{}/preprocessData/kmeans/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+kmeans_path = "{}/preprocessData/kmeans/{}/{}/ssl_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 kmeans = pickle.load(open(kmeans_path, "rb"))
 
-pca_path = "{}/preprocessData/{}/{}/vgg19_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+pca_path = "{}/preprocessData/{}/{}/ssl_{}_100_128.pickle".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 pca = pickle.load(open(pca_path, "rb"))
 
 ## Label
-train_label_name = "{}/preprocessData/label/vgg19/{}/{}/train/{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+train_label_name = "{}/preprocessData/label/ssl/{}/{}/train/{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 train_label = torch.tensor(torch.load(train_label_name))
 
-test_label_name = "{}/preprocessData/label/vgg19/{}/{}/test/all_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+test_label_name = "{}/preprocessData/label/ssl/{}/{}/test/all_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 test_label = torch.tensor(torch.load(test_label_name))
 
-test_good_label_name = "{}/preprocessData/label/vgg19/{}/{}/test/good_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
+test_good_label_name = "{}/preprocessData/label/ssl/{}/{}/test/good_{}_100.pth".format(ROOT, args.dim_reduction, args.data, args.kmeans)
 test_good_label = torch.tensor(torch.load(test_good_label_name))
 
 ## Others
@@ -131,16 +131,16 @@ def eval_feature(epoch, model, test_loader, test_label):
             for i in range(chunk_num):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].cuda()
-                    crop_output = pretrain_model(crop_img)
+                    crop_output, _ = pretrain_model(crop_img)
                     """ flatten the dimension of H and W """
-                    out_ = crop_output.flatten(1,2).flatten(1,2)
+                    out_ = crop_output[0, :, :, :].flatten(0, 1).flatten(0, 1)
                     patches.append(out_.detach().cpu().numpy())
                     
                     # out = pca.transform(out_.detach().cpu().numpy())
                     # out = pil_to_tensor(out).squeeze().cuda()
                     # crop_list.append(out)
 
-                    mask = torch.ones(1, 1, 1024, 1024)
+                    mask = torch.ones(1, 1, 256, 256)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.cuda()
                     x = img * mask
@@ -195,87 +195,84 @@ def eval_feature(epoch, model, test_loader, test_label):
     total_gt = np.array(total_gt).reshape((len(test_loader), -1))
     total_idx = np.array(total_idx).reshape((len(test_loader), -1))
 
-    return img_feature, total_gt, total_idx
+    return norm(img_feature), total_gt, total_idx
 
 
 start = time.time()
 """ load model """
 global_index = args.index
-scratch_model.load_state_dict(torch.load('{}/models/vgg19/{}/exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
+scratch_model.load_state_dict(torch.load('{}/models/ssl/{}/ssl_exp1_{}_{}.ckpt'.format(ROOT, args.data, args.kmeans, global_index)))
 
+print("------- For good type -------")
+value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, test_good_loader, test_good_label)
+print("------- For defect type -------")
+value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
 print("------- For training data -------")
-value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, train_loader, train_label)
-# print("------- For defect type -------")
-# value_feature, total_gt, total_idx = eval_feature(global_index, scratch_model, test_loader, test_label)
-# print("------- For good type -------")
-# value_good_feature, total_good_gt, total_good_idx = eval_feature(global_index, scratch_model, test_good_loader, test_good_label)
+value_train_feature, total_train_gt, total_train_idx = eval_feature(global_index, scratch_model, train_loader, train_label)
 
 label_pred = []
 label_gt = []
 
 chunk_num = int(args.image_size / args.patch_size)
-# """ for defect type """ 
-# for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
-    # img = img.cuda()
-    # idx = idx[0].item()
-
-
-    # error_map = np.zeros((1024, 1024))
-    # for index, scalar in enumerate(value_feature[idx]):
-    #     mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
-    #     mask = np.invert(mask)
-    #     mask[mask==255]=1
-        
-    #     error_map += mask * scalar
-
-    # img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
-    # defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
-    # ironman_grid = plt.GridSpec(1, 3)
-    # fig = plt.figure(figsize=(18,6), dpi=100)
-    # ax1 = fig.add_subplot(ironman_grid[0,0])
-    # im1 = ax1.imshow(error_map, cmap="Blues")
-    # ax2 = fig.add_subplot(ironman_grid[0,1])
-    # ax3 = fig.add_subplot(ironman_grid[0,2])
-    # im2 = ax2.imshow(img_)
-    # im3 = ax3.imshow(defect_gt)
-
-
-    # for i in range(chunk_num):
-    #     for j in range(chunk_num):
-    #         ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
-    #         ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
-
-
-    # ## 可以在這邊算
-    # defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
-    # true_mask = defect_gt[:, :, 0].astype('int32')
-    # label_pred.append(error_map)
-    # label_gt.append(true_mask)    
-    # print(f'EP={global_index} defect_img_idx={idx}')
-
-    # errorMapPath = "./testing/{}/all/{}/".format(test_data, args.kmeans)
-    # if not os.path.isdir(errorMapPath):
-    #     os.makedirs(errorMapPath)
-    #     print("----- create folder for type:{} -----".format(test_type))
-    
-    # errorMapName = "{}_{}.png".format(
-    #     str(idx),
-    #     str(global_index)
-    # )
-
-    # plt.savefig(errorMapPath+errorMapName, dpi=100)
-    # plt.close(fig)
-
-
-""" for good type """
-# for (idx, img) in test_good_loader:
-for (idx, img) in train_loader:
+""" for defect type """ 
+for ((idx, img), (idx2, img2)) in zip(test_loader, mask_loader):
     img = img.cuda()
     idx = idx[0].item()
 
-    error_map = np.zeros((1024, 1024))
+    error_map = np.zeros((256, 256))
+    for index, scalar in enumerate(value_feature[idx]):
+        mask = cv2.imread('{}/dataset/ssl_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+        mask = np.invert(mask)
+        mask[mask==255]=1
+        
+        error_map += mask * scalar
+
+    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    defect_gt = np.squeeze(img2.cpu().numpy()).transpose((1,2,0))
+    ironman_grid = plt.GridSpec(1, 3)
+    fig = plt.figure(figsize=(18,6), dpi=100)
+    ax1 = fig.add_subplot(ironman_grid[0,0])
+    im1 = ax1.imshow(error_map, cmap="Blues")
+    ax2 = fig.add_subplot(ironman_grid[0,1])
+    ax3 = fig.add_subplot(ironman_grid[0,2])
+    im2 = ax2.imshow(img_)
+    im3 = ax3.imshow(defect_gt)
+
+    for i in range(chunk_num):
+        for j in range(chunk_num):
+            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
+            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+
+
+    ## 可以在這邊算
+    defect_gt = np.squeeze(img2.cpu().numpy()).transpose(1,2,0)
+    true_mask = defect_gt[:, :, 0].astype('int32')
+    label_pred.append(error_map)
+    label_gt.append(true_mask)    
+    print(f'EP={global_index} defect_img_idx={idx}')
+
+    errorMapPath = "./testing/ssl/{}/all/{}/".format(test_data, args.kmeans)
+    if not os.path.isdir(errorMapPath):
+        os.makedirs(errorMapPath)
+        print("----- create folder for type:{} -----".format(test_type))
+    
+    errorMapName = "{}_{}.png".format(
+        str(idx),
+        str(global_index)
+    )
+
+    plt.savefig(errorMapPath+errorMapName, dpi=100)
+    plt.close(fig)
+
+""" for good type """
+for (idx, img) in test_good_loader:
+# for (idx, img) in train_loader:
+    img = img.cuda()
+    idx = idx[0].item()
+
+    error_map = np.zeros((256, 256))
     for index, scalar in enumerate(value_good_feature[idx]):
-        mask = cv2.imread('./dataset/big_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        mask = cv2.imread('./dataset/ssl_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
         mask = np.invert(mask)
         mask[mask==255]=1
         error_map += mask * scalar
@@ -291,16 +288,16 @@ for (idx, img) in train_loader:
     
     for i in range(chunk_num):
         for j in range(chunk_num):
-            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_idx[idx][i*chunk_num+j], fontsize=10)
-            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_gt[idx][i*chunk_num+j], fontsize=10)
+            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_idx[idx][i*chunk_num+j], fontsize=10)
+            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_good_gt[idx][i*chunk_num+j], fontsize=10)
 
-    defect_gt = np.zeros((1024, 1024, 3))
+    defect_gt = np.zeros((256, 256, 3))
     true_mask = defect_gt[:, :, 0].astype('int32')
     label_pred.append(error_map)
     label_gt.append(true_mask)    
     print(f'EP={global_index} good_img_idx={idx}')
 
-    errorMapPath = "./testing/{}/train/{}/".format(test_data, args.kmeans)
+    errorMapPath = "./testing/ssl/{}/good/{}/".format(test_data, args.kmeans)
     if not os.path.isdir(errorMapPath):
         os.makedirs(errorMapPath)
         print("----- create folder for type:{} -----".format(test_type))
@@ -313,14 +310,53 @@ for (idx, img) in train_loader:
     plt.savefig(errorMapPath+errorMapName, dpi=100)
     plt.close(fig)
 
-# mu, sigma = 0.5, 1 # mean and standard deviation
-# label_pred = np.random.normal(mu, sigma, np.array(label_gt).size )
+""" for train data """
+for (idx, img) in train_loader:
+    img = img.cuda()
+    idx = idx[0].item()
 
-label_pred = norm(np.array(label_pred))
+    error_map = np.zeros((256, 256))
+    for index, scalar in enumerate(value_train_feature[idx]):
+        mask = cv2.imread('./dataset/ssl_mask/mask{}.png'.format(index), cv2.IMREAD_GRAYSCALE)
+        mask = np.invert(mask)
+        mask[mask==255]=1
+        error_map += mask * scalar
+
+    img_ = np.squeeze(img.detach().cpu().numpy()).transpose((1,2,0))
+    ironman_grid = plt.GridSpec(1, 2)
+    fig = plt.figure(figsize=(12,6), dpi=100)
+    ax1 = fig.add_subplot(ironman_grid[0,0])
+    im1 = ax1.imshow(error_map, cmap="Blues")
+    ax2 = fig.add_subplot(ironman_grid[0,1])
+    im2 = ax2.imshow(img_)
+
+    
+    for i in range(chunk_num):
+        for j in range(chunk_num):
+            ax1.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_train_idx[idx][i*chunk_num+j], fontsize=10)
+            ax2.text((j+0.2)*args.patch_size, (i+0.6)*args.patch_size, total_train_gt[idx][i*chunk_num+j], fontsize=10)
+
+    defect_gt = np.zeros((256, 256, 3))
+    true_mask = defect_gt[:, :, 0].astype('int32')
+    print(f'EP={global_index} train_img_idx={idx}')
+
+    errorMapPath = "./testing/ssl/{}/train/{}/".format(test_data, args.kmeans)
+    if not os.path.isdir(errorMapPath):
+        os.makedirs(errorMapPath)
+        print("----- create folder for type:{} -----".format(test_type))
+    
+    errorMapName = "{}_{}.png".format(
+        str(idx),
+        str(global_index)
+    )
+
+    plt.savefig(errorMapPath+errorMapName, dpi=100)
+    plt.close(fig)
+
+
+label_pred = np.array(label_pred)
 print('spend w/o auroc: ', time.time() - start)
-# auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
+auc = roc_auc_score(np.array(label_gt).flatten(), label_pred.flatten())
 
-# print("Single Map AUC score for testing data {}: {}".format(args.data, auc))
-# print('spend with auroc: ', time.time() - start)
-# np.save("out", label_pred)
-# print(label_pred)
+print("Single Map AUC score for testing data {}: {}".format(args.data, auc))
+print('spend with auroc: ', time.time() - start)

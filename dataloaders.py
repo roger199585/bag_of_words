@@ -28,13 +28,19 @@ transform_set = [
 #    transforms.GaussianBlur(7, 3),
 ]
 
+train_path = './normalize_value/bottle/'
+train_mean = pickle.load(open(train_path + 'mean.pickle', 'rb'))
+train_std = pickle.load(open(train_path + 'std.pickle', 'rb'))
+train_mean = np.array(train_mean)
+train_std = np.array(train_std)
+
 data_transforms = {
     'ft-train': transforms.Compose([
-        transforms.Resize(1024),
+        transforms.Resize(64),
         transforms.ToTensor()
     ]),
     'ft-val': transforms.Compose([
-        transforms.Resize(1024),
+        transforms.Resize(64),
         transforms.ToTensor()
     ]),
     'aug': transforms.Compose([
@@ -43,6 +49,10 @@ data_transforms = {
     ]),
     'train': transforms.Compose([
         transforms.ToTensor(),
+        transforms.Normalize(train_mean, train_std)
+    ]),
+    'train2': transforms.Compose([
+        transforms.ToTensor()
     ])
 }
 
@@ -95,17 +105,14 @@ class MvtecLoaderForFineTune(Dataset):
     def __init__(self, dir, transforms_type='train'):  
         self.dir = dir
         self.list = os.listdir(self.dir)
-        self.list.sort(key= lambda x: int(x[:-4].split('-')[-1])) # 移除 .png 的檔案名稱
         self.trans = transforms_type
 
     def __len__(self):
         return len(self.list)
 
     def __getitem__(self, index):
-        index2 = random.randint(0, self.__len__() - 1)
-
-        img1_path = self.dir + '/' + self.list[index]
-        img2_path = self.dir + '/' + self.list[index2]
+        img1_path = self.dir + '/' + str( int(index / 2) ) + '_1.png'
+        img2_path = self.dir + '/' + str( int(index / 2) ) + '_2.png'
 
         img1 = cached_load_image(img1_path)
         img2 = cached_load_image(img2_path)
@@ -113,17 +120,7 @@ class MvtecLoaderForFineTune(Dataset):
         img1 = data_transforms[self.trans](img1)
         img2 = data_transforms[self.trans](img2)
 
-        pos_i = random.randint(0, 15)
-        pos_j = random.randint(0, 15)
-
-        pos_i_2 = random.randint(0, 15)
-        pos_j_2 = random.randint(0, 15)        
-        
-        patch1 = img1[:, pos_i*64:pos_i*64+64, pos_j*64:pos_j*64+64]
-        patch2 = img2[:, pos_i_2*64:pos_i_2*64+64, pos_j_2*64:pos_j_2*64+64]
-
-        return patch1, patch2
-
+        return img1, img2
 
 class MaskLoader(Dataset):
     def __init__(self, dir):
@@ -138,10 +135,9 @@ class MaskLoader(Dataset):
         img_path = self.dir + '/' + self.list[index]
         img = cached_load_image(img_path)
         # img = Image.open(img_path).convert('RGB')
-        img = data_transforms['train'](img)
+        img = data_transforms['train2'](img)
         return index, img
         
-
 class FullPatchLoader(Dataset):
     def __init__(self, img, mask, label):
         self.img_path = img
@@ -177,8 +173,7 @@ class FullPatchLoader(Dataset):
         mask = data_transforms['train'](mask__)
 
         return index, img, mask, label
-
-        
+       
 class NoisePatchDataloader(Dataset):
     def __init__(self, img, label, left_i_path, left_j_path):
         self.img_path = img
@@ -208,16 +203,16 @@ class NoisePatchDataloader(Dataset):
         """ for mask position """
         left_i = self.left_i_list[index]
         left_j = self.left_j_list[index]
-        mask = torch.ones(1, 1024, 1024)
+        mask = torch.ones(1, 256, 256)
         mask_idx = index % 256
 
         i = mask_idx // 16 
         j = mask_idx % 16
-        mask[:, i*64+left_i:i*64+64+left_i, j*64+left_j:j*64+64+left_j] = 0
+        mask[:, i*16+left_i:i*16+16+left_i, j*16+left_j:j*16+16+left_j] = 0
 
-        """ 5*5 surroundings for patch """ 
-        img = get_partial(img, i, j)
-        mask = get_partial(mask, i, j)
+        # """ 5*5 surroundings for patch """ 
+        # img = get_partial(img, i, j)
+        # mask = get_partial(mask, i, j)
 
         label = self.label_list[index]
 
@@ -264,7 +259,6 @@ class NoisePatchDataloader2(Dataset):
 def fullPatchLabel(label_path, model, data, kmeans, batch):
 
     index_label = torch.load(label_path)
-    print(len(index_label[0]))
     label_list = []
     
     saveLabelPath = "{}/preprocessData/label/fullPatch/{}/{}/".format(
@@ -282,11 +276,16 @@ def fullPatchLabel(label_path, model, data, kmeans, batch):
         os.makedirs(saveLabelPath)
     
     chunk_num = int(args.image_size / args.patch_size)
+    count = np.zeros(args.kmeans)
     for idx in range(len(index_label)):
         for i in range(chunk_num):
             for j in range(chunk_num):
                 label = index_label[idx][i*chunk_num+j]
                 label_list.append(label)
+
+                count[label] += 1
+    
+    print(count)
 
     print("save label: ", saveLabelPath+saveLabelName)
     torch.save(label_list, saveLabelPath+saveLabelName)
@@ -298,12 +297,12 @@ if __name__ == "__main__":
     
     """ parameters """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--kmeans', type=int, default=16)
+    parser.add_argument('--kmeans', type=int, default=128)
     parser.add_argument('--data', type=str, default='bottle')
     parser.add_argument('--batch', type=int, default=100)
     parser.add_argument('--model', type=str, default='vgg19')
-    parser.add_argument('--patch_size', type=int, default=64)
-    parser.add_argument('--image_size', type=int, default=1024)
+    parser.add_argument('--patch_size', type=int, default=16)
+    parser.add_argument('--image_size', type=int, default=256)
     parser.add_argument('--dim_reduction', type=str, default='PCA')
     args = parser.parse_args()
     out = args.kmeans

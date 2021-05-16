@@ -41,7 +41,7 @@ class VGG(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        # x = self.avgpool(x)
+        x = self.avgpool(x)
         return x
 
 def make_layers(cfg, batch_norm=False):
@@ -86,8 +86,8 @@ if __name__ == "__main__":
     """ Set parameters """ 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='bottle')
-    parser.add_argument('--pos_x', type=int, default=0)
-    parser.add_argument('--pos_y', type=int, default=0)
+    # parser.add_argument('--pos_x', type=int, default=0)
+    # parser.add_argument('--pos_y', type=int, default=0)
     parser.add_argument('--fine_tune_epoch', type=int, default=0)
     args = parser.parse_args()
 
@@ -97,33 +97,39 @@ if __name__ == "__main__":
 
     model = model.to(device)
     if args.fine_tune_epoch != 0:
-        model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
+        model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
 
     """ Load dataset """
-    train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data.split('_')[0] }/train_resize/good/" )
+    train_dataset = dataloaders.MvtecLoader( f"/mnt/train-data1/corn/bottle_patch/train/" )
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=False)
 
-    test_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data.split('_')[0] }/test_resize/good/" )
-    test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-
     features = []
-    for idx, img in test_loader:
+    for i in range(256):
+        features.append([])
+    
+    for idx, img in train_loader:
         model.eval()
         img = img.to(device)
-        feature = model(img)
-        
-        features.append(feature[0, :, args.pos_x, args.pos_y].detach().cpu().numpy())
+
+        for i in range(16):
+            for j in range(16):
+                patch = img[:, :, i*64:i*64+64, j*64:j*64+64].to(device)
+                feature = model(patch)
+
+                feature = feature.squeeze(2)
+                feature = feature.squeeze(2)
+
+                feature = pca.transform(feature.detach().cpu().numpy())
+                features[i*16+j].append(feature)
     
     features = np.array(features) # 特定位置經過 pre-trained model 所得到的特徵
-    features = pca.transform(features) # 用處理好的 pca 將 feature 降維至 128D
+    features = features.reshape(256, -1, 128)
+    np.save('./fine_tune_features_{}'.format(args.fine_tune_epoch), features)
+    features.mean(axis=1)
+    # print(aaaa)
+    # features = pca.transform(features) # 用處理好的 pca 將 feature 降維至 128D
 
-    diff = []
-    diff_max = []
-    for i in range(features.shape[0]):
-        for j in range(features.shape[0]):
-            diff.append( np.abs(features[i] - features[j]).mean() )
-            diff_max.append( np.abs(features[i] - features[j]).max() )
-    
-    print(np.array(diff).mean(), np.array(diff).max())
-    plt.imshow(np.array(diff).reshape(features.shape[0], features.shape[0]), cmap='binary', interpolation='nearest')
-    plt.savefig(f"pos_{ args.pos_x }_{ args.pos_y }_tune_{ args.fine_tune_epoch }_comp.png")
+    for i in range(features.shape[0]): 
+        for j in range(i+1, feature.shape[0]): 
+            print(f"({int(i/16)}, {i%16}) v.s ({int(j/16), j%16})") 
+            print("dis = ", np.abs(mean_features[i] - mean_features[j]).mean()) 

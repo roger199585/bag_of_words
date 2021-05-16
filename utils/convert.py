@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 from tqdm import tqdm
 from PIL import Image, ImageFilter
 
@@ -82,6 +83,29 @@ class ImageConverter():
                         else:
                             print(imageName, "is not a picture")
     
+    def getPatches(self, category):
+        dataPath = '{}/{}/train_resize/good'.format(self.ROOT, category)
+        patchDataPath = '/mnt/train-data1/corn/{}/'.format(category)
+
+        if not os.path.isdir(patchDataPath):
+            os.makedirs(patchDataPath)
+        
+        images = os.listdir(dataPath)
+        images = sorted(images, key=lambda a: a[:-4])
+
+        idx = 0
+        for imageName in images:
+            im = Image.open(dataPath + '/' + imageName)
+            im = np.array(im)
+
+            for i in range(16):
+                for j in range(16):
+                    new_img = Image.fromarray(im[i*64:i*64+64, j*64:j*64+64, :])
+                    new_img.save(patchDataPath + str(idx) + '.png')
+                    idx += 1
+
+
+
     def start(self):
         print("Start converting...\n")
         for _type in self.TYPES:

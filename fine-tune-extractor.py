@@ -19,7 +19,8 @@ from config import ROOT, RESULT_PATH
 
 print("PyTorch Version: ",torch.__version__)
 print("Torchvision Version: ",torchvision.__version__)
-
+iter_count=0
+val_iter_count=0
 # === VGG ====
 cfgs = {
     'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
@@ -103,6 +104,9 @@ def set_parameter_requires_grad(model, feature_extracting):
 
 
 def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=25, is_inception=False):
+    global iter_count
+    global val_iter_count
+
     since = time.time()
 
     best_acc = 0.0
@@ -112,63 +116,76 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=25,
         print('-' * 10)
 
         # Each epoch has a training and validation phase
-        for phase in ['train', 'val']:
-            if phase == 'train':
-                model.train()  # Set model to training mode
-            else:
-                model.eval()   # Set model to evaluate mode
-
-            running_loss = 0.0
-            count = 0
-            # Iterate over data.
-            for aug1, aug2 in dataloaders[phase]:
-                aug1 = aug1.to(device)
-                aug2 = aug2.to(device)
-
-                for idx in range(aug1.size(0)):
-                    # zero the parameter gradients
-                    optimizer.zero_grad()
-
-                    # forward
-                    # track history if only in train
-                    with torch.set_grad_enabled(phase == 'train'):
-                        # Get model outputs and calculate loss
-                        # Special case for inception because in training it has an auxiliary output. In train
-                        #   mode we calculate the loss by summing the final output and the auxiliary output
-                        #   but in testing we only consider the final output.
-                        diff = (aug1[idx, :, :, :] - aug2[idx, :, :, :]).abs()
-                        if is_inception and phase == 'train':
-                            # From https://discuss.pytorch.org/t/how-to-optimize-inception-model-with-auxiliary-classifiers/7958
-                            featue1 = model(aug1[idx, :, :, :].unsqueeze(0))
-                            featue2 = model(aug2[idx, :, :, :].unsqueeze(0))
-                            loss = criterion(feature1, feature2)
-                        else:
-                            feature1 = model(aug1[idx, :, :, :].unsqueeze(0))
-                            feature2 = model(aug2[idx, :, :, :].unsqueeze(0))
-                            loss = criterion(feature1, feature2)
-                            loss = loss.mean()
 
 
-                        # backward + optimize only if in training phase
-                        if phase == 'train' and (diff.max() > diff.mean() * 1.5 or diff.mean() < 0.05):
-                            loss.backward()
-                            optimizer.step()
+        # running_loss = 0.0
+        # Iterate over data.
+        phase='train'
+        for patch1, patch2 in dataloaders[phase]:
+            model.train()
 
-                            # statistics
-                            running_loss += loss.item()
-                            count += 1
+            patch1 = patch1.to(device)
+            patch2 = patch2.to(device)
 
-            epoch_loss = 0 if count == 0 else running_loss / count
+            # zero the parameter gradients
+            optimizer.zero_grad()
 
-            print('{} Loss: {:.4f}, Update {} time'.format(phase, epoch_loss, count))
-            writer.add_scalar(phase, epoch_loss, epoch)
-        print()
+            # forward
+            # track history if only in train
+            with torch.set_grad_enabled(phase == 'train'):
+                # Get model outputs and calculate loss
+                # Special case for inception because in training it has an auxiliary output. In train
+                #   mode we calculate the loss by summing the final output and the auxiliary output
+                #   but in testing we only consider the final output.
 
-        if not os.path.isdir(f"/train-data2/corn/fine-tune-models2/{ args.data }"):
-            print(f"create {args.data}")
-            os.makedirs(f"/train-data2/corn/fine-tune-models2/{ args.data }")
+                feature1 = model(patch1)
+                feature2 = model(patch2)
+                loss = criterion(feature1, feature2)
+                loss = loss.mean()
 
-        torch.save(model.state_dict(), f"/train-data2/corn/fine-tune-models2/{ args.data }/{ epoch }.ckpt")
+                if phase == 'train':
+                    # backward + optimize only if in training phase
+                    loss.backward()
+                    optimizer.step()
+
+                # statistics
+                writer.add_scalar(phase, loss.item(), iter_count)
+                # running_loss += loss.item() * patch1.size(0)
+                iter_count += 1
+
+            if iter_count % 200 == 0:
+                for patch1, patch2, in dataloaders['val']:
+                    model.eval()
+
+                    patch1 = patch1.to(device)
+                    patch2 = patch2.to(device)
+
+                    feature1 = model(patch1)
+                    feature2 = model(patch2)
+                    loss = criterion(feature1, feature2)
+                    loss = loss.mean()
+
+                    writer.add_scalar('val', loss.item(), val_iter_count)
+                    val_iter_count += 1
+                
+                if not os.path.isdir(f"//mnt/train-data1/fine-tune-models/{ args.data }"):
+                    print(f"create {args.data}")
+                    os.makedirs(f"//mnt/train-data1/fine-tune-models/{ args.data }")
+
+                torch.save(model.state_dict(), f"//mnt/train-data1/fine-tune-models/{ args.data }/{ iter_count }.ckpt")
+
+
+
+        # epoch_loss = running_loss / len(dataloaders[phase].dataset)
+
+        # print('{} Loss: {:.4f}'.format(phase, epoch_loss))
+        # writer.add_scalar(phase + '_epoch', epoch_loss, epoch)
+
+        # if not os.path.isdir(f"//mnt/train-data1/fine-tune-models/{ args.data }"):
+        #     print(f"create {args.data}")
+        #     os.makedirs(f"//mnt/train-data1/fine-tune-models/{ args.data }")
+
+        # torch.save(model.state_dict(), f"//mnt/train-data1/fine-tune-models/{ args.data }/{ epoch }.ckpt")
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -201,16 +218,16 @@ for name,param in model_ft.named_parameters():
 # ================================================= DataLoader =============================================
 print("Initializing Datasets and Dataloaders...")
 # Create training and validation datasets
-train_dataset = dataloaders.MvtecLoaderForFineTune( f"{ ROOT }/dataset/{ args.data }/train/good", 'ft-train' )
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_dataset = dataloaders.MvtecLoaderForFineTune( f"/mnt/train-data1/corn/bottle_patch/train", 'ft-train' )
+train_loader = DataLoader(train_dataset, batch_size=1024, shuffle=True)
 
-validation_dataset = dataloaders.MvtecLoaderForFineTune( f"{ ROOT }/dataset/{ args.data }/test/good", 'ft-val' )
-validation_loader = DataLoader(validation_dataset, batch_size=4, shuffle=False)
+validation_dataset = dataloaders.MvtecLoaderForFineTune( f"/mnt/train-data1/corn/bottle_patch/val", 'ft-val' )
+validation_loader = DataLoader(validation_dataset, batch_size=1024, shuffle=False)
 
 # ================================================== Train Model =======================================
 writer = SummaryWriter(log_dir="{}/fine_tune_{}_{}".format(RESULT_PATH, args.data, datetime.now()))
 # Observe that all parameters are being optimized
-optimizer_ft = optim.SGD(params_to_update, lr=0.001, momentum=0.9)
+optimizer_ft = optim.Adam(params_to_update, lr=0.00001)
 # Setup the loss fxn
 criterion = nn.L1Loss()
 # criterion = nn.CosineSimilarity(dim=1, eps=1e-6)
@@ -218,4 +235,4 @@ criterion = nn.L1Loss()
 model_ft = train_model(model_ft, {
     "train": train_loader,
     "val": validation_loader
-}, criterion, optimizer_ft, writer, num_epochs=50)
+}, criterion, optimizer_ft, writer, num_epochs=100)

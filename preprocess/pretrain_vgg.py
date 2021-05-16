@@ -110,8 +110,8 @@ if __name__ == "__main__":
     patch_j = []
 
     model = model.to(device)
-    if args.fine_tune_epoch != 0:
-        model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
+    # if args.fine_tune_epoch != 0:
+    #     model.load_state_dict(torch.load(f"/train-data2/corn/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch }.ckpt"))
         
     """ Load dataset """
     train_dataset = dataloaders.MvtecLoader( f"{ ROOT }/dataset/{ args.data }/train_resize/good/" )

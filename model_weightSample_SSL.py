@@ -26,42 +26,38 @@ import matplotlib.pyplot as plt
 # customize
 import networks.resnet as resnet
 import dataloaders
-import preprocess.pretrain_vgg as pretrain_vgg
-import preprocess.pretrain_resnet as pretrain_resnet
+from preprocess_SSL.SSL import model as ssl_model
 from config import ROOT, RESULT_PATH
 
 # evaluations
-from sklearn import preprocessing
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.metrics import roc_auc_score
 
 
 # from config import gamma
 
 """ set parameters """
 parser = argparse.ArgumentParser()
-parser.add_argument('--kmeans', type=int, default=16)
+parser.add_argument('--kmeans', type=int, default=128)
 parser.add_argument('--lr', type=float, default=1e-3)
 parser.add_argument('--epoch', type=int, default=10)
 parser.add_argument('--data', type=str, default='bottle')
 parser.add_argument('--type', type=str, default='good')
 parser.add_argument('--batch', type=int, default=100)
 parser.add_argument('--dim', type=int, default=128)
-parser.add_argument('--model', type=str, default='vgg19')
+parser.add_argument('--model', type=str, default='ssl')
 parser.add_argument('--train_batch', type=int, default=16)
 parser.add_argument('--test_batch_size', type=int, default=64)
 parser.add_argument('--with_mask', type=str, default='True')
-parser.add_argument('--patch_size', type=int, default=64)
-parser.add_argument('--image_size', type=int, default=1024)
+parser.add_argument('--patch_size', type=int, default=16)
+parser.add_argument('--image_size', type=int, default=256)
 parser.add_argument('--dim_reduction', type=str, default='PCA')
-parser.add_argument('--fine_tune_epoch', type=int, default=100)
 args = parser.parse_args()
 
 kmeans_path = f"{ ROOT }/preprocessData/kmeans/{ args.dim_reduction }/{ args.data }/{ args.model }_{ args.kmeans }_{ args.batch }_{ args.dim }.pickle"
 pca_path    = f"{ ROOT }/preprocessData/{ args.dim_reduction }/{ args.data }/{ args.model }_{ str(args.kmeans) }_{ str(args.batch) }_{ str(args.dim) }.pickle"
 
-left_i_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_i.pickle".format(ROOT, args.dim_reduction, args.data)
-left_j_path = "{}/preprocessData/coordinate/vgg19/{}/{}/left_j.pickle".format(ROOT, args.dim_reduction, args.data)
+left_i_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.dim_reduction }/{ args.data }/left_i.pickle"
+left_j_path = f"{ ROOT }/preprocessData/coordinate/{ args.model }/{ args.dim_reduction }/{ args.data }/left_j.pickle"
 
 pca = pickle.load(open(pca_path, "rb"))
 kmeans = pickle.load(open(kmeans_path, "rb"))
@@ -81,16 +77,13 @@ scratch_model = nn.Sequential(
 """ training """
 train_path = f"{ ROOT }/dataset/{ args.data }/train_resize/good"
 label_name = f"{ ROOT }/preprocessData/label/fullPatch/{ args.model }/{ args.data }/kmeans_{ args.kmeans }_{ args.batch }.pth"
-mask_path  = f"{ ROOT}/dataset/big_mask/".format(ROOT)
 
-if args.model == 'vgg19':
-    pretrain_model = pretrain_vgg.model
-    if args.fine_tune_epoch != 0:
-        pretrain_model.load_state_dict(torch.load(f"/mnt/train-data1/fine-tune-models/{ args.data.split('_')[0] }/{ args.fine_tune_epoch}.ckpt"))
-    pretrain_model = nn.DataParallel(pretrain_model).to(device)
+model_path = f"{ ROOT }/preprocess_SSL/SSL/KNN/exp3/{ args.data }/2048_2000.pth"
 
-if args.model == 'resnet34':
-    pretrain_model = nn.DataParallel(pretrain_resnet.model).to(device)
+pretrain_model = ssl_model.Model()
+pretrain_model = nn.DataParallel(pretrain_model).cuda()
+pretrain_model.load_state_dict(torch.load(model_path))
+pretrain_model.eval()
 
 print('training data: ', train_path)
 print('training label: ', label_name)
@@ -107,8 +100,8 @@ else:
 
 
 test_label = torch.tensor(torch.load(test_label_name))
-print(test_label.shape)
 all_test_label = torch.tensor(torch.load(all_test_label_name))
+print(test_label.shape)
 print(all_test_label.shape)
 
 """ eval """
@@ -159,13 +152,14 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
             for i in range(chunk_num):
                 for j in range(chunk_num):
                     crop_img = img[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size].to(device)
-                    crop_output = pretrain_model(crop_img)
+                    crop_output, _ = pretrain_model(crop_img)
+
                     """ flatten the dimension of H and W """
                     out_ = crop_output.flatten(1,2).flatten(1,2)
                     patches.append(out_.detach().cpu().numpy())
                     origin_feature_list.append(out_)
 
-                    mask = torch.ones(1, 1, 1024, 1024)
+                    mask = torch.ones(1, 1, 256, 256)
                     mask[:, :, i*args.patch_size:i*args.patch_size+args.patch_size, j*args.patch_size:j*args.patch_size+args.patch_size] = 0
                     mask = mask.to(device)
                     x = img * mask if args.with_mask == 'True' else img
@@ -239,24 +233,16 @@ def eval_feature(epoch, model, test_loader, __labels, isGood):
 
     return img_feature
 
-def weights_init(m):
-    if isinstance(m, nn.Conv2d):
-        torch.nn.init.zeros_(m.weight.data)
-        if m.bias is not None:
-            torch.nn.init.zeros_(m.bias)
-        # xavier(m.weight.data)
-        # xavier(m.bias.data)
-
 if __name__ == "__main__":
 
     """ Summary Writer """
-    writer = SummaryWriter(log_dir="{}/fine_tune_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
+    writer = SummaryWriter(log_dir="{}/Finial_SSL_mask_{}_patch_{}_{}_{}_{}_{}".format(RESULT_PATH, args.with_mask, args.patch_size, args.data, args.type, args.kmeans, datetime.now()))
 
     """ weight sampling with noise patch in training data """
     train_dataset = dataloaders.NoisePatchDataloader(train_path, label_name, left_i_path, left_j_path)
     samples_weights = torch.from_numpy(train_dataset.samples_weights)
     sampler = WeightedRandomSampler(samples_weights.type('torch.DoubleTensor'), len(samples_weights))
-    train_loader = DataLoader(train_dataset, batch_size=args.train_batch, num_workers=1, sampler=sampler)
+    train_loader = DataLoader(train_dataset, batch_size=args.train_batch, num_workers=0, sampler=sampler)
 
     # testing set (normal data)
     test_dataset = dataloaders.MvtecLoader(test_path)
@@ -273,8 +259,6 @@ if __name__ == "__main__":
 
     scratch_model = nn.DataParallel(scratch_model).to(device)
     epoch_num = 0
-
-    # scratch_model.apply(weights_init)
 
     """ training config """ 
     # criterion = nn.MSELoss()
@@ -298,9 +282,9 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
+            error_map = np.zeros((256, 256))
             for index, scalar in enumerate(value_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread('{}/dataset/ssl_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 
@@ -319,14 +303,14 @@ if __name__ == "__main__":
             img = img.cuda()
             idx = idx[0].item()
 
-            error_map = np.zeros((1024, 1024))
+            error_map = np.zeros((256, 256))
             for index, scalar in enumerate(value_good_feature[idx]):
-                mask = cv2.imread('{}/dataset/big_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
+                mask = cv2.imread('{}/dataset/ssl_mask/mask{}.png'.format(ROOT, index), cv2.IMREAD_GRAYSCALE)
                 mask = np.invert(mask)
                 mask[mask==255]=1
                 error_map += mask * scalar
 
-            defect_gt = np.zeros((1024, 1024, 3))
+            defect_gt = np.zeros((256, 256, 3))
             true_mask = defect_gt[:, :, 0].astype('int32')
             label_pred.append(error_map)
             label_gt.append(true_mask)    
@@ -372,7 +356,7 @@ if __name__ == "__main__":
         if not os.path.isdir('{}/models/{}/{}'.format(ROOT, args.model, args.data)):
             os.makedirs('{}/models/{}/{}'.format(ROOT, args.model, args.data))
         
-        path = "{}/models/{}/{}/exp1_{}_{}.ckpt".format(
+        path = "{}/models/{}/{}/ssl_exp1_{}_{}.ckpt".format(
             ROOT,
             args.model, 
             args.data, 
