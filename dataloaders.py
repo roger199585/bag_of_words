@@ -98,29 +98,9 @@ class MvtecLoader(Dataset):
     def __getitem__(self, index):
         img_path = self.dir + '/' + self.list[index]
         img = cached_load_image(img_path)
-        img = data_transforms[self.trans](img)
-        return index, img
-
-class MvtecLoaderForFineTune(Dataset):
-    def __init__(self, dir, transforms_type='train'):  
-        self.dir = dir
-        self.list = os.listdir(self.dir)
-        self.trans = transforms_type
-
-    def __len__(self):
-        return len(self.list)
-
-    def __getitem__(self, index):
-        img1_path = self.dir + '/' + str( int(index / 2) ) + '_1.png'
-        img2_path = self.dir + '/' + str( int(index / 2) ) + '_2.png'
-
-        img1 = cached_load_image(img1_path)
-        img2 = cached_load_image(img2_path)
-
-        img1 = data_transforms[self.trans](img1)
-        img2 = data_transforms[self.trans](img2)
-
-        return img1, img2
+        norm_img = data_transforms['train'](img)
+        img = data_transforms['train2'](img)
+        return index, img, norm_img
 
 class MaskLoader(Dataset):
     def __init__(self, dir):
@@ -198,7 +178,8 @@ class NoisePatchDataloader(Dataset):
         img_idx = index // 256
         img = self.img_path + "/" + self.img_list[img_idx]
         img = cached_load_image(img)
-        img = data_transforms['train'](img)
+        norm_img = data_transforms['train'](img)
+        img = data_transforms['train2'](img)
         
         """ for mask position """
         left_i = self.left_i_list[index]
@@ -210,13 +191,9 @@ class NoisePatchDataloader(Dataset):
         j = mask_idx % 16
         mask[:, i*16+left_i:i*16+16+left_i, j*16+left_j:j*16+16+left_j] = 0
 
-        # """ 5*5 surroundings for patch """ 
-        # img = get_partial(img, i, j)
-        # mask = get_partial(mask, i, j)
-
         label = self.label_list[index]
 
-        return index, img, left_i, left_j, label, mask
+        return index, img, norm_img, left_i, left_j, label, mask
 
 # 這是給先抽取 feature 在去切 patch 用的
 class NoisePatchDataloader2(Dataset):
